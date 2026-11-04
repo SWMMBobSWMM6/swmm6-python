@@ -1,0 +1,595 @@
+# The runtime names py/gen/engine.py uses: Python name, tab, the C# member(s) it stands for (a .name is a member of runtime objects). See py/RUNTIME_HELPERS.md.
+# Written by tools/cs2x/Cs2Py.cs. Written by Claude (Anthropic) for the SWMM6 ports; see AI-USE.md.
+.Assign	method Cpp.Map<K, V>.Assign(Cpp.Map<K, V>) | method Cpp.Opt<T>.Assign(Cpp.Opt<T>) | method Cpp.Que<T>.Assign(Cpp.Que<T>) | method Cpp.Set<T>.Assign(Cpp.Set<T>) | method Cpp.UMap<K, V>.Assign(Cpp.UMap<K, V>) | method Cpp.UMapC<K, V, H, E>.Assign(Cpp.UMapC<K, V, H, E>) | method Cpp.Variant.Assign(Cpp.Variant)
+.Assign_CPtr	method Cpp.Str.Assign(Cpp.CPtr)
+.Assign_FsPath	method Cpp.FsPath.Assign(Cpp.FsPath)
+.Assign_Str	method Cpp.Str.Assign(Cpp.Str)
+.Assign_VecT	method Cpp.Vec<T>.Assign(Cpp.Vec<T>)
+.Bool	method Cpp.ErrorCode.Bool()
+.Cancel	method Cpp.Defer.Cancel()
+.Clone	method Cpp.CPtr.Clone() | method Cpp.Duration.Clone() | method Cpp.FsPath.Clone() | method Cpp.Iter<T>.Clone() | method Cpp.MIt<E>.Clone() | method Cpp.Map<K, V>.Clone() | method Cpp.Opt<T>.Clone() | method Cpp.Pair<A, B>.Clone() | method Cpp.Que<T>.Clone() | method Cpp.Set<T>.Clone() | method Cpp.Str.Clone() | method Cpp.TimePoint.Clone() | method Cpp.UMap<K, V>.Clone() | method Cpp.UMapC<K, V, H, E>.Clone() | method Cpp.Variant.Clone() | method Cpp.Vec<T>.Clone()
+.EqLit	method Cpp.Str.EqLit(Cpp.CPtr)
+.Equals_Str	method Cpp.Str.Equals(Cpp.Str?)
+.Get_Str	method Cpp.IStream.Get(Cpp.Str)
+.Get_dr	method Cpp.IStream.Get(ref double)
+.Get_ir	method Cpp.IStream.Get(ref int)
+.Get_ulr	method Cpp.IStream.Get(ref ulong)
+.Get_ur	method Cpp.IStream.Get(ref uint)
+.Index	method Cpp.Map<K, V>.Index(K) | method Cpp.UMap<K, V>.Index(K)
+.Items	method Cpp.HashTable<K, E>.Items() | method Cpp.Map<K, V>.Items()
+.Join_FsPath	method Cpp.FsPath.Join(Cpp.FsPath)
+.Manip_quoted_CPtr	method Cpp.OStream.Manip_quoted(Cpp.CPtr)
+.Manip_quoted_Str	method Cpp.OStream.Manip_quoted(Cpp.Str)
+.Manip_setprecision	method Cpp.OStream.Manip_setprecision(long)
+.Manip_ws	method Cpp.IStream.Manip_ws()
+.MoveFrom	method Cpp.FsPath.MoveFrom(Cpp.FsPath) | method Cpp.Opt<T>.MoveFrom(Cpp.Opt<T>) | method Cpp.Str.MoveFrom(Cpp.Str) | method Cpp.Variant.MoveFrom(Cpp.Variant)
+.MoveFrom_TA	method Cpp.Vec<T>.MoveFrom(T[])
+.MoveFrom_VecT	method Cpp.Vec<T>.MoveFrom(Cpp.Vec<T>)
+.Put_CPtr	method Cpp.OStream.Put(Cpp.CPtr)
+.Put_Str	method Cpp.OStream.Put(Cpp.Str)
+.Put_c	method Cpp.OStream.Put(sbyte)
+.Put_d	method Cpp.OStream.Put(double)
+.Put_i	method Cpp.OStream.Put(int)
+.Put_ul	method Cpp.OStream.Put(ulong)
+.Set	method Cpp.Opt<T>.Set(T)
+.Set_Str	method Cpp.Variant.Set(Cpp.Str)
+.Set_b	method Cpp.Variant.Set(bool)
+.Set_d	method Cpp.Variant.Set(double)
+.Set_i	method Cpp.Variant.Set(int)
+.ToString	method ToString() of a runtime value (a Python str)
+.a	field Cpp.CSpan<T>.a | field Cpp.Iter<T>.a | field Cpp.Vec<T>.a | field Cpp.Vec<T>.a (the backing list; elements 0..n-1)
+.append_CPtr	method Cpp.Str.append(Cpp.CPtr)
+.append_CPtr_ul	method Cpp.Str.append(Cpp.CPtr, ulong)
+.append_Str	method Cpp.Str.append(Cpp.Str)
+.append_i	method Cpp.Str.append(int)
+.assign_CPtr_ul	method Cpp.Str.assign(Cpp.CPtr, ulong)
+.assign_IterT_IterT	method Cpp.Vec<T>.assign(Cpp.Iter<T>, Cpp.Iter<T>)
+.assign_Ptrc_Ptrc	method Cpp.Str.assign(Cpp.Ptr<sbyte>, Cpp.Ptr<sbyte>)
+.assign_Str	method Cpp.Str.assign(Cpp.Str)
+.assign_ul_T	method Cpp.Vec<T>.assign(ulong, T)
+.at	method Cpp.Vec<T>.at(ulong)
+.b	field Cpp.Str.b | field Cpp.Str.b (the backing bytearray; bytes 0..n-1)
+.back	method Cpp.Str.back() | method Cpp.Vec<T>.back()
+.bad	method Cpp.IosBase.bad()
+.begin	method Cpp.Str.begin() | method Cpp.Vec<T>.begin()
+.c_str	method Cpp.FsPath.c_str() | method Cpp.Str.c_str()
+.capacity	method Cpp.Vec<T>.capacity()
+.clear	method Cpp.FsPath.clear() | method Cpp.HashTable<K, E>.clear() | method Cpp.IosBase.clear(int) | method Cpp.Str.clear() | method Cpp.Vec<T>.clear()
+.close	method Cpp.OFStream.close()
+.compare	method Cpp.FsPath.compare(Cpp.FsPath)
+.compare_exchange	method Cpp.Atomic<T>.compare_exchange(ref T, T)
+.compare_ul_ul_Str	method Cpp.Str.compare(ulong, ulong, Cpp.Str)
+.contains	method Cpp.HashTable<K, E>.contains(K)
+.count	method Cpp.Duration.count() | method Cpp.HashTable<K, E>.count(K)
+.data	method Cpp.Str.data() | method Cpp.Vec<T>.data()
+.ec	field Cpp.FromCharsResult.ec
+.emplace	method Cpp.Opt<T>.emplace(T)
+.emplace_K_V	method Cpp.Map<K, V>.emplace(K, V) | method Cpp.UMap<K, V>.emplace(K, V)
+.emplace_back	method Cpp.Vec<T>.emplace_back(T)
+.empty	method Cpp.CSpan<T>.empty() | method Cpp.FsPath.empty() | method Cpp.Map<K, V>.empty() | method Cpp.Stk<T>.empty()
+.end	method Cpp.HashTable<K, E>.end() | method Cpp.Map<K, V>.end() | method Cpp.Str.end() | method Cpp.Vec<T>.end()
+.eof	method Cpp.IosBase.eof()
+.erase	method Cpp.Str.erase(ulong, ulong)
+.erase_IterT	method Cpp.Vec<T>.erase(Cpp.Iter<T>)
+.erase_IterT_IterT	method Cpp.Vec<T>.erase(Cpp.Iter<T>, Cpp.Iter<T>)
+.erase_MItE	method Cpp.HashTable<K, E>.erase(Cpp.MIt<E>)
+.extension	method Cpp.FsPath.extension()
+.fetch_add	method Cpp.Atomic<T>.fetch_add(T, int)
+.find	method Cpp.HashTable<K, E>.find(K) | method Cpp.Map<K, V>.find(K)
+.find_CPtr_ul	method Cpp.Str.find(Cpp.CPtr, ulong)
+.find_first_not_of_CPtr_ul	method Cpp.Str.find_first_not_of(Cpp.CPtr, ulong)
+.find_first_not_of_i_ul	method Cpp.Str.find_first_not_of(int, ulong)
+.find_first_of_CPtr_ul	method Cpp.Str.find_first_of(Cpp.CPtr, ulong)
+.find_i_ul	method Cpp.Str.find(int, ulong)
+.find_last_not_of_CPtr_ul	method Cpp.Str.find_last_not_of(Cpp.CPtr, ulong)
+.find_last_of_i_ul	method Cpp.Str.find_last_of(int, ulong)
+.first	field Cpp.Pair<A, B>.first
+.front	method Cpp.Str.front() | method Cpp.Vec<T>.front()
+.gcount	method Cpp.IStream.gcount()
+.generic_string	method Cpp.FsPath.generic_string()
+.get	method CPtr.this[int] get (get(i))
+.get_Deref	property Cpp.Iter<T>.Deref | property Cpp.MIt<E>.Deref | property Cpp.Ptr<T>.Deref | property Cpp.RevIter<T>.Deref
+.get_IsNull	property Cpp.CPtr.IsNull | property Cpp.Ptr<T>.IsNull
+.get_Item_i	property Cpp.Ptr<T>.this[][int]
+.get_Item_ul	property Cpp.Ptr<T>.this[][ulong]
+.good	method Cpp.IosBase.good()
+.has	field Cpp.Opt<T>.has
+.i	field Cpp.Iter<T>.i
+.imbue	method Cpp.IosBase.imbue(object?)
+.insert	method Cpp.Set<T>.insert(T) | method Cpp.USet<T>.insert(T)
+.insert_IterT_IterT_IterT	method Cpp.Vec<T>.insert(Cpp.Iter<T>, Cpp.Iter<T>, Cpp.Iter<T>)
+.insert_IterT_PtrT_PtrT	method Cpp.Vec<T>.insert(Cpp.Iter<T>, Cpp.Ptr<T>, Cpp.Ptr<T>)
+.insert_IterT_T	method Cpp.Vec<T>.insert(Cpp.Iter<T>, T)
+.insert_IterT_TA	method Cpp.Vec<T>.insert(Cpp.Iter<T>, T[])
+.is_open	method Cpp.IFStream.is_open() | method Cpp.OFStream.is_open()
+.is_relative	method Cpp.FsPath.is_relative()
+.lexically_normal	method Cpp.FsPath.lexically_normal()
+.n	field Cpp.CSpan<T>.n | field Cpp.Str.n | field Cpp.Str.n (the element count; size(), length(), empty() read it) | field Cpp.Vec<T>.n | field Cpp.Vec<T>.n (the element count; size(), length(), empty() read it)
+.notok	method Cpp.IosBase.notok()
+.o	field Cpp.CSpan<T>.o
+.ok	method Cpp.IosBase.ok()
+.open_Str_i	method Cpp.OFStream.open(Cpp.Str, int)
+.parent_path	method Cpp.FsPath.parent_path()
+.pop	method Cpp.Stk<T>.pop()
+.pop_back	method Cpp.Str.pop_back() | method Cpp.Vec<T>.pop_back()
+.ptr	field Cpp.FromCharsResult.ptr
+.push	method Cpp.Stk<T>.push(T)
+.push_back	method Cpp.Str.push_back(int) | method Cpp.Vec<T>.push_back(T)
+.rbegin	method Cpp.Vec<T>.rbegin()
+.read_CPtr_l	method Cpp.IStream.read(Cpp.CPtr, long)
+.read_PtrT_l__B	method Cpp.IStream.read<T>(Cpp.Ptr<T>, long) __B
+.read_PtrT_l__D	method Cpp.IStream.read<T>(Cpp.Ptr<T>, long) __D
+.read_PtrT_l__F	method Cpp.IStream.read<T>(Cpp.Ptr<T>, long) __F
+.read_PtrT_l__I	method Cpp.IStream.read<T>(Cpp.Ptr<T>, long) __I
+.read_PtrT_l__L	method Cpp.IStream.read<T>(Cpp.Ptr<T>, long) __L
+.ref_Deref	property Cpp.Ptr<T>.Deref (a Ref)
+.ref_Index	method Cpp.Map<K, V>.Index(K) (a Ref) | method Cpp.UMap<K, V>.Index(K) (a Ref)
+.ref_Item_i	property Cpp.Ptr<T>.this[][int] (a Ref)
+.ref_Item_ul	property Cpp.Ptr<T>.this[][ulong] (a Ref)
+.ref_back	method Cpp.Vec<T>.back() (a Ref)
+.ref_first	field ref Cpp.Pair<A, B>.first (a Ref to the field)
+.ref_second	field ref Cpp.Pair<A, B>.second (a Ref to the field)
+.remove_prefix	method Cpp.Str.remove_prefix(ulong)
+.rend	method Cpp.Vec<T>.rend()
+.replace_extension_FsPath	method Cpp.FsPath.replace_extension(Cpp.FsPath?)
+.reserve	method Cpp.HashTable<K, E>.reserve(ulong) | method Cpp.Str.reserve(ulong) | method Cpp.Vec<T>.reserve(ulong)
+.reset	method Cpp.Opt<T>.reset()
+.resize	method Cpp.Str.resize(ulong, int)
+.resize_ul	method Cpp.Vec<T>.resize(ulong)
+.resize_ul_T	method Cpp.Vec<T>.resize(ulong, T)
+.rfind_CPtr_ul	method Cpp.Str.rfind(Cpp.CPtr, ulong)
+.rfind_i_ul	method Cpp.Str.rfind(int, ulong)
+.second	field Cpp.Pair<A, B>.second
+.seekg	method Cpp.IStream.seekg(long, int)
+.set	method CPtr.this[int] set (set(i, v))
+.set_Deref	property Cpp.Ptr<T>.Deref (assignment through the reference: set_Deref(args..., v))
+.set_Item_i	property Cpp.Ptr<T>.this[][int] (assignment through the reference: set_Item_i(args..., v))
+.set_Item_ul	property Cpp.Ptr<T>.this[][ulong] (assignment through the reference: set_Item_ul(args..., v))
+.set_V	property Cpp.Box<T>.V (assignment through the reference: set_V(args..., v))
+.shrink_to_fit	method Cpp.Vec<T>.shrink_to_fit()
+.size	method Cpp.HashTable<K, E>.size() | method Cpp.Map<K, V>.size() | method Cpp.Stk<T>.size()
+.starts_with_CPtr	method Cpp.Str.starts_with(Cpp.CPtr)
+.starts_with_Str	method Cpp.Str.starts_with(Cpp.Str)
+.str_	method Cpp.OStringStream.str()
+.string	method Cpp.FsPath.@string()
+.substr	method Cpp.Str.substr(ulong, ulong)
+.swap	method Cpp.Vec<T>.swap(Cpp.Vec<T>)
+.tellg	method Cpp.IStream.tellg()
+.top	method Cpp.Stk<T>.top()
+.v	field Cpp.Atomic<T>.v
+.val	field Cpp.Opt<T>.val
+.value_or	method Cpp.Opt<T>.value_or(T)
+.what	method Cpp.CppException.what()
+.write_CPtr_l	method Cpp.OStream.write(Cpp.CPtr, long)
+.write_PtrT_l__D	method Cpp.OStream.write<T>(Cpp.Ptr<T>, long) __D
+.write_PtrT_l__F	method Cpp.OStream.write<T>(Cpp.Ptr<T>, long) __F
+.write_PtrT_l__I	method Cpp.OStream.write<T>(Cpp.Ptr<T>, long) __I
+.write_PtrT_l__L	method Cpp.OStream.write<T>(Cpp.Ptr<T>, long) __L
+Algo_VecFrom	static Cpp.Algo.VecFrom<T>(Cpp.Iter<T>, Cpp.Iter<T>)
+Algo_VecFrom__D	static Cpp.Algo.VecFrom<T>(Cpp.Iter<T>, Cpp.Iter<T>) __D
+Algo_VecFrom__I	static Cpp.Algo.VecFrom<T>(Cpp.Iter<T>, Cpp.Iter<T>) __I
+Algo_accumulate_Iterd_Iterd_d	static Cpp.Algo.accumulate(Cpp.Iter<double>, Cpp.Iter<double>, double)
+Algo_all_of	static Cpp.Algo.all_of<T>(Cpp.Iter<T>, Cpp.Iter<T>, System.Func<T, bool>)
+Algo_all_of__D	static Cpp.Algo.all_of<T>(Cpp.Iter<T>, Cpp.Iter<T>, System.Func<T, bool>) __D
+Algo_any_of	static Cpp.Algo.any_of<T>(Cpp.Iter<T>, Cpp.Iter<T>, System.Func<T, bool>)
+Algo_any_of__B	static Cpp.Algo.any_of<T>(Cpp.Iter<T>, Cpp.Iter<T>, System.Func<T, bool>) __B
+Algo_any_of__D	static Cpp.Algo.any_of<T>(Cpp.Iter<T>, Cpp.Iter<T>, System.Func<T, bool>) __D
+Algo_any_of__I	static Cpp.Algo.any_of<T>(Cpp.Iter<T>, Cpp.Iter<T>, System.Func<T, bool>) __I
+Algo_any_of__Z	static Cpp.Algo.any_of<T>(Cpp.Iter<T>, Cpp.Iter<T>, System.Func<T, bool>) __Z
+Algo_begin_TA__D	static Cpp.Algo.begin<T>(T[]) __D
+Algo_begin_TA__Z	static Cpp.Algo.begin<T>(T[]) __Z
+Algo_copy_IterT_IterT_IterT__D	static Cpp.Algo.copy<T>(Cpp.Iter<T>, Cpp.Iter<T>, Cpp.Iter<T>) __D
+Algo_copy_n_PtrT_ul_PtrT__D	static Cpp.Algo.copy_n<T>(Cpp.Ptr<T>, ulong, Cpp.Ptr<T>) __D
+Algo_count__B	static Cpp.Algo.count<T>(Cpp.Iter<T>, Cpp.Iter<T>, T) __B
+Algo_end_TA__D	static Cpp.Algo.end<T>(T[]) __D
+Algo_end_TA__Z	static Cpp.Algo.end<T>(T[]) __Z
+Algo_fill_IterT_IterT_T__B	static Cpp.Algo.fill<T>(Cpp.Iter<T>, Cpp.Iter<T>, T) __B
+Algo_fill_IterT_IterT_T__D	static Cpp.Algo.fill<T>(Cpp.Iter<T>, Cpp.Iter<T>, T) __D
+Algo_fill_IterT_IterT_T__F	static Cpp.Algo.fill<T>(Cpp.Iter<T>, Cpp.Iter<T>, T) __F
+Algo_fill_IterT_IterT_T__I	static Cpp.Algo.fill<T>(Cpp.Iter<T>, Cpp.Iter<T>, T) __I
+Algo_fill_IterT_IterT_T__Z	static Cpp.Algo.fill<T>(Cpp.Iter<T>, Cpp.Iter<T>, T) __Z
+Algo_fill_PtrT_PtrT_T__D	static Cpp.Algo.fill<T>(Cpp.Ptr<T>, Cpp.Ptr<T>, T) __D
+Algo_fill_n_PtrT_ul_T__D	static Cpp.Algo.fill_n<T>(Cpp.Ptr<T>, ulong, T) __D
+Algo_find	static Cpp.Algo.find<T>(Cpp.Iter<T>, Cpp.Iter<T>, T)
+Algo_find__B	static Cpp.Algo.find<T>(Cpp.Iter<T>, Cpp.Iter<T>, T) __B
+Algo_find_if	static Cpp.Algo.find_if<T>(Cpp.Iter<T>, Cpp.Iter<T>, System.Func<T, bool>)
+Algo_iota_Iterul_Iterul_ul	static Cpp.Algo.iota(Cpp.Iter<ulong>, Cpp.Iter<ulong>, ulong)
+Algo_is_sorted_IterT_IterT__D	static Cpp.Algo.is_sorted<T>(Cpp.Iter<T>, Cpp.Iter<T>) __D
+Algo_lower_bound_IterT_IterT_T__D	static Cpp.Algo.lower_bound<T>(Cpp.Iter<T>, Cpp.Iter<T>, T) __D
+Algo_lower_bound_IterT_IterT_T__I	static Cpp.Algo.lower_bound<T>(Cpp.Iter<T>, Cpp.Iter<T>, T) __I
+Algo_lower_bound_IterT_IterT_V_FuncTVb__OD	static Cpp.Algo.lower_bound<T, V>(Cpp.Iter<T>, Cpp.Iter<T>, V, System.Func<T, V, bool>) __OD
+Algo_max_element_IterT_IterT__D	static Cpp.Algo.max_element<T>(Cpp.Iter<T>, Cpp.Iter<T>) __D
+Algo_min_element_IterT_IterT__D	static Cpp.Algo.min_element<T>(Cpp.Iter<T>, Cpp.Iter<T>) __D
+Algo_none_of	static Cpp.Algo.none_of<T>(Cpp.Iter<T>, Cpp.Iter<T>, System.Func<T, bool>)
+Algo_none_of__I	static Cpp.Algo.none_of<T>(Cpp.Iter<T>, Cpp.Iter<T>, System.Func<T, bool>) __I
+Algo_replace__B	static Cpp.Algo.replace<T>(Cpp.Iter<T>, Cpp.Iter<T>, T, T) __B
+Algo_transform_IterT_IterT_IterU_FuncTU__BB	static Cpp.Algo.transform<T, U>(Cpp.Iter<T>, Cpp.Iter<T>, Cpp.Iter<U>, System.Func<T, U>) __BB
+Algo_transform_Iteruc_Iteruc_Iteruc_Funcucc	static Cpp.Algo.transform(Cpp.Iter<byte>, Cpp.Iter<byte>, Cpp.Iter<byte>, System.Func<byte, sbyte>)
+Algo_unique_IterT_IterT__I	static Cpp.Algo.unique<T>(Cpp.Iter<T>, Cpp.Iter<T>) __I
+Algo_upper_bound_IterT_IterT_T__D	static Cpp.Algo.upper_bound<T>(Cpp.Iter<T>, Cpp.Iter<T>, T) __D
+ArrRef	a Ref (.v) to element i of a Python list: ArrRef(list, i)
+Arr_Assign	static Cpp.Arr.Assign<T>(T[], T[])
+Arr_Assign__B	static Cpp.Arr.Assign<T>(T[], T[]) __B
+Arr_Assign__D	static Cpp.Arr.Assign<T>(T[], T[]) __D
+Arr_Assign__I	static Cpp.Arr.Assign<T>(T[], T[]) __I
+Arr_Assign__L	static Cpp.Arr.Assign<T>(T[], T[]) __L
+Arr_Assign__S	static Cpp.Arr.Assign<T>(T[], T[]) __S
+Arr_Assign__Z	static Cpp.Arr.Assign<T>(T[], T[]) __Z
+Arr_Clone	static Cpp.Arr.Clone<T>(T[])
+Arr_Clone__B	static Cpp.Arr.Clone<T>(T[]) __B
+Arr_Clone__D	static Cpp.Arr.Clone<T>(T[]) __D
+Arr_Clone__I	static Cpp.Arr.Clone<T>(T[]) __I
+Arr_Clone__L	static Cpp.Arr.Clone<T>(T[]) __L
+Arr_Clone__S	static Cpp.Arr.Clone<T>(T[]) __S
+Arr_Clone__Z	static Cpp.Arr.Clone<T>(T[]) __Z
+Arr_Eq__D	static Cpp.Arr.Eq<T>(T[], T[]) __D
+Arr_Make	static Cpp.Arr.Make<T>(int) + maker
+Arr_Make2	static Cpp.Arr.Make2<T>(int, int) + maker
+Arr_Make2__D	static Cpp.Arr.Make2<T>(int, int) __D
+Arr_Make2__I	static Cpp.Arr.Make2<T>(int, int) __I
+Arr_MakeWith	static Cpp.Arr.MakeWith<T>(int, System.Func<T>)
+Arr_Make__D	static Cpp.Arr.Make<T>(int) __D
+Arr_Make__I	static Cpp.Arr.Make<T>(int) __I
+Arr_Make__L	static Cpp.Arr.Make<T>(int) __L
+Arr_Make__Z	static Cpp.Arr.Make<T>(int) __Z
+Array_Fill	System.Array.Fill(T[], T): every element the same value
+Box_Of__Z	static Cpp.Box<T>.Of(Cpp.RefGet<T>) __Z
+Bytes_View_CPtr	static Cpp.Bytes.View(Cpp.CPtr)
+Bytes_View_PtrT__B	static Cpp.Bytes.View<T>(Cpp.Ptr<T>) __B
+Bytes_View_PtrT__D	static Cpp.Bytes.View<T>(Cpp.Ptr<T>) __D
+Bytes_View_PtrT__F	static Cpp.Bytes.View<T>(Cpp.Ptr<T>) __F
+Bytes_View_PtrT__I	static Cpp.Bytes.View<T>(Cpp.Ptr<T>) __I
+Bytes_View_PtrT__L	static Cpp.Bytes.View<T>(Cpp.Ptr<T>) __L
+Bytes_View_PtrT__S	static Cpp.Bytes.View<T>(Cpp.Ptr<T>) __S
+Bytes_View_PtrT__Z	static Cpp.Bytes.View<T>(Cpp.Ptr<T>) __Z
+CPtr_Diff	static Cpp.CPtr.Diff(Cpp.CPtr, Cpp.CPtr)
+CPtr_ZERO	default(Cpp.CPtr)
+CPtr_from_Ptrc	conversion Cpp.CPtr.implicit operator Cpp.CPtr(Cpp.Ptr<sbyte>)
+CPtr_from_Ptruc	conversion Cpp.CPtr.implicit operator Cpp.CPtr(Cpp.Ptr<byte>)
+CPtr_op_Add_CPtr_i	operator Cpp.CPtr.operator +(Cpp.CPtr, int)
+CPtr_op_Add_CPtr_l	operator Cpp.CPtr.operator +(Cpp.CPtr, long)
+CPtr_op_Eq	operator Cpp.CPtr.operator ==(Cpp.CPtr, Cpp.CPtr)
+CPtr_op_Lt	operator Cpp.CPtr.operator <(Cpp.CPtr, Cpp.CPtr)
+CPtr_op_Ne	operator Cpp.CPtr.operator !=(Cpp.CPtr, Cpp.CPtr)
+CSpan_ZERO	default(Cpp.CSpan<T>)
+Cell	a cell (.v) for a local whose address is taken
+Conv_D2I	static Cpp.Conv.D2I(double)
+Conv_D2L	static Cpp.Conv.D2L(double)
+Conv_D2SB	static Cpp.Conv.D2SB(double)
+Conv_D2UL	static Cpp.Conv.D2UL(double)
+CppException	type Cpp.CppException (__init__(self) with no arguments: allocation only) | type Cpp.CppException (an engine base class) | type Cpp.CppException (an exception class)
+Dbg_Caught	static Cpp.Dbg.Caught(System.Exception)
+Dtor_Run	static Cpp.Dtor.Run(object?)
+File_Exists	System.IO.File.Exists(string)
+Fs_create_hard_link	static Cpp.Fs.create_hard_link(Cpp.FsPath, Cpp.FsPath, Cpp.ErrorCode)
+Fs_equivalent_FsPath_FsPath	static Cpp.Fs.equivalent(Cpp.FsPath, Cpp.FsPath)
+Fs_exists_FsPath_ErrorCode	static Cpp.Fs.exists(Cpp.FsPath, Cpp.ErrorCode)
+Fs_file_size_FsPath	static Cpp.Fs.file_size(Cpp.FsPath)
+Fs_file_size_FsPath_ErrorCode	static Cpp.Fs.file_size(Cpp.FsPath, Cpp.ErrorCode)
+Fs_is_directory_FsPath	static Cpp.Fs.is_directory(Cpp.FsPath)
+Fs_is_regular_file_FileStatus	static Cpp.Fs.is_regular_file(Cpp.FileStatus)
+Fs_remove_FsPath_ErrorCode	static Cpp.Fs.remove(Cpp.FsPath, Cpp.ErrorCode)
+Fs_rename_FsPath_FsPath_ErrorCode	static Cpp.Fs.rename(Cpp.FsPath, Cpp.FsPath, Cpp.ErrorCode)
+Fs_symlink_status_FsPath	static Cpp.Fs.symlink_status(Cpp.FsPath)
+Fs_symlink_status_FsPath_ErrorCode	static Cpp.Fs.symlink_status(Cpp.FsPath, Cpp.ErrorCode)
+Fs_weakly_canonical_FsPath	static Cpp.Fs.weakly_canonical(Cpp.FsPath)
+I64	a typed box for a params object[] argument of C# type long (.v holds the value)
+IBinFn	interface Cpp.IBinFn<K>
+ICopy	interface Cpp.ICopy<T>
+IDisposable	interface System.IDisposable | interface System.IDisposable (Dispose())
+IHashFn	interface Cpp.IHashFn<K>
+IterB_op_Add	operator Cpp.Iter<byte>.operator +(Cpp.Iter<byte>, long) | operator Cpp.Iter<openswmm.DividerType>.operator +(Cpp.Iter<openswmm.DividerType>, long) | operator Cpp.Iter<openswmm.OutfallType>.operator +(Cpp.Iter<openswmm.OutfallType>, long) | operator Cpp.Iter<openswmm.StorageShape>.operator +(Cpp.Iter<openswmm.StorageShape>, long) | operator Cpp.Iter<sbyte>.operator +(Cpp.Iter<sbyte>, long)
+IterB_op_Eq	operator Cpp.Iter<byte>.operator ==(Cpp.Iter<byte>, Cpp.Iter<byte>)
+IterD_op_Add	operator Cpp.Iter<double>.operator +(Cpp.Iter<double>, long)
+IterD_op_Eq	operator Cpp.Iter<double>.operator ==(Cpp.Iter<double>, Cpp.Iter<double>)
+IterD_op_Increment	operator Cpp.Iter<double>.operator ++(Cpp.Iter<double>)
+IterD_op_Sub_IterT_IterT	operator Cpp.Iter<double>.operator -(Cpp.Iter<double>, Cpp.Iter<double>)
+IterI_op_Add	operator Cpp.Iter<int>.operator +(Cpp.Iter<int>, long)
+IterI_op_Sub_IterT_IterT	operator Cpp.Iter<int>.operator -(Cpp.Iter<int>, Cpp.Iter<int>)
+IterI_op_Sub_IterT_l	operator Cpp.Iter<int>.operator -(Cpp.Iter<int>, long)
+Iter_op_Add	operator Cpp.Iter<Cpp.Str>.operator +(Cpp.Iter<Cpp.Str>, long) | operator Cpp.Iter<openswmm.LidNodeConfig>.operator +(Cpp.Iter<openswmm.LidNodeConfig>, long) | operator Cpp.Iter<openswmm.LidNodeState>.operator +(Cpp.Iter<openswmm.LidNodeState>, long) | operator Cpp.Iter<openswmm.surface.ueb.ThermalSample>.operator +(Cpp.Iter<openswmm.surface.ueb.ThermalSample>, long)
+Iter_op_Eq	operator Cpp.Iter<Cpp.Str>.operator ==(Cpp.Iter<Cpp.Str>, Cpp.Iter<Cpp.Str>) | operator Cpp.Iter<openswmm.IOutputPlugin>.operator ==(Cpp.Iter<openswmm.IOutputPlugin>, Cpp.Iter<openswmm.IOutputPlugin>) | operator Cpp.Iter<openswmm.LidLayerTreatment>.operator ==(Cpp.Iter<openswmm.LidLayerTreatment>, Cpp.Iter<openswmm.LidLayerTreatment>) | operator Cpp.Iter<openswmm.climate.HourlyMetRecord>.operator ==(Cpp.Iter<openswmm.climate.HourlyMetRecord>, Cpp.Iter<openswmm.climate.HourlyMetRecord>) | operator Cpp.Iter<openswmm.climate.SnowDailyWeather>.operator ==(Cpp.Iter<openswmm.climate.SnowDailyWeather>, Cpp.Iter<openswmm.climate.SnowDailyWeather>)
+Iter_op_Increment	operator Cpp.Iter<openswmm.climate.HourlyMetRecord>.operator ++(Cpp.Iter<openswmm.climate.HourlyMetRecord>)
+Less_Fn	static field Cpp.Less<T>.Fn
+LibM_expm1	static Cpp.LibM.expm1(double)
+LibM_fmod	static Cpp.LibM.fmod(double, double)
+LibM_hypot	static Cpp.LibM.hypot(double, double)
+LibM_log1p	static Cpp.LibM.log1p(double)
+LibM_nextafter	static Cpp.LibM.nextafter(double, double)
+LibM_remainder	static Cpp.LibM.remainder(double, double)
+LibM_round	static Cpp.LibM.round(double)
+MIt_op_Eq	operator Cpp.MIt<Cpp.Pair<Cpp.Pair<Cpp.Str, Cpp.Str>, ulong>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Pair<Cpp.Str, Cpp.Str>, ulong>>, Cpp.MIt<Cpp.Pair<Cpp.Pair<Cpp.Str, Cpp.Str>, ulong>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Pair<int, double>, int>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Pair<int, double>, int>>, Cpp.MIt<Cpp.Pair<Cpp.Pair<int, double>, int>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Pair<int, int>, int>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Pair<int, int>, int>>, Cpp.MIt<Cpp.Pair<Cpp.Pair<int, int>, int>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Pair<int, int>, openswmm.lid.LIDSolver.LidRptFile>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Pair<int, int>, openswmm.lid.LIDSolver.LidRptFile>>, Cpp.MIt<Cpp.Pair<Cpp.Pair<int, int>, openswmm.lid.LIDSolver.LidRptFile>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Str, Cpp.Str>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Str, Cpp.Str>>, Cpp.MIt<Cpp.Pair<Cpp.Str, Cpp.Str>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Str, Cpp.Vec<int>>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Str, Cpp.Vec<int>>>, Cpp.MIt<Cpp.Pair<Cpp.Str, Cpp.Vec<int>>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Str, Gen.FN22>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Str, Gen.FN22>>, Cpp.MIt<Cpp.Pair<Cpp.Str, Gen.FN22>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Str, int>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Str, int>>, Cpp.MIt<Cpp.Pair<Cpp.Str, int>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Str, object>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Str, object>>, Cpp.MIt<Cpp.Pair<Cpp.Str, object>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.TableType>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.TableType>>, Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.TableType>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.components.ProcessComponentEntry>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.components.ProcessComponentEntry>>, Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.components.ProcessComponentEntry>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.input.MultiColumnFileCache.Entry>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.input.MultiColumnFileCache.Entry>>, Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.input.MultiColumnFileCache.Entry>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.mathexpr.TokenType>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.mathexpr.TokenType>>, Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.mathexpr.TokenType>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.treatment.TokenType>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.treatment.TokenType>>, Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.treatment.TokenType>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.treatment.TreatVar>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.treatment.TreatVar>>, Cpp.MIt<Cpp.Pair<Cpp.Str, openswmm.treatment.TreatVar>>) | operator Cpp.MIt<Cpp.Pair<Cpp.Str, ulong>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.Str, ulong>>, Cpp.MIt<Cpp.Pair<Cpp.Str, ulong>>) | operator Cpp.MIt<Cpp.Pair<Cpp.TupN, int>>.operator ==(Cpp.MIt<Cpp.Pair<Cpp.TupN, int>>, Cpp.MIt<Cpp.Pair<Cpp.TupN, int>>) | operator Cpp.MIt<Cpp.Pair<int, Cpp.CPtr>>.operator ==(Cpp.MIt<Cpp.Pair<int, Cpp.CPtr>>, Cpp.MIt<Cpp.Pair<int, Cpp.CPtr>>) | operator Cpp.MIt<Cpp.Pair<int, int>>.operator ==(Cpp.MIt<Cpp.Pair<int, int>>, Cpp.MIt<Cpp.Pair<int, int>>) | operator Cpp.MIt<Cpp.Pair<int, openswmm.input.SeriesParseState_src_engine_input_handlers_TablesHandler_cpp_109>>.operator ==(Cpp.MIt<Cpp.Pair<int, openswmm.input.SeriesParseState_src_engine_input_handlers_TablesHandler_cpp_109>>, Cpp.MIt<Cpp.Pair<int, openswmm.input.SeriesParseState_src_engine_input_handlers_TablesHandler_cpp_109>>) | operator Cpp.MIt<Cpp.Pair<int, openswmm.surface.SnowpackConfig>>.operator ==(Cpp.MIt<Cpp.Pair<int, openswmm.surface.SnowpackConfig>>, Cpp.MIt<Cpp.Pair<int, openswmm.surface.SnowpackConfig>>) | operator Cpp.MIt<Cpp.Pair<int, ulong>>.operator ==(Cpp.MIt<Cpp.Pair<int, ulong>>, Cpp.MIt<Cpp.Pair<int, ulong>>) | operator Cpp.MIt<Cpp.Pair<long, int>>.operator ==(Cpp.MIt<Cpp.Pair<long, int>>, Cpp.MIt<Cpp.Pair<long, int>>) | operator Cpp.MIt<Cpp.Pair<object, openswmm.IPluginComponentInfo>>.operator ==(Cpp.MIt<Cpp.Pair<object, openswmm.IPluginComponentInfo>>, Cpp.MIt<Cpp.Pair<object, openswmm.IPluginComponentInfo>>) | operator Cpp.MIt<object>.operator ==(Cpp.MIt<object>, Cpp.MIt<object>)
+MK_CPtr	maker: default(Cpp.CPtr)
+MK_D	maker: 0.0
+MK_I	maker: 0
+MK_N	maker: null
+MK_PtrD	maker: default(Cpp.Ptr<T>)
+M_max_dA	static Cpp.M.max(double[])
+M_max_iA	static Cpp.M.max(int[])
+M_min_dA	static Cpp.M.min(double[])
+Math_Acos_d	System.Math.Acos(Double): IEEE results (inf, nan) where Python's math raises
+Math_Asin_d	System.Math.Asin(Double): IEEE results (inf, nan) where Python's math raises
+Math_Atan2_d	System.Math.Atan2(Double,Double): IEEE results (inf, nan) where Python's math raises
+Math_Atan_d	System.Math.Atan(Double): IEEE results (inf, nan) where Python's math raises
+Math_Cbrt_d	System.Math.Cbrt(Double): IEEE results (inf, nan) where Python's math raises
+Math_Ceiling_d	System.Math.Ceiling(Double): IEEE results (inf, nan) where Python's math raises
+Math_CopySign_d	System.Math.CopySign(Double,Double): IEEE results (inf, nan) where Python's math raises
+Math_Cos_d	System.Math.Cos(Double): IEEE results (inf, nan) where Python's math raises
+Math_Cosh_d	System.Math.Cosh(Double): IEEE results (inf, nan) where Python's math raises
+Math_Exp_d	System.Math.Exp(Double): IEEE results (inf, nan) where Python's math raises
+Math_Floor_d	System.Math.Floor(Double): IEEE results (inf, nan) where Python's math raises
+Math_Log10_d	System.Math.Log10(Double): IEEE results (inf, nan) where Python's math raises
+Math_Log2_d	System.Math.Log2(Double): IEEE results (inf, nan) where Python's math raises
+Math_Log_d	System.Math.Log(Double): IEEE results (inf, nan) where Python's math raises
+Math_Pow_d	System.Math.Pow(Double,Double): IEEE results (inf, nan) where Python's math raises
+Math_Sin_d	System.Math.Sin(Double): IEEE results (inf, nan) where Python's math raises
+Math_Sinh_d	System.Math.Sinh(Double): IEEE results (inf, nan) where Python's math raises
+Math_Sqrt_d	System.Math.Sqrt(double): IEEE sqrt, with x86's NaN for a negative argument
+Math_Tan_d	System.Math.Tan(Double): IEEE results (inf, nan) where Python's math raises
+Math_Tanh_d	System.Math.Tanh(Double): IEEE results (inf, nan) where Python's math raises
+Math_Truncate_d	System.Math.Truncate(Double): IEEE results (inf, nan) where Python's math raises
+Mem_Calloc__D	static Cpp.Mem.Calloc<T>(ulong, ulong) __D
+Mem_Diff_T_PtrT	static Cpp.Mem.Diff<T>(T, Cpp.Ptr<T>)
+Mem_Free	static Cpp.Mem.Free(object?)
+Mem_fread_CPtr_ul_ul_CFile	static Cpp.Mem.fread(Cpp.CPtr, ulong, ulong, Cpp.CFile)
+Mem_fread_PtrT_ul_ul_CFile__F	static Cpp.Mem.fread<T>(Cpp.Ptr<T>, ulong, ulong, Cpp.CFile) __F
+Mem_fread_PtrT_ul_ul_CFile__I	static Cpp.Mem.fread<T>(Cpp.Ptr<T>, ulong, ulong, Cpp.CFile) __I
+Mem_fwrite_CPtr_ul_ul_CFile	static Cpp.Mem.fwrite(Cpp.CPtr, ulong, ulong, Cpp.CFile)
+Mem_fwrite_PtrT_ul_ul_CFile__F	static Cpp.Mem.fwrite<T>(Cpp.Ptr<T>, ulong, ulong, Cpp.CFile) __F
+Mem_fwrite_PtrT_ul_ul_CFile__I	static Cpp.Mem.fwrite<T>(Cpp.Ptr<T>, ulong, ulong, Cpp.CFile) __I
+Mem_memcpy_PtrT_CPtr_ul__B	static Cpp.Mem.memcpy<T>(Cpp.Ptr<T>, Cpp.CPtr, ulong) __B
+Mem_memcpy_PtrT_CPtr_ul__D	static Cpp.Mem.memcpy<T>(Cpp.Ptr<T>, Cpp.CPtr, ulong) __D
+Mem_memcpy_PtrT_CPtr_ul__F	static Cpp.Mem.memcpy<T>(Cpp.Ptr<T>, Cpp.CPtr, ulong) __F
+Mem_memcpy_PtrT_CPtr_ul__I	static Cpp.Mem.memcpy<T>(Cpp.Ptr<T>, Cpp.CPtr, ulong) __I
+Mem_memcpy_PtrT_CPtr_ul__L	static Cpp.Mem.memcpy<T>(Cpp.Ptr<T>, Cpp.CPtr, ulong) __L
+Mem_memcpy_PtrT_CPtr_ul__S	static Cpp.Mem.memcpy<T>(Cpp.Ptr<T>, Cpp.CPtr, ulong) __S
+Mem_memcpy_PtrT_PtrU_ul__IB	static Cpp.Mem.memcpy<T, U>(Cpp.Ptr<T>, Cpp.Ptr<U>, ulong) __IB
+Mem_memcpy_PtrT_PtrU_ul__LD	static Cpp.Mem.memcpy<T, U>(Cpp.Ptr<T>, Cpp.Ptr<U>, ulong) __LD
+Mv_Back__DD	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __DD
+Mv_Back__DQ	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __DQ
+Mv_Back__ID	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __ID
+Mv_Back__II	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __II
+Mv_Back__LL	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __LL
+Mv_Back__OB	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __OB
+Mv_Back__OD	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __OD
+Mv_Back__OF	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __OF
+Mv_Back__OI	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __OI
+Mv_Back__OL	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __OL
+Mv_Back__OQ	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __OQ
+Mv_Back__OS	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __OS
+Mv_Back__OU	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __OU
+Mv_Back__OZ	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __OZ
+Mv_Back__ZD	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __ZD
+Mv_Back__ZO	static Cpp.Mv.Back<R, T>(R, ref T, T[]) __ZO
+Mv_Delete	static Cpp.Mv.Delete(object?)
+Mv_PostStep_PtrTr_i__D	static Cpp.Mv.PostStep<T>(ref Cpp.Ptr<T>, int) __D
+Mv_Reset	static Cpp.Mv.Reset<T>(ref T, T)
+Mv_Take	static Cpp.Mv.Take<T>(ref T) + maker
+Mv_TakeRef	static Cpp.Mv.TakeRef<T>(ref T)
+NewAtomicD	new Cpp.Atomic<T>.Atomic() (double)
+NewAtomicI_T	new Cpp.Atomic<T>.Atomic(T) (int)
+NewAtomicL	new Cpp.Atomic<T>.Atomic() (ulong)
+NewAtomicL_T	new Cpp.Atomic<T>.Atomic(T) (long) | new Cpp.Atomic<T>.Atomic(T) (ulong)
+NewAtomicZ_T	new Cpp.Atomic<T>.Atomic(T) (bool)
+NewCondVar	new Cpp.CondVar.CondVar()
+NewDefer	new Cpp.Defer.Defer(System.Action)
+NewErrorCode	new Cpp.ErrorCode.ErrorCode()
+NewFsPath	new Cpp.FsPath.FsPath()
+NewFsPath_CPtr	new Cpp.FsPath.FsPath(Cpp.CPtr)
+NewFsPath_Str	new Cpp.FsPath.FsPath(Cpp.Str)
+NewIFStream_FsPath_i	new Cpp.IFStream.IFStream(Cpp.FsPath, int)
+NewIFStream_Str_i	new Cpp.IFStream.IFStream(Cpp.Str, int)
+NewIStringStream_Str	new Cpp.IStringStream.IStringStream(Cpp.Str)
+NewIStringStream_Str_i	new Cpp.IStringStream.IStringStream(Cpp.Str, int)
+NewInvalidArgument_Str	new Cpp.InvalidArgument.InvalidArgument(Cpp.Str)
+NewIterD_TA_l	new Cpp.Iter<T>.Iter(T[], long) (double)
+NewLock	new Cpp.Lock.Lock()
+NewMap_FuncKKb_FuncV	new Cpp.Map<K, V>.Map(System.Func<K, K, bool>?, System.Func<V>?) | new Cpp.Map<K, V>.Map(System.Func<K, K, bool>?, System.Func<V>?) + makers
+NewMutex	new Cpp.Mutex.Mutex()
+NewOFStream	new Cpp.OFStream.OFStream()
+NewOFStream_CPtr_i	new Cpp.OFStream.OFStream(Cpp.CPtr, int)
+NewOFStream_FsPath_i	new Cpp.OFStream.OFStream(Cpp.FsPath, int)
+NewOStringStream	new Cpp.OStringStream.OStringStream()
+NewOStringStream_i	new Cpp.OStringStream.OStringStream(int)
+NewOnceFlag	new Cpp.OnceFlag.OnceFlag()
+NewOpt	new Cpp.Opt<T>.Opt()
+NewOptD	new Cpp.Opt<T>.Opt() (double)
+NewOptD_T	new Cpp.Opt<T>.Opt(T) (double)
+NewOutOfRange_Str	new Cpp.OutOfRange.OutOfRange(Cpp.Str)
+NewPair	new Cpp.Pair<A, B>.Pair() + makers
+NewPair_A_B	new Cpp.Pair<A, B>.Pair(A, B)
+NewPtrB_TA_l	new Cpp.Ptr<T>.Ptr(T[], long) (byte) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.FlowClass) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.ForcingMode) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.HeatScope) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.LinkType) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.MassUnits) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.NodeType) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.OutfallType) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.RainSource) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.StorageShape) | new Cpp.Ptr<T>.Ptr(T[], long) (sbyte)
+NewPtrD_TA_l	new Cpp.Ptr<T>.Ptr(T[], long) (double)
+NewPtrD_o_RefAtT	new Cpp.Ptr<T>.Ptr(object?, Cpp.RefAt<T>) (double)
+NewPtrF_TA_l	new Cpp.Ptr<T>.Ptr(T[], long) (float)
+NewPtrI_TA_l	new Cpp.Ptr<T>.Ptr(T[], long) (int) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.ArdDispersionMode) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.DryTempPolicy) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.FlowUnits) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.HeatAttr) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.InfilModel) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.InfiltrationModel) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.LidNodeBottom) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.LidNodeLayerKind) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.NodeContinuity) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.QualitySolverKind) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.RoutingModel) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.RunoffModel) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.ShortwaveMode) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.TableType) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.climate.EvapMethod) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.climate.RadiationOrigin) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.controls.ActionType) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.controls.CompareOp) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.controls.ConditionVar) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.controls.LogicOp) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.dynwave.SurchargeMethod) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.fv.Limiter) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.fv.ScalarScheme) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.input.SeriesFileStatus) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.lid.LIDType) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.runoff.SourceEtKind) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.surface.InfilBank.Owner) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.surface.RadiationSource.Mode) | new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.surface.SnowKind) | new Cpp.Ptr<T>.Ptr(T[], long) (uint)
+NewPtrI_o_RefAtT	new Cpp.Ptr<T>.Ptr(object?, Cpp.RefAt<T>) (int) | new Cpp.Ptr<T>.Ptr(object?, Cpp.RefAt<T>) (openswmm.input.SeriesFileStatus)
+NewPtrL_TA_l	new Cpp.Ptr<T>.Ptr(T[], long) (long) | new Cpp.Ptr<T>.Ptr(T[], long) (ulong)
+NewPtrL_o_RefAtT	new Cpp.Ptr<T>.Ptr(object?, Cpp.RefAt<T>) (long) | new Cpp.Ptr<T>.Ptr(object?, Cpp.RefAt<T>) (ulong)
+NewPtrS_TA_l	new Cpp.Ptr<T>.Ptr(T[], long) (openswmm.XsectShape)
+NewPtrZ_TA_l	new Cpp.Ptr<T>.Ptr(T[], long) (bool)
+NewPtr_TA_l	new Cpp.Ptr<T>.Ptr(T[], long)
+NewPtr_o_RefAtT	new Cpp.Ptr<T>.Ptr(object?, Cpp.RefAt<T>)
+NewQue	new Cpp.Que<T>.Que()
+NewRuntimeError_Str	new Cpp.RuntimeError.RuntimeError(Cpp.Str)
+NewSet_FuncTTb	new Cpp.Set<T>.Set(System.Func<T, T, bool>?)
+NewStk	new Cpp.Stk<T>.Stk()
+NewStr	new Cpp.Str.Str()
+NewStr_CPtr	new Cpp.Str.Str(Cpp.CPtr)
+NewStr_CPtr_ul	new Cpp.Str.Str(Cpp.CPtr, ulong)
+NewStr_Str	new Cpp.Str.Str(Cpp.Str)
+NewStr_ul_i	new Cpp.Str.Str(ulong, int)
+NewThread	new Cpp.Thread.Thread()
+NewTupN_oA	new Cpp.TupN.TupN(params object[])
+NewUMapC_FuncV	new Cpp.UMapC<K, V, H, E>.UMapC(System.Func<V>?)
+NewUMap_FuncKul_FuncKKb_FuncV	new Cpp.UMap<K, V>.UMap(System.Func<K, ulong>?, System.Func<K, K, bool>?, System.Func<V>?) | new Cpp.UMap<K, V>.UMap(System.Func<K, ulong>?, System.Func<K, K, bool>?, System.Func<V>?) + makers
+NewUMap_PairKVA_FuncKul_FuncKKb	new Cpp.UMap<K, V>.UMap(Cpp.Pair<K, V>[], System.Func<K, ulong>?, System.Func<K, K, bool>?) + makers
+NewUSet_FuncTul_FuncTTb	new Cpp.USet<T>.USet(System.Func<T, ulong>?, System.Func<T, T, bool>?)
+NewVariant	new Cpp.Variant.Variant()
+NewVec	new Cpp.Vec<T>.Vec() + makers
+NewVecB	new Cpp.Vec<T>.Vec() (byte) | new Cpp.Vec<T>.Vec() (openswmm.DividerType) | new Cpp.Vec<T>.Vec() (openswmm.FlowClass) | new Cpp.Vec<T>.Vec() (openswmm.ForcingMode) | new Cpp.Vec<T>.Vec() (openswmm.ForcingPersist) | new Cpp.Vec<T>.Vec() (openswmm.LinkType) | new Cpp.Vec<T>.Vec() (openswmm.MassUnits) | new Cpp.Vec<T>.Vec() (openswmm.NodeCoupling2DType) | new Cpp.Vec<T>.Vec() (openswmm.NodeType) | new Cpp.Vec<T>.Vec() (openswmm.OutfallType) | new Cpp.Vec<T>.Vec() (openswmm.RainFileFormat) | new Cpp.Vec<T>.Vec() (openswmm.RainSource) | new Cpp.Vec<T>.Vec() (openswmm.StorageShape) | new Cpp.Vec<T>.Vec() (openswmm.dynwave.MomentumCategory) | new Cpp.Vec<T>.Vec() (sbyte)
+NewVecB_ul	new Cpp.Vec<T>.Vec(ulong) (byte) | new Cpp.Vec<T>.Vec(ulong) (sbyte)
+NewVecB_ul_T	new Cpp.Vec<T>.Vec(ulong, T) (byte) | new Cpp.Vec<T>.Vec(ulong, T) (sbyte)
+NewVecD	new Cpp.Vec<T>.Vec() (double)
+NewVecD_TA	new Cpp.Vec<T>.Vec(T[]) (double)
+NewVecD_ul	new Cpp.Vec<T>.Vec(ulong) (double)
+NewVecD_ul_T	new Cpp.Vec<T>.Vec(ulong, T) (double)
+NewVecF	new Cpp.Vec<T>.Vec() (float)
+NewVecI	new Cpp.Vec<T>.Vec() (int) | new Cpp.Vec<T>.Vec() (openswmm.InfilModel) | new Cpp.Vec<T>.Vec() (openswmm.PluginRole) | new Cpp.Vec<T>.Vec() (openswmm.ReactionExprForm) | new Cpp.Vec<T>.Vec() (openswmm.SpeciesKind) | new Cpp.Vec<T>.Vec() (openswmm.surface.InfilBank.Owner) | new Cpp.Vec<T>.Vec() (openswmm.surface.SnowKind) | new Cpp.Vec<T>.Vec() (uint)
+NewVecI_ul	new Cpp.Vec<T>.Vec(ulong) (int)
+NewVecI_ul_T	new Cpp.Vec<T>.Vec(ulong, T) (int)
+NewVecL	new Cpp.Vec<T>.Vec() (long) | new Cpp.Vec<T>.Vec() (ulong)
+NewVecL_ul	new Cpp.Vec<T>.Vec(ulong) (ulong)
+NewVecS	new Cpp.Vec<T>.Vec() (openswmm.XsectShape)
+NewVecZ	new Cpp.Vec<T>.Vec() (bool)
+NewVecZ_ul_T	new Cpp.Vec<T>.Vec(ulong, T) (bool)
+NewVec_FuncT	new Cpp.Vec<T>.Vec(System.Func<T>)
+NewVec_TA	new Cpp.Vec<T>.Vec(T[]) + makers
+NewVec_ul	new Cpp.Vec<T>.Vec(ulong) + makers
+NewVec_ul_FuncT	new Cpp.Vec<T>.Vec(ulong, System.Func<T>)
+NewVec_ul_T	new Cpp.Vec<T>.Vec(ulong, T) + makers
+PtrB_ZERO	default(Cpp.Ptr<T>) (byte)
+PtrB_op_Add_PtrT_l	operator Cpp.Ptr<byte>.operator +(Cpp.Ptr<byte>, long) | operator Cpp.Ptr<sbyte>.operator +(Cpp.Ptr<sbyte>, long)
+PtrB_op_Sub_PtrT_l	operator Cpp.Ptr<byte>.operator -(Cpp.Ptr<byte>, long)
+PtrD_ZERO	default(Cpp.Ptr<T>) (double)
+PtrD_from_IterT	conversion Cpp.Ptr<double>.implicit operator Cpp.Ptr<double>(Cpp.Iter<double>)
+PtrD_op_Add_PtrT_l	operator Cpp.Ptr<double>.operator +(Cpp.Ptr<double>, long)
+PtrD_op_Eq	operator Cpp.Ptr<double>.operator ==(Cpp.Ptr<double>, Cpp.Ptr<double>)
+PtrD_op_Ne	operator Cpp.Ptr<double>.operator !=(Cpp.Ptr<double>, Cpp.Ptr<double>)
+PtrD_op_Sub_PtrT_l	operator Cpp.Ptr<double>.operator -(Cpp.Ptr<double>, long)
+PtrF_op_Add_PtrT_l	operator Cpp.Ptr<float>.operator +(Cpp.Ptr<float>, long)
+PtrI_ZERO	default(Cpp.Ptr<T>) (int)
+PtrI_op_Add_PtrT_l	operator Cpp.Ptr<int>.operator +(Cpp.Ptr<int>, long)
+PtrI_op_Ne	operator Cpp.Ptr<int>.operator !=(Cpp.Ptr<int>, Cpp.Ptr<int>)
+PtrI_op_Sub_PtrT_l	operator Cpp.Ptr<int>.operator -(Cpp.Ptr<int>, long)
+PtrL_ZERO	default(Cpp.Ptr<T>) (long) | default(Cpp.Ptr<T>) (ulong)
+PtrZ_ZERO	default(Cpp.Ptr<T>) (bool)
+Ptr_ZERO	default(Cpp.Ptr<T>)
+Ptr_op_Add_PtrT_l	operator Cpp.Ptr<Cpp.Ptr<double>>.operator +(Cpp.Ptr<Cpp.Ptr<double>>, long) | operator Cpp.Ptr<openswmm.RxToken>.operator +(Cpp.Ptr<openswmm.RxToken>, long) | operator Cpp.Ptr<openswmm.xsect.LocateLut>.operator +(Cpp.Ptr<openswmm.xsect.LocateLut>, long)
+Ptr_op_Ne	operator Cpp.Ptr<openswmm.RxToken>.operator !=(Cpp.Ptr<openswmm.RxToken>, Cpp.Ptr<openswmm.RxToken>)
+R_Back_i_T1r_T2r__LB	static Cpp.R.Back<T1, T2>(int, ref T1, ref T2) __LB
+R_Back_i_T1r__B	static Cpp.R.Back<T1>(int, ref T1) __B
+R_BufOf	static Cpp.R.BufOf(int, int[])
+R_Buf_i	static Cpp.R.Buf(int)
+R_Bufs	static Cpp.R.Bufs(int, int)
+R_CopyBuf	static Cpp.R.CopyBuf(Cpp.CPtr)
+R_Lit	static Cpp.R.Lit(string)
+R_LitN	static Cpp.R.LitN(string, int)
+R_RefD	static Cpp.R.RefD(System.Action<double>)
+R_RefF	static Cpp.R.RefF(System.Action<float>)
+R_RefI	static Cpp.R.RefI(System.Action<int>)
+R_RefL	static Cpp.R.RefL(System.Action<long>)
+R_Slot	static field Cpp.R.Slot
+R_atof	static Cpp.R.atof(Cpp.CPtr)
+R_atoi	static Cpp.R.atoi(Cpp.CPtr)
+R_atol	static Cpp.R.atol(Cpp.CPtr)
+R_ctime_Ptrl	static Cpp.R.ctime(Cpp.Ptr<long>)
+R_difftime	static Cpp.R.difftime(long, long)
+R_fclose	static Cpp.R.fclose(Cpp.CFile)
+R_feof	static Cpp.R.feof(Cpp.CFile)
+R_ferror	static Cpp.R.ferror(Cpp.CFile)
+R_fflush	static Cpp.R.fflush(Cpp.CFile)
+R_fgetc	static Cpp.R.fgetc(Cpp.CFile)
+R_fgets	static Cpp.R.fgets(Cpp.CPtr, int, Cpp.CFile)
+R_fileno	static Cpp.R.fileno(Cpp.CFile)
+R_fopen	static Cpp.R.fopen(Cpp.CPtr, Cpp.CPtr)
+R_fprintf	static Cpp.R.fprintf(Cpp.CFile, Cpp.CPtr, params object[])
+R_freadD1	static Cpp.R.freadD1(ref double, Cpp.CFile)
+R_freadF1	static Cpp.R.freadF1(ref float, Cpp.CFile)
+R_freadI1	static Cpp.R.freadI1(ref int, Cpp.CFile)
+R_fseek_CFile_l_i	static Cpp.R.fseek(Cpp.CFile, long, int)
+R_ftell	static Cpp.R.ftell(Cpp.CFile)
+R_fwriteD1	static Cpp.R.fwriteD1(double, Cpp.CFile)
+R_fwriteF1	static Cpp.R.fwriteF1(float, Cpp.CFile)
+R_fwriteI1	static Cpp.R.fwriteI1(int, Cpp.CFile)
+R_getenv	static Cpp.R.getenv(Cpp.CPtr)
+R_isalnum	static Cpp.R.isalnum(int)
+R_isalpha	static Cpp.R.isalpha(int)
+R_isdigit	static Cpp.R.isdigit(int)
+R_isspace	static Cpp.R.isspace(int)
+R_memcmp	static Cpp.R.memcmp(Cpp.CPtr, Cpp.CPtr, ulong)
+R_memcpyBuf	static Cpp.R.memcpyBuf(Cpp.CPtr, Cpp.CPtr)
+R_rewind	static Cpp.R.rewind(Cpp.CFile)
+R_setvbuf	static Cpp.R.setvbuf(Cpp.CFile, Cpp.CPtr, int, ulong)
+R_snprintf_CPtr_ul_CPtr_oA	static Cpp.R.snprintf(Cpp.CPtr, ulong, Cpp.CPtr, params object[])
+R_sscanf	static Cpp.R.sscanf(Cpp.CPtr, Cpp.CPtr, params object[])
+R_stderr_	static field Cpp.R.stderr_
+R_stdout_	static field Cpp.R.stdout_
+R_strchr	static Cpp.R.strchr(Cpp.CPtr, int)
+R_strcmp	static Cpp.R.strcmp(Cpp.CPtr, Cpp.CPtr)
+R_strlen	static Cpp.R.strlen(Cpp.CPtr)
+R_strncmp	static Cpp.R.strncmp(Cpp.CPtr, Cpp.CPtr, ulong)
+R_strncpy	static Cpp.R.strncpy(Cpp.CPtr, Cpp.CPtr, ulong)
+R_strrchr	static Cpp.R.strrchr(Cpp.CPtr, int)
+R_strstr	static Cpp.R.strstr(Cpp.CPtr, Cpp.CPtr)
+R_strtod_CPtr	static Cpp.R.strtod(Cpp.CPtr)
+R_strtod_CPtr_CPtrr	static Cpp.R.strtod(Cpp.CPtr, ref Cpp.CPtr)
+R_strtok	static Cpp.R.strtok(Cpp.CPtr, Cpp.CPtr)
+R_strtol0	static Cpp.R.strtol0(Cpp.CPtr, int)
+R_time_Ptrl	static Cpp.R.time(Cpp.Ptr<long>)
+R_tolower	static Cpp.R.tolower(int)
+R_toupper	static Cpp.R.toupper(int)
+RevIter_op_Eq	operator Cpp.RevIter<Cpp.Pair<int, int>>.operator ==(Cpp.RevIter<Cpp.Pair<int, int>>, Cpp.RevIter<Cpp.Pair<int, int>>) | operator Cpp.RevIter<openswmm.LidNodeCell>.operator ==(Cpp.RevIter<openswmm.LidNodeCell>, Cpp.RevIter<openswmm.LidNodeCell>) | operator Cpp.RevIter<openswmm.controls.Action>.operator ==(Cpp.RevIter<openswmm.controls.Action>, Cpp.RevIter<openswmm.controls.Action>) | operator Cpp.RevIter<openswmm.io.CheckpointOutputPublication.Entry>.operator ==(Cpp.RevIter<openswmm.io.CheckpointOutputPublication.Entry>, Cpp.RevIter<openswmm.io.CheckpointOutputPublication.Entry>)
+RevIter_op_Increment	operator Cpp.RevIter<Cpp.Pair<int, int>>.operator ++(Cpp.RevIter<Cpp.Pair<int, int>>) | operator Cpp.RevIter<openswmm.LidNodeCell>.operator ++(Cpp.RevIter<openswmm.LidNodeCell>) | operator Cpp.RevIter<openswmm.controls.Action>.operator ++(Cpp.RevIter<openswmm.controls.Action>) | operator Cpp.RevIter<openswmm.io.CheckpointOutputPublication.Entry>.operator ++(Cpp.RevIter<openswmm.io.CheckpointOutputPublication.Entry>)
+RuntimeError	type Cpp.RuntimeError (an exception class)
+StdAlgo_Sort	static Cpp.StdAlgo.Sort<T>(T[], long, long, System.Func<T, T, bool>)
+StdAlgo_Sort__D	static Cpp.StdAlgo.Sort<T>(T[], long, long, System.Func<T, T, bool>) __D
+StdAlgo_Sort__I	static Cpp.StdAlgo.Sort<T>(T[], long, long, System.Func<T, T, bool>) __I
+StdAlgo_Sort__L	static Cpp.StdAlgo.Sort<T>(T[], long, long, System.Func<T, T, bool>) __L
+StdAlgo_StableSort	static Cpp.StdAlgo.StableSort<T>(T[], long, long, System.Func<T, T, bool>)
+StdAlgo_StableSort__I	static Cpp.StdAlgo.StableSort<T>(T[], long, long, System.Func<T, T, bool>) __I
+Std_Nop	static Cpp.Std.Nop(object?)
+Std_QNaN	static field Cpp.Std.QNaN
+Std_Rethrow	static Cpp.Std.Rethrow(System.Exception)
+Std_call_once	static Cpp.Std.call_once(Cpp.OnceFlag, System.Action)
+Std_from_chars_CPtr_CPtr_dr	static Cpp.Std.from_chars(Cpp.CPtr, Cpp.CPtr, ref double)
+Std_from_chars_CPtr_CPtr_ir	static Cpp.Std.from_chars(Cpp.CPtr, Cpp.CPtr, ref int)
+Std_from_chars_CPtr_CPtr_ur	static Cpp.Std.from_chars(Cpp.CPtr, Cpp.CPtr, ref uint)
+Std_get0_PairAB	static Cpp.Std.get0<A, B>(Cpp.Pair<A, B>)
+Std_get0_PairAB__ID	static Cpp.Std.get0<A, B>(Cpp.Pair<A, B>) __ID
+Std_get0_PairAB__II	static Cpp.Std.get0<A, B>(Cpp.Pair<A, B>) __II
+Std_get0_PairAB__IO	static Cpp.Std.get0<A, B>(Cpp.Pair<A, B>) __IO
+Std_get0_PairAB__LO	static Cpp.Std.get0<A, B>(Cpp.Pair<A, B>) __LO
+Std_get0_PairAB__OD	static Cpp.Std.get0<A, B>(Cpp.Pair<A, B>) __OD
+Std_get0_PairAB__OL	static Cpp.Std.get0<A, B>(Cpp.Pair<A, B>) __OL
+Std_get0_PairAB__OS	static Cpp.Std.get0<A, B>(Cpp.Pair<A, B>) __OS
+Std_get0_PairAB__OZ	static Cpp.Std.get0<A, B>(Cpp.Pair<A, B>) __OZ
+Std_get1_PairAB	static Cpp.Std.get1<A, B>(Cpp.Pair<A, B>)
+Std_get1_PairAB__ID	static Cpp.Std.get1<A, B>(Cpp.Pair<A, B>) __ID
+Std_get1_PairAB__II	static Cpp.Std.get1<A, B>(Cpp.Pair<A, B>) __II
+Std_get1_PairAB__IO	static Cpp.Std.get1<A, B>(Cpp.Pair<A, B>) __IO
+Std_get1_PairAB__LO	static Cpp.Std.get1<A, B>(Cpp.Pair<A, B>) __LO
+Std_get1_PairAB__OD	static Cpp.Std.get1<A, B>(Cpp.Pair<A, B>) __OD
+Std_get1_PairAB__OL	static Cpp.Std.get1<A, B>(Cpp.Pair<A, B>) __OL
+Std_get1_PairAB__OS	static Cpp.Std.get1<A, B>(Cpp.Pair<A, B>) __OS
+Std_get1_PairAB__OZ	static Cpp.Std.get1<A, B>(Cpp.Pair<A, B>) __OZ
+Std_swap	static Cpp.Std.swap<T>(ref T, ref T)
+Std_swap__D	static Cpp.Std.swap<T>(ref T, ref T) __D
+Std_swap__I	static Cpp.Std.swap<T>(ref T, ref T) __I
+Str_Cat_CPtr_Str	static Cpp.Str.Cat(Cpp.CPtr, Cpp.Str)
+Str_Cat_Str_CPtr	static Cpp.Str.Cat(Cpp.Str, Cpp.CPtr)
+Str_Cat_Str_Str	static Cpp.Str.Cat(Cpp.Str, Cpp.Str)
+Str_Cat_Str_i	static Cpp.Str.Cat(Cpp.Str, int)
+Str_from_CPtr	conversion Cpp.Str.implicit operator Cpp.Str(Cpp.CPtr)
+Str_stod	static Cpp.Str.stod(Cpp.Str, Cpp.Ptr<ulong>)
+Str_to_string_d	static Cpp.Str.to_string(double)
+Str_to_string_i	static Cpp.Str.to_string(int)
+Str_to_string_l	static Cpp.Str.to_string(long)
+Str_to_string_u	static Cpp.Str.to_string(uint)
+Str_to_string_ul	static Cpp.Str.to_string(ulong)
+Streams_getline_IStream_Str	static Cpp.Streams.getline(Cpp.IStream, Cpp.Str)
+Streams_getline_IStream_Str_c	static Cpp.Streams.getline(Cpp.IStream, Cpp.Str, sbyte)
+SysException	a .NET exception (SysException(kind, message)); except SysException for a catch of a .NET exception type
+Sys_hardware_concurrency	static Cpp.Sys.hardware_concurrency()
+TimePoint_ZERO	default(Cpp.TimePoint)
+TimePoint_now	static Cpp.TimePoint.now()
+TimePoint_op_Sub	operator Cpp.TimePoint.operator -(Cpp.TimePoint, Cpp.TimePoint)
+U64	a typed box for a params object[] argument of C# type ulong (.v holds the value)
+VecB_Eq	static Cpp.Vec<T>.Eq(Cpp.Vec<T>, Cpp.Vec<T>)
+VecD_Eq	static Cpp.Vec<T>.Eq(Cpp.Vec<T>, Cpp.Vec<T>)
+VecI_Eq	static Cpp.Vec<T>.Eq(Cpp.Vec<T>, Cpp.Vec<T>)
+Vec_Eq	static Cpp.Vec<T>.Eq(Cpp.Vec<T>, Cpp.Vec<T>)
+f32	round to IEEE single precision (C# float)
+fdiv0	a / b for b == 0 (or -0.0): IEEE's inf or nan with C#'s signs; a and b may be ints
+idiv	C# signed integer division (truncates toward zero)
+irem	C# signed integer remainder (the sign of the dividend)

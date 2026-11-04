@@ -1,0 +1,9 @@
+#!/bin/bash
+# runswmm6 - the Python SWMM6 engine's command line for the gate: py/runswmm6 model.inp r.rpt [r.out]
+# Runs py/runswmm6.py with python3 -I (isolated: no user site, no PYTHON* variables, the script's directory not on the
+# path); because -I ignores PYTHONPATH, runswmm6.py itself puts py/ (the runtime package cpp) and py/gen (the engine)
+# on sys.path, so this works from any working directory. PYTHONPATH is still exported for tools that run without -I.
+# Written by Claude (Anthropic) for the SWMM6 ports; see AI-USE.md.
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export PYTHONPATH="$HERE/gen:$HERE${PYTHONPATH:+:$PYTHONPATH}"
+exec python3 -I "$HERE/runswmm6.py" "$@"

@@ -185,7 +185,8 @@ class Str(ICopy):
         return self
 
     def assign_CPtr_ul(self, p, ln):
-        self.b = _own(buf_bytes(p.B, p.O, ln), ln)
+        # (no bytes are read for a length of 0: the pointer may be null, as libstdc++ allows)
+        self.b = _own(buf_bytes(p.B, p.O, ln) if ln != 0 else b'', ln)
         self.n = ln
         return self
 
@@ -238,6 +239,8 @@ class Str(ICopy):
         return self
 
     def append_CPtr_ul(self, p, ln):
+        if ln == 0:                 # nothing, even at a null pointer
+            return self
         src = buf_bytes(p.B, p.O, ln)
         n = self.n
         b = self.b
@@ -621,8 +624,8 @@ Str_from_CPtr = NewStr_CPtr        # the implicit conversion C++ applies
 
 
 def NewStr_CPtr_ul(p, ln):
-    """std::string(const char*, n): n bytes (NULs included)."""
-    return _S(_own(buf_bytes(p.B, p.O, ln), ln), ln)
+    """std::string(const char*, n): n bytes (NULs included; none read, at a pointer that may be null, for n = 0)."""
+    return _S(_own(buf_bytes(p.B, p.O, ln) if ln != 0 else b'', ln), ln)
 
 
 def NewStr_ul_i(count, ch):
@@ -643,8 +646,8 @@ def NewStr_Str_ul_ul(s, pos, ln=NPOS):
 
 
 def NewStr_ucA_i_i(src, off, ln):
-    """new Str(byte[] src, int off, int len)."""
-    return _S(_own(buf_bytes(src, off, ln), ln), ln)
+    """new Str(byte[] src, int off, int len) (src is not read, and may be null, when len is 0)."""
+    return _S(_own(buf_bytes(src, off, ln) if ln != 0 else b'', ln), ln)
 
 
 def NewStr_str(text):
@@ -740,21 +743,25 @@ def Str_to_string_d(v):
 
 Str_to_string_f = Str_to_string_d
 
-_strtod = None
+_strtod = _erange = None
 
 
 def Str_stod(s, idx=Ptr_ZERO):
-    """std::stod: strtod (part C's R.strtod), throwing invalid_argument when nothing converts (out_of_range on
-    ERANGE is not reproduced, as in the C#); idx, unless null, receives the number of bytes used."""
-    global _strtod
+    """std::stod (libstdc++'s __stoa over strtod, part C's R.strtod): invalid_argument("stod") when nothing
+    converts, out_of_range("stod") when strtod sets ERANGE (R.ERange: overflow, or an underflow such as "1e-400" or
+    the inexact subnormal 2.2250738585072011e-308); idx, unless null, receives the number of bytes used."""
+    global _strtod, _erange
     if _strtod is None:
-        from . import R_strtod_CPtr_CPtrr as f
+        from . import R_strtod_CPtr_CPtrr as f, R_get_ERange as g
         _strtod = f
+        _erange = g
     p = s.c_str()
     end = Cell(p)
     v = _strtod(p, end)
     if end.v.O == p.O:
         raise InvalidArgument('stod')
+    if _erange():
+        raise OutOfRange('stod')
     if not idx.get_IsNull():
         idx.set_Deref(end.v.O - p.O)
     return v

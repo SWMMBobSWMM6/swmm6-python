@@ -35,12 +35,12 @@ namespace openswmm.lidnode
             double[] s = c.surface[((ulong)control)];
             if ((s[((ulong)0)] > 0.0))
             {
-                @out.push_back(new global::openswmm.LidNodeLayer() { kind = global::openswmm.LidNodeLayerKind.Surface, @params = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }, treatment = new global::Cpp.Vec<global::openswmm.LidLayerTreatment>(), retention = new global::openswmm.richards.Material(), flow = new global::openswmm.richards.Options() });
+                @out.push_back(new global::openswmm.LidNodeLayer() { kind = global::openswmm.LidNodeLayerKind.Surface, @params = new double[] { s[((ulong)0)], s[((ulong)1)], 0.0, 0.0, 0.0, 0.0, 0.0 }, treatment = new global::Cpp.Vec<global::openswmm.LidLayerTreatment>(), retention = new global::openswmm.richards.Material(), flow = new global::openswmm.richards.Options() });
             }
             double[] p = c.pavement[((ulong)control)];
             if ((type.EqLit(global::Cpp.R.Lit("PP")) && (p[((ulong)0)] > 0.0)))
             {
-                @out.push_back(new global::openswmm.LidNodeLayer() { kind = global::openswmm.LidNodeLayerKind.Aggregate, @params = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }, treatment = new global::Cpp.Vec<global::openswmm.LidLayerTreatment>(), retention = new global::openswmm.richards.Material(), flow = new global::openswmm.richards.Options() });
+                @out.push_back(new global::openswmm.LidNodeLayer() { kind = global::openswmm.LidNodeLayerKind.Aggregate, @params = new double[] { p[((ulong)0)], ((p[((ulong)1)] / ((1.0 + p[((ulong)1)]))) * ((1.0 - p[((ulong)2)]))), p[((ulong)3)], 0.0, 0.0, 0.0, 0.0 }, treatment = new global::Cpp.Vec<global::openswmm.LidLayerTreatment>(), retention = new global::openswmm.richards.Material(), flow = new global::openswmm.richards.Options() });
             }
             double[] m = c.soil[((ulong)control)];
             if ((m[((ulong)0)] > 0.0))
@@ -50,8 +50,8 @@ namespace openswmm.lidnode
             double[] g = c.storage[((ulong)control)];
             if ((g[((ulong)0)] > 0.0))
             {
-                @out.push_back(new global::openswmm.LidNodeLayer() { kind = global::openswmm.LidNodeLayerKind.Aggregate, @params = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }, treatment = new global::Cpp.Vec<global::openswmm.LidLayerTreatment>(), retention = new global::openswmm.richards.Material(), flow = new global::openswmm.richards.Options() });
-                @out.push_back(new global::openswmm.LidNodeLayer() { kind = global::openswmm.LidNodeLayerKind.Bottom, @params = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }, treatment = new global::Cpp.Vec<global::openswmm.LidLayerTreatment>(), retention = new global::openswmm.richards.Material(), flow = new global::openswmm.richards.Options() });
+                @out.push_back(new global::openswmm.LidNodeLayer() { kind = global::openswmm.LidNodeLayerKind.Aggregate, @params = new double[] { g[((ulong)0)], (g[((ulong)1)] / ((1.0 + g[((ulong)1)]))), 1.0E+12, 0.0, 0.0, 0.0, 0.0 }, treatment = new global::Cpp.Vec<global::openswmm.LidLayerTreatment>(), retention = new global::openswmm.richards.Material(), flow = new global::openswmm.richards.Options() });
+                @out.push_back(new global::openswmm.LidNodeLayer() { kind = global::openswmm.LidNodeLayerKind.Bottom, @params = new double[] { g[((ulong)2)], g[((ulong)3)], 0.0, 0.0, 0.0, 0.0, 0.0 }, treatment = new global::Cpp.Vec<global::openswmm.LidLayerTreatment>(), retention = new global::openswmm.richards.Material(), flow = new global::openswmm.richards.Options() });
             }
             return global::Cpp.Mv.Take(ref @out);
         }

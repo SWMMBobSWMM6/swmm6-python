@@ -7,10 +7,16 @@ translation checked against SWMM6.
 
 ## Result
 
-**474 of 474 models run so far are byte-identical; 6 of the 480 are still running** against the C++ reference engine built from the same commit and run on one thread
+**412 of the 413 models run are byte-identical** (of those run, 1 did not finish within the time limit, `EPA/72_H&H_Elements(2).inp` after 7000 s; untested, not failed) against the C++ reference engine built from the same commit and run on one thread
 (`OMP_NUM_THREADS=1`), on the 480-model gate set (the one the SWMM5 ports were checked on), drawn from
-[1729-SWMM5-Models-2030](https://github.com/SWMMBobSWMM6/1729-SWMM5-Models-2030). Gate runs
-`py1`, `py1h`; every result, with the SHA-256 of each `.out` and `.rpt`, is in `gate/evidence/`.
+[1729-SWMM5-Models-2030](https://github.com/SWMMBobSWMM6/1729-SWMM5-Models-2030). Gate run
+`py2`; every result, with the SHA-256 of each `.out` and `.rpt`, is in `gate/evidence/`. The other 67 of the 480, the slowest for this port, were not run on this build: the run was stopped there by choice, not by a failure.
+
+The same engine on the 452 extra decks: **450 of 452 extra decks byte-identical** (2 did not finish within the time limit: `legacy_small.inp`, `refactored_small.inp`; untested, not failed). These are SWMM6's own tests, which the corpus cannot be:
+the input files in the upstream repository's `tests` folder at 88329d6, and the synthetic decks of
+[swmm6-rust](https://github.com/SWMMBobSWMM6/swmm6-rust)'s gate, which probe the finite-volume solver, its
+structure coupling, the newer hydrology and the input checks. Gate run
+`py_x2`, in `gate/evidence/` with the same hashes.
 
 A model passes when its `.out` is byte-identical to the reference's (when the reference writes one), its `.rpt` is
 identical after removing the lines "Analysis begun", "Analysis ended" and "Total elapsed time", and its exit code is
@@ -43,14 +49,18 @@ commit 88329d6 and libclang.
 `gate/make_ref.sh` makes the reference outputs with the C++ engine (`ref/runswmm6`: build openswmm.engine at
 88329d6 and run it single-threaded); `gate/gate.py NAME "py/runswmm6" --resume` runs this engine on every model in
 `gate/models_all.tsv` (paths relative to the corpus; set `SWMM_CORPUS`) and compares; `gate/cmp1.sh` checks one
-model. The median time per model in the gate runs was 3.55 s (the C# engine's: 1.38 s, which includes .NET's start-up and JIT compilation). The times were measured on a shared two-core cloud machine while other runs were going, so they are a
+model. The extra decks are listed in `gate/models_extra.tsv`, with paths relative to a folder that holds clones of
+openswmm.engine (at 88329d6) and swmm6-rust: make their references with
+`SWMM_CORPUS=FOLDER MODELS=gate/models_extra.tsv REF=$PWD/gate/ref_outputs_extra gate/make_ref.sh`, then run
+`gate/gate.py NAME "py/runswmm6" --models gate/models_extra.tsv --ref gate/ref_outputs_extra --root FOLDER --resume`.
+The median time per model in the gate run was 1.92 s (the C# engine's: 0.76 s, which includes .NET's start-up and JIT compilation). The times were measured on a shared two-core cloud machine while other runs were going, so they are a
 rough guide, not a benchmark.
 
 ## What this does not show
 
-- Agreement on models outside the 480. The gate set is broad (EPA's examples, the OWA EXTRAN set, hydrology,
-  hydraulics, water quality, LID, RDII, controls, hot start, input errors), but a feature no gate model uses is
-  untested.
+- Agreement on models outside the 480 and the 452. The two sets are broad (EPA's examples, the OWA EXTRAN set,
+  hydrology, hydraulics, water quality, LID, RDII, controls, hot start, input errors, the FV solver and SWMM6's own
+  tests), but a feature no gate model or deck uses is untested.
 - The reference's parallel runs. Every parallel loop runs on one thread, in order, which is what the C++ engine
   does when it is held to one thread; results with OpenMP threads can differ in the last bits.
 - The 2D and other modules of OpenSWMM 6 beyond the 1D engine the command line runs.

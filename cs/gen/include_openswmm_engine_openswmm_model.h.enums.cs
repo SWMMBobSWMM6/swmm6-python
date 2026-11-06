@@ -4,26 +4,26 @@
 namespace _global {
     public enum SWMM_InpProfile : int
     {
-        SWMM_INP_PROFILE_FULL,
-        SWMM_INP_PROFILE_SWMM5,
-        SWMM_INP_PROFILE_SWMM5_STOCK,
+        SWMM_INP_PROFILE_FULL = unchecked((int)0),
+        SWMM_INP_PROFILE_SWMM5 = unchecked((int)1),
+        SWMM_INP_PROFILE_SWMM5_STOCK = unchecked((int)2),
     }
 }
 namespace _global {
     public enum SWMM_FilePathRole : int
     {
-        SWMM_FILE_RAINFALL,
-        SWMM_FILE_RUNOFF,
-        SWMM_FILE_RDII,
-        SWMM_FILE_INFLOWS,
-        SWMM_FILE_OUTFLOWS,
-        SWMM_FILE_HOTSTART_USE,
-        SWMM_FILE_CLIMATE_TEMP,
-        SWMM_FILE_HOTSTART_SAVE,
-        SWMM_FILE_RAINGAGE_DATA,
-        SWMM_FILE_TIMESERIES_DATA,
-        SWMM_FILE_MESH_2D,
-        SWMM_FILE_OUTPUT_2D,
-        SWMM_FILE_LID_REPORT,
+        SWMM_FILE_RAINFALL = unchecked((int)1),
+        SWMM_FILE_RUNOFF = unchecked((int)2),
+        SWMM_FILE_RDII = unchecked((int)3),
+        SWMM_FILE_INFLOWS = unchecked((int)4),
+        SWMM_FILE_OUTFLOWS = unchecked((int)5),
+        SWMM_FILE_HOTSTART_USE = unchecked((int)6),
+        SWMM_FILE_CLIMATE_TEMP = unchecked((int)7),
+        SWMM_FILE_HOTSTART_SAVE = unchecked((int)8),
+        SWMM_FILE_RAINGAGE_DATA = unchecked((int)9),
+        SWMM_FILE_TIMESERIES_DATA = unchecked((int)10),
+        SWMM_FILE_MESH_2D = unchecked((int)11),
+        SWMM_FILE_OUTPUT_2D = unchecked((int)12),
+        SWMM_FILE_LID_REPORT = unchecked((int)13),
     }
 }

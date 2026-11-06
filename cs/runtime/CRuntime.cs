@@ -60,6 +60,11 @@ namespace Cpp
         public Stream S;
         public bool Eof;
         public bool IsStd;
+        /// <summary>A directory opened with fopen(dir, "r"): glibc opens it, and every read then fails with EISDIR,
+        /// which sets the error indicator, not end-of-file.</summary>
+        public bool Dir, Err;
+        /// <summary>A read found no more data: end-of-file, or for a directory an error.</summary>
+        public void ReadFailed() { if (Dir) Err = true; else Eof = true; }
         public CFile(Stream s, bool std = false) { S = s; IsStd = std; if (!std) lock (Open) Open.Add(this); }
         /// <summary>The files fopen opened and fclose has not closed: exit() flushes them (R.FlushAll).</summary>
         public static readonly HashSet<CFile> Open = new HashSet<CFile>();
@@ -323,10 +328,15 @@ namespace Cpp
             return v;
         }
         public static double atof(CPtr s) => strtod(s);
+        /// <summary>Whether the last ScanDouble (strtod, atof, sscanf's conversions) would have set errno to ERANGE in
+        /// glibc: an overflow to +-inf, a nonzero number that became zero, or a result that is tiny (below DBL_MIN
+        /// after rounding to 53 bits, the x86 rule) and inexact. libstdc++'s std::stod throws out_of_range on it.</summary>
+        public static bool ERange;
         /// <summary>Parse a C floating number at b[o..] using at most maxw chars (after leading space). Returns chars consumed (0 = none).</summary>
         public static int ScanDouble(byte[] b, int o, int maxw, out double v, bool skipSpace = true)
         {
             v = 0.0;
+            ERange = false;
             int i = o;
             if (skipSpace) while (IsSpace(b[i])) i++;
             int lim = maxw == int.MaxValue ? int.MaxValue : i + maxw;
@@ -369,8 +379,37 @@ namespace Cpp
             }
             var txt = Encoding.ASCII.GetString(b, ms, i - ms);
             v = double.Parse(txt, NumberStyles.Float, CultureInfo.InvariantCulture);
+            ERange = DecRange(txt, v);
             if (neg) v = -v;
             return i - o;
+        }
+        /// <summary>glibc strtod's ERANGE for the decimal text txt (digits, '.', exponent; no sign) whose correctly
+        /// rounded value is av: overflow, or underflow (tiny after rounding and inexact, decided exactly).</summary>
+        static bool DecRange(string txt, double av)
+        {
+            if (double.IsInfinity(av)) return true;
+            if (av > 2.2250738585072014e-308) return false;          // above DBL_MIN: normal
+            BigInteger d = 0; long e10 = 0; int k = 0;
+            for (; k < txt.Length && IsDigit(txt[k]); k++) d = d * 10 + (txt[k] - '0');
+            if (k < txt.Length && txt[k] == '.') for (k++; k < txt.Length && IsDigit(txt[k]); k++) { d = d * 10 + (txt[k] - '0'); e10--; }
+            if (d.IsZero) return false;                                // a zero is exact
+            if (k < txt.Length && (txt[k] == 'e' || txt[k] == 'E'))
+            {
+                k++; bool en = false;
+                if (k < txt.Length && (txt[k] == '+' || txt[k] == '-')) { en = txt[k] == '-'; k++; }
+                long ex = 0;
+                for (; k < txt.Length && IsDigit(txt[k]); k++) ex = Math.Min(ex * 10 + (txt[k] - '0'), 1000000000L);
+                e10 += en ? -ex : ex;
+            }
+            long nd = d.ToString(CultureInfo.InvariantCulture).Length;
+            if (nd + e10 < -340) return true;                          // below 1e-340: zero, and not exact
+            if (e10 >= 0) return false;
+            var p10 = BigInteger.Pow(10, (int)-e10);                   // the value is d / 10^-e10
+            // tiny after rounding: below 2^-1022 - 2^-1076, the midpoint under DBL_MIN of the 53-bit grid
+            if (d * BigInteger.Pow(2, 1076) >= ((BigInteger.One << 54) - 1) * p10) return false;
+            // inexact: not av itself, which is m * 2^-1074 for a subnormal (or DBL_MIN, or zero)
+            long m = BitConverter.DoubleToInt64Bits(av);
+            return d * (BigInteger.One << 1074) != m * p10;
         }
         static bool IsHex(int c) => IsDigit(c) || (Lower(c) >= 'a' && Lower(c) <= 'f');
         static int Lower(int c) => (c >= 'A' && c <= 'Z') ? c + 32 : c;
@@ -389,6 +428,7 @@ namespace Cpp
                 if (IsDigit(Get(k))) { int e = 0; while (IsDigit(Get(k))) { e = Math.Min(e * 10 + Get(k) - '0', 100000); k++; } exp += en ? -e : e; i = k; }
             }
             v = BigRatioToDouble(m, exp);
+            ERange = !m.IsZero && (v == 0 || double.IsInfinity(v));    // (a hexadecimal subnormal is not checked)
             if (neg) v = -v;
             return i - o;
         }
@@ -423,93 +463,155 @@ namespace Cpp
         public static RefD RefD(Action<double> a) => new RefD { Set = a };
         public static RefF RefF(Action<float> a) => new RefF { Set = a };
 
+        /// <summary>glibc's sscanf for the directives the engine uses: %d %i %u (decimal), %f %e %g %a (and capitals),
+        /// %s, %c, %[...], %n and %%, with * and widths and the h/l/L/z/j/t/q modifiers. It returns the number of
+        /// assignments, or EOF (-1) when the input ends before the first assignment (a suppressed conversion that
+        /// consumed input does not count). %u is strtoul's value (a negative number wraps), cut to 32 bits without l;
+        /// a float target gets strtof's rounding of the characters, not a double rounded again. As in the Java, Go
+        /// and Fortran runtimes (java/src/cpp/R.java sscanf).</summary>
         public static int sscanf(CPtr s, CPtr fmt, params object[] args)
         {
+            StashReset();
             byte[] b = s.B; int i = s.O;
             byte[] f = fmt.B; int k = fmt.O;
             int ai = 0, count = 0;
-            bool anyInput = false;
-            StashReset();
             while (f[k] != 0)
             {
                 int fc = f[k];
-                if (IsSpace(fc)) { while (IsSpace(f[k])) k++; while (IsSpace(b[i])) i++; continue; }
+                if (IsSpace(fc)) { while (IsSpace(f[k])) k++; while (IsSpace(At(b, i))) i++; continue; }
                 if (fc != '%')
                 {
-                    if (b[i] == 0) return anyInput || count > 0 ? count : -1;
-                    if (b[i] != fc) return count;
+                    if (At(b, i) == 0) return count == 0 ? -1 : count;
+                    if (At(b, i) != fc) return count;
                     i++; k++; continue;
                 }
                 k++;
-                if (f[k] == '%') { while (IsSpace(b[i])) i++; if (b[i] != '%') return count; i++; k++; continue; }
                 bool suppress = false;
                 if (f[k] == '*') { suppress = true; k++; }
                 int width = 0;
                 while (IsDigit(f[k])) { width = width * 10 + f[k] - '0'; k++; }
                 int lmod = 0;
-                while (f[k] == 'l' || f[k] == 'h' || f[k] == 'L') { if (f[k] == 'l') lmod++; k++; }
+                while (f[k] == 'l' || f[k] == 'h' || f[k] == 'L' || f[k] == 'z' || f[k] == 'j' || f[k] == 't' || f[k] == 'q')
+                {
+                    if (f[k] != 'h') lmod++;
+                    k++;
+                }
                 int conv = f[k]; k++;
-                if (conv != 'c' && conv != '[' && conv != 'n') while (IsSpace(b[i])) i++;
-                if (b[i] == 0 && conv != 'n') return (count == 0 && !anyInput) ? -1 : count;
-                int w = width == 0 ? int.MaxValue : width;
+                bool[] set = null;
+                if (conv == '[')
+                {
+                    set = new bool[256];
+                    bool neg = false;
+                    if (f[k] == '^') { neg = true; k++; }
+                    bool first = true;
+                    while (f[k] != 0 && (first || f[k] != ']'))
+                    {
+                        int c = f[k];
+                        if (c == '-' && !first && f[k + 1] != ']' && f[k + 1] != 0 && f[k - 1] <= f[k + 1])
+                        {
+                            for (int x = f[k - 1]; x <= f[k + 1]; x++) set[x] = true;
+                            k += 2; first = false; continue;
+                        }
+                        set[c] = true; k++; first = false;
+                    }
+                    if (f[k] == ']') k++;
+                    if (neg) { for (int x = 0; x < 256; x++) set[x] = !set[x]; set[0] = false; }
+                }
+                if (conv != 'c' && conv != '[' && conv != 'n') while (IsSpace(At(b, i))) i++;
+                if (conv == 'n')
+                {
+                    // the characters read so far; not an assignment, and not stopped by the end of the input
+                    if (!suppress) StoreInt(args[ai++], i - s.O, lmod);
+                    continue;
+                }
+                if (At(b, i) == 0) return count == 0 ? -1 : count;
+                int w = width > 0 ? width : 1 << 30;
                 switch (conv)
                 {
+                    case '%':
+                        if (At(b, i) != '%') return count;
+                        i++;
+                        break;
                     case 'd':
                     case 'i':
                     case 'u':
                         {
-                            int j = i, lim = width == 0 ? int.MaxValue : i + width;
+                            int j = i, lim = i + w;
                             bool neg = false;
-                            if (j < lim && (b[j] == '+' || b[j] == '-')) { neg = b[j] == '-'; j++; }
-                            int ds = j; BigInteger v = 0;
-                            while (j < lim && IsDigit(b[j])) { v = v * 10 + (b[j] - '0'); j++; }
+                            if (j < lim && (At(b, j) == '+' || At(b, j) == '-')) { neg = At(b, j) == '-'; j++; }
+                            int ds = j; BigInteger u = 0;
+                            while (j < lim && IsDigit(At(b, j))) { u = u * 10 + (At(b, j) - '0'); j++; }
                             if (j == ds) return count;
-                            i = j; anyInput = true;
-                            if (neg) v = -v;
-                            if (!suppress)
+                            i = j;
+                            long v;
+                            if (conv == 'u')
                             {
-                                object a = args[ai++];
-                                long lv = v > long.MaxValue ? long.MaxValue : v < long.MinValue ? long.MinValue : (long)v;
-                                if (a is RefL rl) rl.Set(lv);
-                                else if (a is RefI ri) ri.Set(unchecked((int)lv));
-                                else if (a is ScanSlot) Stash(lmod > 0 ? (object)lv : (object)unchecked((int)lv));
-                                count++;
+                                // strtoul: the magnitude (ULONG_MAX when it does not fit), negated as an unsigned number
+                                ulong m = u > ulong.MaxValue ? ulong.MaxValue : (ulong)u;
+                                if (neg && u <= ulong.MaxValue) m = unchecked(0UL - m);
+                                v = unchecked((long)(lmod == 0 ? (m & 0xFFFFFFFFUL) : m));
                             }
+                            else
+                            {
+                                if (neg) u = -u;            // strtol: clamped to long
+                                v = u > long.MaxValue ? long.MaxValue : u < long.MinValue ? long.MinValue : (long)u;
+                            }
+                            if (!suppress) { StoreInt(args[ai++], v, lmod); count++; }
                             break;
                         }
                     case 'f':
                     case 'e':
                     case 'g':
+                    case 'E':
+                    case 'G':
+                    case 'a':
+                    case 'A':
+                    case 'F':
                         {
-                            int n = ScanDouble(b, i, w, out double v, false);
-                            if (n == 0) return count;
-                            i += n; anyInput = true;
+                            int e = ScanFloat(b, i, width, out byte[] num);
+                            if (e < 0) return count;
+                            i = e;
+                            // the characters taken are converted as strtod (or strtof, for a float) converts them
+                            int n = ScanDouble(num, 0, int.MaxValue, out double v, false);
+                            if (n <= 0) return count;
                             if (!suppress)
                             {
                                 object a = args[ai++];
+                                float fv = lmod > 0 ? 0f : StrToF(num, n, v);
                                 if (a is RefD rd) rd.Set(v);
-                                else if (a is RefF rf) rf.Set((float)v);
-                                else if (a is ScanSlot) Stash(lmod > 0 ? (object)v : (object)(float)v);
+                                else if (a is RefF rf) rf.Set(fv);
+                                else if (a is ScanSlot) Stash(lmod > 0 ? (object)v : (object)fv);
+                                else throw new NotSupportedException("sscanf %" + (char)conv + " target " + a);
                                 count++;
                             }
                             break;
                         }
                     case 's':
+                    case '[':
                         {
-                            int j = i;
-                            var dst = suppress ? CPtr.Null : (CPtr)args[ai++];
-                            int n = 0;
-                            while (b[j] != 0 && !IsSpace(b[j]) && n < w) { if (!suppress) dst.B[dst.O + n] = b[j]; j++; n++; }
-                            if (!suppress) { dst.B[dst.O + n] = 0; count++; }
-                            i = j; anyInput = true;
+                            int j = i, m = 0;
+                            while (At(b, j) != 0 && m < w)
+                            {
+                                int c = At(b, j);
+                                if (conv == 's' ? IsSpace(c) : !set[c]) break;
+                                j++; m++;
+                            }
+                            if (m == 0) return count;       // only %[ can match nothing: a matching failure
+                            if (!suppress)
+                            {
+                                var d = (CPtr)args[ai++];
+                                Array.Copy(b, i, d.B, d.O, m);
+                                d.B[d.O + m] = 0;
+                                count++;
+                            }
+                            i = j;
                             break;
                         }
                     case 'c':
                         {
-                            int n = width == 0 ? 1 : width;
-                            if (b[i] == 0) return count == 0 && !anyInput ? -1 : count;
+                            int n = width > 0 ? width : 1;
                             object a = suppress ? null : args[ai++];
-                            for (int t = 0; t < n && b[i] != 0; t++)
+                            for (int t = 0; t < n && At(b, i) != 0; t++)
                             {
                                 if (!suppress)
                                 {
@@ -520,7 +622,6 @@ namespace Cpp
                                 }
                                 i++;
                             }
-                            anyInput = true;
                             if (!suppress) count++;
                             break;
                         }
@@ -529,6 +630,107 @@ namespace Cpp
                 }
             }
             return count;
+        }
+        static int At(byte[] b, int j) => j < b.Length ? b[j] : 0;
+        /// <summary>An integer conversion's value into its target (an int unless the l modifier was given).</summary>
+        static void StoreInt(object a, long v, int lmod)
+        {
+            if (a is RefI ri) ri.Set(unchecked((int)v));
+            else if (a is RefL rl) rl.Set(v);
+            else if (a is ScanSlot) Stash(lmod > 0 ? (object)v : (object)unchecked((int)v));
+            else throw new NotSupportedException("sscanf integer target " + a);
+        }
+        /// <summary>strtof of the first n characters of a NUL-terminated number text, of which v is strtod's value:
+        /// .NET's float parser rounds the decimal text once, to float, as strtof does (a hexadecimal float, which
+        /// the engine's inputs do not contain, is the double's value rounded to float).</summary>
+        static float StrToF(byte[] num, int n, double v)
+        {
+            if (double.IsNaN(v) || double.IsInfinity(v)) return (float)v;
+            string txt = Encoding.ASCII.GetString(num, 0, n);
+            if (txt.IndexOf('x') >= 0 || txt.IndexOf('X') >= 0) return (float)v;
+            return float.Parse(txt, NumberStyles.Float, CultureInfo.InvariantCulture);
+        }
+        /// <summary>The scanner of glibc's vfscanf for a floating conversion at b[i] (not a space, not the end): it
+        /// collects the characters it takes (at most width, 0 for no limit) into num (NUL-terminated) and returns the
+        /// index after them, -1 for a matching failure. Like glibc, it reads one character ahead and pushes back only
+        /// that one, so an exponent marker or sign with no digits after it ("1e", "1e+") is taken (and ignored by the
+        /// conversion), and a partial "infinity" or a bare "0x" fails. "nan" never takes an n-char-sequence.</summary>
+        static int ScanFloat(byte[] b, int i, int width, out byte[] num)
+        {
+            num = null;
+            int left = width == 0 ? -1 : width, p = i;     // characters still allowed (-1: no limit), next index
+            var buf = new List<byte>(32);
+            int Inchar() { if (p < b.Length && b[p] != 0) return b[p++]; return -1; }
+            void Dec() { if (left > 0) left--; }
+            bool Expect(int ch)
+            {
+                if (left == 0) return false;
+                int c2 = Inchar();
+                if (c2 < 0 || Lower(c2) != ch) return false;
+                Dec(); buf.Add((byte)c2); return true;
+            }
+            int Done(out byte[] o) { buf.Add(0); o = buf.ToArray(); return p; }
+            int c = Inchar();
+            Dec();
+            int gotSign = 0;
+            if (c == '-' || c == '+')
+            {
+                gotSign = 1; buf.Add((byte)c);
+                if (left == 0) return -1;
+                if ((c = Inchar()) < 0) return -1;
+                Dec();
+            }
+            if (Lower(c) == 'n')
+            {
+                buf.Add((byte)c);
+                if (!Expect('a') || !Expect('n')) return -1;
+                return Done(out num);
+            }
+            if (Lower(c) == 'i')
+            {
+                buf.Add((byte)c);
+                if (!Expect('n') || !Expect('f')) return -1;
+                if (left != 0)
+                {
+                    if ((c = Inchar()) >= 0)
+                    {
+                        if (Lower(c) == 'i')
+                        {
+                            Dec(); buf.Add((byte)c);
+                            if (!Expect('n') || !Expect('i') || !Expect('t') || !Expect('y')) return -1;
+                        }
+                        else p--;                             // ungetc
+                    }
+                }
+                return Done(out num);
+            }
+            int expChar = 'e';
+            bool hexa = false, gotDigit = false, gotDot = false, gotE = false;
+            if (left != 0 && c == '0')
+            {
+                buf.Add((byte)c);
+                c = Inchar(); Dec();
+                if (left != 0 && Lower(c) == 'x')
+                {
+                    buf.Add((byte)c); hexa = true; expChar = 'p';
+                    c = Inchar(); Dec();
+                }
+                else gotDigit = true;
+            }
+            for (; ; )
+            {
+                if (c >= '0' && c <= '9') { buf.Add((byte)c); gotDigit = true; }
+                else if (!gotE && hexa && IsHex(c)) { buf.Add((byte)c); gotDigit = true; }
+                else if (gotE && buf[buf.Count - 1] == expChar && (c == '-' || c == '+')) buf.Add((byte)c);
+                else if (gotDigit && !gotE && Lower(c) == expChar) { buf.Add((byte)expChar); gotE = true; gotDot = true; }
+                else if (!gotDot && c == '.') { buf.Add((byte)c); gotDot = true; }
+                else { if (c >= 0) p--; break; }              // not part of the number: pushed back
+                if (left == 0) break;
+                if ((c = Inchar()) < 0) break;
+                Dec();
+            }
+            if (buf.Count == gotSign || (hexa && buf.Count == 2 + gotSign)) return -1;
+            return Done(out num);
         }
 
         // ---------------------------------------------------------------- printf family
@@ -759,6 +961,7 @@ namespace Cpp
             {
                 FileStream fs;
                 bool plus = m.Contains('+');
+                if (m[0] == 'r' && !plus && Directory.Exists(fn)) return new CFile(Stream.Null) { Dir = true };
                 if (m[0] == 'r') fs = new FileStream(fn, FileMode.Open, plus ? FileAccess.ReadWrite : FileAccess.Read, FileShare.ReadWrite);
                 else if (m[0] == 'w') fs = new FileStream(fn, FileMode.Create, plus ? FileAccess.ReadWrite : FileAccess.Write, FileShare.ReadWrite);
                 else if (m[0] == 'a') { fs = new FileStream(fn, FileMode.Append, FileAccess.Write, FileShare.ReadWrite); }
@@ -803,7 +1006,7 @@ namespace Cpp
             while (i < n - 1)
             {
                 int c = f.S.ReadByte();
-                if (c < 0) { f.Eof = true; break; }
+                if (c < 0) { f.ReadFailed(); break; }
                 buf.B[buf.O + i++] = (byte)c;
                 if (c == '\n') break;
             }
@@ -837,7 +1040,7 @@ namespace Cpp
             while (got < n)
             {
                 int r = f.S.Read(b, got, n - got);
-                if (r <= 0) { f.Eof = true; return false; }
+                if (r <= 0) { f.ReadFailed(); return false; }
                 got += r;
             }
             return true;
@@ -850,7 +1053,7 @@ namespace Cpp
         public static ulong fwriteF(float[] a, int off, int n, CFile f) { for (int i = 0; i < n; i++) f.S.Write(BitConverter.GetBytes(a[off + i]), 0, 4); return (ulong)n; }
         public static ulong fwriteD(double[] a, int off, int n, CFile f) { for (int i = 0; i < n; i++) f.S.Write(BitConverter.GetBytes(a[off + i]), 0, 8); return (ulong)n; }
         public static ulong fwriteI(int[] a, int off, int n, CFile f) { for (int i = 0; i < n; i++) f.S.Write(BitConverter.GetBytes(a[off + i]), 0, 4); return (ulong)n; }
-        public static ulong fwriteC(CPtr p, int off, int n, CFile f) { f.S.Write(p.B, p.O + off, n); return (ulong)n; }
+        public static ulong fwriteC(CPtr p, int off, int n, CFile f) { if (n != 0) f.S.Write(p.B, p.O + off, n); return (ulong)n; }
         public static ulong freadF1(ref float v, CFile f) { if (!ReadExact(f, tmp8, 4)) return 0; v = BitConverter.ToSingle(tmp8, 0); return 1; }
         public static ulong freadD1(ref double v, CFile f) { if (!ReadExact(f, tmp8, 8)) return 0; v = BitConverter.ToDouble(tmp8, 0); return 1; }
         public static ulong freadI1(ref int v, CFile f) { if (!ReadExact(f, tmp8, 4)) return 0; v = BitConverter.ToInt32(tmp8, 0); return 1; }
@@ -861,7 +1064,7 @@ namespace Cpp
         public static ulong freadC(CPtr p, int off, int n, CFile f)
         {
             int got = 0;
-            while (got < n) { int r = f.S.Read(p.B, p.O + off + got, n - got); if (r <= 0) { f.Eof = true; break; } got += r; }
+            while (got < n) { int r = f.S.Read(p.B, p.O + off + got, n - got); if (r <= 0) { f.ReadFailed(); break; } got += r; }
             return (ulong)got;
         }
 

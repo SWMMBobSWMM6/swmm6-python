@@ -214,39 +214,39 @@ namespace _global
     }
     public enum SWMM_TempSource : int
     {
-        SWMM_TEMP_NONE,
-        SWMM_TEMP_TIMESERIES,
-        SWMM_TEMP_FILE,
+        SWMM_TEMP_NONE = unchecked((int)0),
+        SWMM_TEMP_TIMESERIES = unchecked((int)1),
+        SWMM_TEMP_FILE = unchecked((int)2),
     }
     public enum SWMM_EvapType : int
     {
-        SWMM_EVAP_CONSTANT,
-        SWMM_EVAP_MONTHLY,
-        SWMM_EVAP_TIMESERIES,
-        SWMM_EVAP_TEMPERATURE,
-        SWMM_EVAP_FILE,
+        SWMM_EVAP_CONSTANT = unchecked((int)0),
+        SWMM_EVAP_MONTHLY = unchecked((int)1),
+        SWMM_EVAP_TIMESERIES = unchecked((int)2),
+        SWMM_EVAP_TEMPERATURE = unchecked((int)3),
+        SWMM_EVAP_FILE = unchecked((int)4),
     }
     public enum SWMM_EvapPreviewStatus : int
     {
-        SWMM_EVAP_PREVIEW_AVAILABLE,
-        SWMM_EVAP_PREVIEW_HELD,
-        SWMM_EVAP_PREVIEW_MISSING,
-        SWMM_EVAP_PREVIEW_ESTIMATED,
+        SWMM_EVAP_PREVIEW_AVAILABLE = unchecked((int)0),
+        SWMM_EVAP_PREVIEW_HELD = unchecked((int)1),
+        SWMM_EVAP_PREVIEW_MISSING = unchecked((int)2),
+        SWMM_EVAP_PREVIEW_ESTIMATED = unchecked((int)3),
     }
     public enum SWMM_WindType : int
     {
-        SWMM_WIND_MONTHLY,
-        SWMM_WIND_FILE,
+        SWMM_WIND_MONTHLY = unchecked((int)0),
+        SWMM_WIND_FILE = unchecked((int)1),
     }
     public enum SWMM_HumidityType : int
     {
-        SWMM_HUMIDITY_CONSTANT,
-        SWMM_HUMIDITY_MONTHLY,
-        SWMM_HUMIDITY_TIMESERIES,
+        SWMM_HUMIDITY_CONSTANT = unchecked((int)0),
+        SWMM_HUMIDITY_MONTHLY = unchecked((int)1),
+        SWMM_HUMIDITY_TIMESERIES = unchecked((int)2),
     }
     public enum SWMM_HumidityVar : int
     {
-        SWMM_HUMIDITY_RELATIVE,
-        SWMM_HUMIDITY_DEWPOINT,
+        SWMM_HUMIDITY_RELATIVE = unchecked((int)0),
+        SWMM_HUMIDITY_DEWPOINT = unchecked((int)1),
     }
 }

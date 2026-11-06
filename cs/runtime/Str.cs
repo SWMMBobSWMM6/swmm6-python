@@ -21,7 +21,7 @@ namespace Cpp
         public void remove_prefix(ulong k) { int m = (int)k; Array.Copy(b, m, b, 0, n - m); n -= m; b[n] = 0; }
         public void remove_suffix(ulong k) { n -= (int)k; b[n] = 0; }
         public Str(string s) { var e = Encoding.Latin1.GetBytes(s); b = new byte[e.Length + 1]; Array.Copy(e, b, e.Length); n = e.Length; }
-        public Str(byte[] src, int off, int len) { b = new byte[len + 1]; Array.Copy(src, off, b, 0, len); n = len; }
+        public Str(byte[] src, int off, int len) { b = new byte[len + 1]; if (len != 0) Array.Copy(src, off, b, 0, len); n = len; }
         public Str(CPtr p) : this(p.B, p.O, (int)R.strlen(p)) { }
         public Str(CPtr p, ulong len) : this(p.B, p.O, (int)len) { }
         public Str(ulong count, int ch) { n = (int)count; b = new byte[n + 1]; for (int i = 0; i < n; i++) b[i] = (byte)ch; }
@@ -58,13 +58,13 @@ namespace Cpp
         public Str assign(CPtr p) { Assign(p); return this; }
         public Str assign(CPtr b0, CPtr e0) => assign(b0, (ulong)(e0.O - b0.O));     // assign(first, last)
         public Str assign(Ptr<sbyte> b0, Ptr<sbyte> e0) => assign((CPtr)b0, (ulong)(e0.o - b0.o));
-        public Str assign(CPtr p, ulong len) { var t = new byte[(int)len + 1]; Array.Copy(p.B, p.O, t, 0, (int)len); b = t; n = (int)len; return this; }
+        public Str assign(CPtr p, ulong len) { var t = new byte[(int)len + 1]; if (len != 0) Array.Copy(p.B, p.O, t, 0, (int)len); b = t; n = (int)len; return this; }
         public Str assign(ulong count, int ch) { Reserve((int)count); for (int i = 0; i < (int)count; i++) b[i] = (byte)ch; n = (int)count; return this; }
 
         public Str append(Str o) { Reserve(n + o.n); Array.Copy(o.b, 0, b, n, o.n); n += o.n; return this; }
         public Str append(Str o, ulong pos, ulong len) { int p = (int)pos; int m = (int)Math.Min(len, (ulong)(o.n - p)); Reserve(n + m); Array.Copy(o.b, p, b, n, m); n += m; return this; }
         public Str append(CPtr p) { int m = (int)R.strlen(p); Reserve(n + m); Array.Copy(p.B, p.O, b, n, m); n += m; return this; }
-        public Str append(CPtr p, ulong len) { int m = (int)len; Reserve(n + m); Array.Copy(p.B, p.O, b, n, m); n += m; return this; }
+        public Str append(CPtr p, ulong len) { int m = (int)len; if (m == 0) return this; Reserve(n + m); Array.Copy(p.B, p.O, b, n, m); n += m; return this; }
         public Str append(ulong count, int ch) { int m = (int)count; Reserve(n + m); for (int i = 0; i < m; i++) b[n + i] = (byte)ch; n += m; return this; }
         public Str append(int ch) => append(1UL, ch);
         public void push_back(int ch) { Reserve(n + 1); b[n++] = (byte)ch; }
@@ -192,13 +192,15 @@ namespace Cpp
         public static Str to_string(double v) => FromBytes(R.Format(R.Lit("%f"), new object[] { v }));
         public static Str to_string(float v) => FromBytes(R.Format(R.Lit("%f"), new object[] { (double)v }));
 
-        /// <summary>std::stod: strtod, throwing invalid_argument when nothing converts (out_of_range on ERANGE is
-        /// not reproduced: strtod's ERANGE cases do not occur in the engine's inputs).</summary>
+        /// <summary>std::stod (libstdc++'s __stoa over strtod): invalid_argument("stod") when nothing converts,
+        /// out_of_range("stod") when strtod sets ERANGE (overflow, or an underflow: "1e999", "1e-400", and a
+        /// subnormal that is not exact, such as 2.2250738585072011e-308).</summary>
         public static double stod(Str s, Ptr<ulong> idx = default)
         {
             var p = s.c_str(); var end = p;
             double v = R.strtod(p, ref end);
             if (end.O == p.O) throw new InvalidArgument("stod");
+            if (R.ERange) throw new OutOfRange("stod");
             if (!idx.IsNull) idx.Deref = (ulong)(end.O - p.O);
             return v;
         }

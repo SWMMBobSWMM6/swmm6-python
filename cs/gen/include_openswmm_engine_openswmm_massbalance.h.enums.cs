@@ -4,33 +4,33 @@
 namespace _global {
     public enum SWMM_RunoffTotal : int
     {
-        SWMM_RUNOFF_RAINFALL,
-        SWMM_RUNOFF_EVAP,
-        SWMM_RUNOFF_INFIL,
-        SWMM_RUNOFF_RUNOFF,
-        SWMM_RUNOFF_SNOWREMOV,
-        SWMM_RUNOFF_INITSTORE,
-        SWMM_RUNOFF_FINALSTORE,
-        SWMM_RUNOFF_INITSNOW,
-        SWMM_RUNOFF_FINALSNOW,
+        SWMM_RUNOFF_RAINFALL = unchecked((int)0),
+        SWMM_RUNOFF_EVAP = unchecked((int)1),
+        SWMM_RUNOFF_INFIL = unchecked((int)2),
+        SWMM_RUNOFF_RUNOFF = unchecked((int)3),
+        SWMM_RUNOFF_SNOWREMOV = unchecked((int)4),
+        SWMM_RUNOFF_INITSTORE = unchecked((int)5),
+        SWMM_RUNOFF_FINALSTORE = unchecked((int)6),
+        SWMM_RUNOFF_INITSNOW = unchecked((int)7),
+        SWMM_RUNOFF_FINALSNOW = unchecked((int)8),
     }
 }
 namespace _global {
     public enum SWMM_RoutingTotal : int
     {
-        SWMM_ROUTING_DRY_WEATHER,
-        SWMM_ROUTING_WET_WEATHER,
-        SWMM_ROUTING_GW_INFLOW,
-        SWMM_ROUTING_RDII,
-        SWMM_ROUTING_EXTERNAL,
-        SWMM_ROUTING_FLOODING,
-        SWMM_ROUTING_OUTFLOW,
-        SWMM_ROUTING_EVAP_LOSS,
-        SWMM_ROUTING_SEEP_LOSS,
-        SWMM_ROUTING_INIT_STORAGE,
-        SWMM_ROUTING_FINAL_STORAGE,
-        SWMM_ROUTING_FORCING_INFLOW,
-        SWMM_ROUTING_LINK_GW_INFLOW,
-        SWMM_ROUTING_COUPLING_OUT,
+        SWMM_ROUTING_DRY_WEATHER = unchecked((int)0),
+        SWMM_ROUTING_WET_WEATHER = unchecked((int)1),
+        SWMM_ROUTING_GW_INFLOW = unchecked((int)2),
+        SWMM_ROUTING_RDII = unchecked((int)3),
+        SWMM_ROUTING_EXTERNAL = unchecked((int)4),
+        SWMM_ROUTING_FLOODING = unchecked((int)5),
+        SWMM_ROUTING_OUTFLOW = unchecked((int)6),
+        SWMM_ROUTING_EVAP_LOSS = unchecked((int)7),
+        SWMM_ROUTING_SEEP_LOSS = unchecked((int)8),
+        SWMM_ROUTING_INIT_STORAGE = unchecked((int)9),
+        SWMM_ROUTING_FINAL_STORAGE = unchecked((int)10),
+        SWMM_ROUTING_FORCING_INFLOW = unchecked((int)11),
+        SWMM_ROUTING_LINK_GW_INFLOW = unchecked((int)13),
+        SWMM_ROUTING_COUPLING_OUT = unchecked((int)12),
     }
 }

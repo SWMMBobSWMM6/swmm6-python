@@ -39,7 +39,7 @@ __all__ = [
     'R_Str', 'R_Bytes', 'R_strlen', 'R_strcpy', 'R_strcat', 'R_strcmp', 'R_strchr', 'R_strrchr', 'R_strstr',
     'R_strcspn', 'R_strtok', 'R_toupper',
     # numbers from text
-    'R_strtod_CPtr', 'R_strtod_CPtr_CPtrr', 'R_atof', 'R_strtol', 'R_atoi', 'R_ScanDouble',
+    'R_strtod_CPtr', 'R_strtod_CPtr_CPtrr', 'R_atof', 'R_strtol', 'R_atoi', 'R_ScanDouble', 'R_get_ERange',
     # sscanf
     'R_RefI', 'R_RefL', 'R_RefD', 'R_RefF', 'R_Slot', 'R_sscanf', 'R_Back_i_T1r__B', 'R_Back_i_T1r_T2r__LB',
     'R_Back_i_T1r__I', 'R_Back_i_T1r__L', 'R_Back_i_T1r__D', 'R_Back_i_T1r__F', 'R_Back_i_T1r__S', 'R_Back_i_T1r__Z',
@@ -461,12 +461,87 @@ def _c_unsigned(s):
     return v if v <= 0xFFFFFFFFFFFFFFFF else 0xFFFFFFFFFFFFFFFF   # strtoull saturates
 
 
+# Whether the last R_ScanDouble (strtod, atof, sscanf's conversions, from_chars) would have set errno to ERANGE in
+# glibc: an overflow to +-inf, a nonzero number that became zero, or a result that is tiny (below DBL_MIN after
+# rounding to 53 bits, the x86 rule) and inexact. libstdc++'s std::stod throws out_of_range on it (C# Cpp.R.ERange,
+# Java R.ERange); part A's Str_stod reads it through R_get_ERange().
+ERange = False
+_DBL_MIN = 2.2250738585072014e-308
+
+
+def R_get_ERange():
+    """R.ERange (see the module global ERange)."""
+    return ERange
+
+
+def _big(digits):
+    """int() of a string of decimal digits of any length (int() refuses more than 4300 digits)."""
+    if len(digits) <= 4000:
+        return int(digits)
+    d = 0
+    for j in range(0, len(digits), 4000):
+        c = digits[j:j + 4000]
+        d = d * 10 ** len(c) + int(c)
+    return d
+
+
+def _dec_range(txt, av):
+    """glibc strtod's ERANGE for the decimal text txt (bytes: digits, '.', exponent; no sign) whose correctly rounded
+    value is av: overflow, or underflow (tiny after rounding and inexact, decided exactly). Java's R.decRange."""
+    if av == _INF:
+        return True
+    if av > _DBL_MIN:                                       # above DBL_MIN: normal
+        return False
+    n = len(txt)
+    k = 0
+    while k < n and 48 <= txt[k] <= 57:
+        k += 1
+    ip = txt[:k]
+    fp = b''
+    if k < n and txt[k] == 46:
+        k += 1
+        s = k
+        while k < n and 48 <= txt[k] <= 57:
+            k += 1
+        fp = txt[s:k]
+    e10 = -len(fp)
+    digits = (ip + fp).lstrip(b'0')
+    if not digits:                                          # a zero is exact
+        return False
+    if k < n and (txt[k] == 101 or txt[k] == 69):
+        k += 1
+        en = False
+        if k < n and (txt[k] == 43 or txt[k] == 45):
+            en = txt[k] == 45
+            k += 1
+        ex = 0
+        while k < n and 48 <= txt[k] <= 57:
+            ex = min(ex * 10 + (txt[k] - 48), 1000000000)
+            k += 1
+        e10 += -ex if en else ex
+    nd = len(digits)
+    if nd + e10 < -340:                                     # below 1e-340: zero, and not exact
+        return True
+    if e10 >= 0:
+        return False
+    d = _big(digits)
+    p10 = 10 ** -e10                                        # the value is d / 10^-e10
+    # tiny after rounding: below 2^-1022 - 2^-1076, the midpoint under DBL_MIN of the 53-bit grid
+    if (d << 1076) >= ((1 << 54) - 1) * p10:
+        return False
+    # inexact: not av itself, which is m * 2^-1074 for a subnormal (or DBL_MIN, or zero)
+    m = _q.unpack(_d.pack(av))[0]
+    return (d << 1074) != m * p10
+
+
 def R_ScanDouble(b, i, skip=True):
     """glibc's strtod on the bytes b from index i (the end of b or a NUL ends the input): (value, end, text), end
     -1 when there is no number; text is the number's characters ([-]digits... or [-]0x...p...) for strtof, None for
     inf / nan. Decimal text is converted by Python's float(), correctly rounded as glibc's strtod is; hexadecimal
     floats, inf / infinity and nan / nan(n-char-sequence) (its payload kept) as glibc reads them. The C# runtime
-    reads NaN as .NET's NaN (negative) and "-nan" as its negation, without payloads; glibc is followed."""
+    reads NaN as .NET's NaN (negative) and "-nan" as its negation, without payloads; glibc is followed.
+    Sets ERange as glibc's strtod sets errno to ERANGE (Java's R.scanDouble)."""
+    global ERange
     m = (_DEC if skip else _DEC_NS).match(b, i)
     if m is not None:
         num = m.group(2)
@@ -475,7 +550,9 @@ def R_ScanDouble(b, i, skip=True):
         else:
             neg = m.group(1) == b'-'
             v = float(num)
+            ERange = False if _DBL_MIN < v < _INF else _dec_range(num, v)
             return (-v if neg else v), m.end(), (b'-' + num if neg else num)
+    ERange = False
     n = len(b)
     if skip:
         while i < n and b[i] in _SPACE:
@@ -509,7 +586,10 @@ def R_ScanDouble(b, i, skip=True):
             mant = h.group(1)
             ex = h.group(2) or b'0'
             text = (b'-0x' if neg else b'0x') + mant + b'p' + ex
-            return _hexval(text.decode('ascii'), False), h.end(), text
+            hv = _hexval(text.decode('ascii'), False)
+            # (a hexadecimal subnormal is not checked, as in the Java and C#)
+            ERange = (hv == 0.0 and mant.replace(b'.', b'').strip(b'0') != b'') or math.isinf(hv)
+            return hv, h.end(), text
         return (-0.0 if neg else 0.0), i + 1, (b'-0' if neg else b'0')   # the "0" alone
     return 0.0, -1, None
 
@@ -1573,16 +1653,53 @@ class CFile:
     """C's FILE* (C# Cpp.CFile): S, the stream (a Python binary file object, or a CStdStream for a standard
     stream: write, read, readline, seek, tell, flush, close), the end-of-file flag Eof and IsStd. A file is opened
     with a 64 KiB buffer, as the C# runtime's BufferedStream over a FileStream: reads, writes and seeks interleave
-    and the position is the logical one."""
-    __slots__ = ('S', 'Eof', 'IsStd', 'floor', '__weakref__')
+    and the position is the logical one. Dir: a directory opened with fopen(dir, "r"): glibc opens it, and every
+    read then fails with EISDIR, which sets the error indicator Err, not end-of-file (C# Cpp.CFile.Dir)."""
+    __slots__ = ('S', 'Eof', 'IsStd', 'floor', 'Dir', 'Err', '__weakref__')
 
     def __init__(self, s, std=False):
         self.S = s
         self.Eof = False
         self.IsStd = std
         self.floor = 0            # append mode: no seeking before the length at open (.NET's FileMode.Append)
+        self.Dir = False
+        self.Err = False
         if not std:
             CFile_Open[self] = None
+
+    def ReadFailed(self):
+        """A read found no more data: end-of-file, or for a directory an error."""
+        if self.Dir:
+            self.Err = True
+        else:
+            self.Eof = True
+
+
+class _NullStream:
+    """.NET's Stream.Null as a CFile's stream (the stream of a directory opened for reading): reads give nothing,
+    writes are discarded, seeks stay at 0."""
+    __slots__ = ()
+
+    def write(self, b):
+        return len(b)
+
+    def read(self, n=-1):
+        return b''
+
+    def readline(self, limit=-1):
+        return b''
+
+    def seek(self, off, whence=0):
+        return 0
+
+    def tell(self):
+        return 0
+
+    def flush(self):
+        pass
+
+    def close(self):
+        pass
 
 
 class CStdStream:
@@ -1654,7 +1771,8 @@ R_stdout_ = CFile(CStdStream(1), True)
 def R_fopen(name, mode):
     """fopen as the C# runtime does it: r (r+: read and write) an existing file, w (w+) a new or truncated file, a
     (a+ alike: .NET's Append is write-only) an append-only file that cannot seek before its old end; b and t are
-    ignored; None when the file cannot be opened."""
+    ignored; None when the file cannot be opened. A directory opened with "r" opens, as glibc opens it, and its
+    reads fail (CFile.Dir)."""
     fn = _cb(name).decode('latin-1')
     m = _cb(mode)
     if not m:
@@ -1662,7 +1780,11 @@ def R_fopen(name, mode):
     plus = 43 in m
     try:
         c = m[0]
-        if c == 114:                                          # r: an existing file (open fails on a directory)
+        if c == 114 and not plus and os.path.isdir(fn):      # r on a directory (C#: Directory.Exists)
+            d = CFile(_NullStream())
+            d.Dir = True
+            return d
+        if c == 114:                                          # r: an existing file (r+ fails on a directory)
             f = open(fn, 'r+b' if plus else 'rb', buffering=1 << 16)
             return CFile(f)
         if c == 119:                                          # w
@@ -1764,7 +1886,7 @@ def R_fgets(buf, n, f):
         return _cz()
     line = f.S.readline(n - 1)
     if len(line) < n - 1 and not line.endswith(b'\n'):
-        f.Eof = True
+        f.ReadFailed()
     if not line:
         return _cz()
     _put(buf, 0, line + b'\0')
@@ -1827,7 +1949,7 @@ def R_fwriteL1(v, f):
 def _read_exact(f, n):
     b = f.S.read(n)
     if len(b) < n:
-        f.Eof = True
+        f.ReadFailed()
         return None
     return b
 

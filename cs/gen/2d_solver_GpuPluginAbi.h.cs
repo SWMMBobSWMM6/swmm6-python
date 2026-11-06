@@ -62,10 +62,10 @@ namespace _global
     }
     public enum OpenSwmmGpuVendor : int
     {
-        OPENSWMM_GPU_VENDOR_NONE,
-        OPENSWMM_GPU_VENDOR_CUDA,
-        OPENSWMM_GPU_VENDOR_HIP,
-        OPENSWMM_GPU_VENDOR_SYCL,
-        OPENSWMM_GPU_VENDOR_OPENMP,
+        OPENSWMM_GPU_VENDOR_NONE = unchecked((int)0),
+        OPENSWMM_GPU_VENDOR_CUDA = unchecked((int)1),
+        OPENSWMM_GPU_VENDOR_HIP = unchecked((int)2),
+        OPENSWMM_GPU_VENDOR_SYCL = unchecked((int)3),
+        OPENSWMM_GPU_VENDOR_OPENMP = unchecked((int)4),
     }
 }

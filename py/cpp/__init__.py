@@ -222,9 +222,10 @@ from .rfs import (  # part D
 )
 from .crt import (  # part C
     R_Buf_l, R_Buf_ul, R_BufFrom, R_NewBufs, R_Str, R_Bytes, R_strcpy, R_strcat, R_strcspn, R_strtol, R_ScanDouble,
-    R_Back_i_T1r__I, R_Back_i_T1r__L, R_Back_i_T1r__D, R_Back_i_T1r__F, R_Back_i_T1r__S, R_Back_i_T1r__Z, ScanSlot,
-    R_snprintf_CPtr_l_CPtr_oA, R_snprintf_CPtr_i_CPtr_oA, R_Format, R_FormatFloat, CFile, CFile_Open, CStdStream,
-    R_FlushAll, R_fseek_CFile_i_i, R_remove, R_mkstemp, R_fwriteL1, R_freadL1, R_time, R_ctime_l, R,
+    R_get_ERange, R_Back_i_T1r__I, R_Back_i_T1r__L, R_Back_i_T1r__D, R_Back_i_T1r__F, R_Back_i_T1r__S,
+    R_Back_i_T1r__Z, ScanSlot, R_snprintf_CPtr_l_CPtr_oA, R_snprintf_CPtr_i_CPtr_oA, R_Format, R_FormatFloat, CFile,
+    CFile_Open, CStdStream, R_FlushAll, R_fseek_CFile_i_i, R_remove, R_mkstemp, R_fwriteL1, R_freadL1, R_time,
+    R_ctime_l, R,
 )
 from .crtmath import (  # part C
     Math_Abs_d, Math_Max_d_d, Math_Min_d_d, Math_Round_d, LibM_lround, LibM_rint, LibM_nearbyint, LibM_exp2,

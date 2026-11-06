@@ -379,7 +379,12 @@ public final class CrtCheck {
 					pk, Integer.toHexString(part[0]), Integer.toHexString(part[1]));
 				R.fclose(fp);
 				check("fopen missing", R.fopen(R.Lit(dir.resolve("none").toString()), R.Lit("r")) == null);
-				check("fopen directory", R.fopen(R.Lit(dir.toString()), R.Lit("r")) == null && R.fopen(R.Lit(dir.toString()), R.Lit("w")) == null);
+				// glibc: a directory opens for reading, and the first read fails (ferror set, feof not); r+ and w fail
+				CFile dfp = R.fopen(R.Lit(dir.toString()), R.Lit("r"));
+				check("fopen directory", dfp != null && R.fgets(R.Buf_i(8), 8, dfp).get_IsNull() && R.feof(dfp) == 0
+					&& RFs.ferror(dfp) == 1 && RFs.fgetc(dfp) == -1 && R.feof(dfp) == 0 && R.fclose(dfp) == 0
+					&& R.fopen(R.Lit(dir.toString()), R.Lit("r+")) == null && R.fopen(R.Lit(dir.toString()), R.Lit("w")) == null);
+				check("ferror of a file", RFs.ferror(R.fopen(name, R.Lit("r"))) == 0);
 				check("fopen bad mode", R.fopen(name, R.Lit("x")) == null);
 				// append mode: writes go at the end, no seeking before the old end
 				CPtr an = R.Lit(dir.resolve("a.txt").toString());
@@ -428,13 +433,13 @@ public final class CrtCheck {
 			boolean ok1 = fa.compare_exchange(old, 3.0);
 			boolean ok2 = fa.compare_exchange(old, 3.0);
 			check("compare_exchange", !ok1 && old.v == 1.5 && ok2 && fa.v == 3.0);
-			RefD.ofBoxed(fa.ref_v()).set(0.5);
+			fa.ref_v().set(0.5);
 			check("ref_v", fa.v == 0.5);
 			AtomicZ z = new AtomicZ(true);
-			RefZ.ofBoxed(z.ref_v()).set(false);
+			z.ref_v().set(false);
 			check("atomic bool", !z.v && !z.Clone().v);
 			AtomicI ai = new AtomicI(0);
-			RefI.ofBoxed(ai.ref_v()).set(RefI.ofBoxed(ai.ref_v()).get() + 1);
+			ai.ref_v().set(ai.ref_v().get() + 1);
 			check("atomic int", ai.v == 1);
 			AtomicL ul = new AtomicL(-1L);
 			ul.fetch_add(1L, 0);

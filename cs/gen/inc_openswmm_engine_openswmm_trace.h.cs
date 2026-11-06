@@ -544,34 +544,34 @@ namespace _global
     }
     public enum _anon_include_openswmm_engine_openswmm_trace_h_45_ : int
     {
-        SWMM_TRACE_DOWNSTREAM,
-        SWMM_TRACE_UPSTREAM,
+        SWMM_TRACE_DOWNSTREAM = unchecked((int)0),
+        SWMM_TRACE_UPSTREAM = unchecked((int)1),
     }
     public enum _anon_include_openswmm_engine_openswmm_trace_h_46_ : int
     {
-        SWMM_TRACE_PONDING,
-        SWMM_TRACE_EXTERNAL_EXCHANGE,
-        SWMM_TRACE_ROUTED_OUTFALL,
-        SWMM_TRACE_UNKNOWN_LOSSES,
+        SWMM_TRACE_PONDING = unchecked((int)1),
+        SWMM_TRACE_EXTERNAL_EXCHANGE = unchecked((int)2),
+        SWMM_TRACE_ROUTED_OUTFALL = unchecked((int)4),
+        SWMM_TRACE_UNKNOWN_LOSSES = unchecked((int)8),
     }
     public enum _anon_include_openswmm_engine_openswmm_trace_h_52_ : int
     {
-        SWMM_TRACE_UNREACHABLE,
-        SWMM_TRACE_NO_DIRECTION,
-        SWMM_TRACE_REVERSAL,
-        SWMM_TRACE_UNKNOWN_TIME,
-        SWMM_TRACE_PARTIAL_TIME,
-        SWMM_TRACE_TRAPPED,
-        SWMM_TRACE_APPROXIMATE,
+        SWMM_TRACE_UNREACHABLE = unchecked((int)1),
+        SWMM_TRACE_NO_DIRECTION = unchecked((int)2),
+        SWMM_TRACE_REVERSAL = unchecked((int)4),
+        SWMM_TRACE_UNKNOWN_TIME = unchecked((int)8),
+        SWMM_TRACE_PARTIAL_TIME = unchecked((int)16),
+        SWMM_TRACE_TRAPPED = unchecked((int)32),
+        SWMM_TRACE_APPROXIMATE = unchecked((int)64),
     }
     public enum _anon_include_openswmm_engine_openswmm_trace_h_61_ : int
     {
-        SWMM_TRACE_OUTFALL,
-        SWMM_TRACE_LOSS,
-        SWMM_TRACE_SOURCE,
-        SWMM_TRACE_RETAINED,
-        SWMM_TRACE_UNRESOLVED,
-        SWMM_TRACE_CIRCULATION,
-        SWMM_TRACE_TERMINAL_COUNT,
+        SWMM_TRACE_OUTFALL = unchecked((int)0),
+        SWMM_TRACE_LOSS = unchecked((int)1),
+        SWMM_TRACE_SOURCE = unchecked((int)2),
+        SWMM_TRACE_RETAINED = unchecked((int)3),
+        SWMM_TRACE_UNRESOLVED = unchecked((int)4),
+        SWMM_TRACE_CIRCULATION = unchecked((int)5),
+        SWMM_TRACE_TERMINAL_COUNT = unchecked((int)6),
     }
 }

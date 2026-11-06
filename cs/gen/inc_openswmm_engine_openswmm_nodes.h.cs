@@ -52,25 +52,25 @@ namespace _global
     }
     public enum SWMM_NodeType : int
     {
-        SWMM_NODE_JUNCTION,
-        SWMM_NODE_OUTFALL,
-        SWMM_NODE_STORAGE,
-        SWMM_NODE_DIVIDER,
+        SWMM_NODE_JUNCTION = unchecked((int)0),
+        SWMM_NODE_OUTFALL = unchecked((int)1),
+        SWMM_NODE_STORAGE = unchecked((int)2),
+        SWMM_NODE_DIVIDER = unchecked((int)3),
     }
     public enum _anon_include_openswmm_engine_openswmm_nodes_h_723_ : int
     {
-        SWMM_STORAGE_TABULAR,
-        SWMM_STORAGE_FUNCTIONAL,
-        SWMM_STORAGE_CYLINDRICAL,
-        SWMM_STORAGE_CONICAL,
-        SWMM_STORAGE_PARABOLOID,
-        SWMM_STORAGE_PYRAMIDAL,
+        SWMM_STORAGE_TABULAR = unchecked((int)0),
+        SWMM_STORAGE_FUNCTIONAL = unchecked((int)1),
+        SWMM_STORAGE_CYLINDRICAL = unchecked((int)2),
+        SWMM_STORAGE_CONICAL = unchecked((int)3),
+        SWMM_STORAGE_PARABOLOID = unchecked((int)4),
+        SWMM_STORAGE_PYRAMIDAL = unchecked((int)5),
     }
     public enum SWMM_DividerType : int
     {
-        SWMM_DIVIDER_CUTOFF,
-        SWMM_DIVIDER_OVERFLOW,
-        SWMM_DIVIDER_TABULAR,
-        SWMM_DIVIDER_WEIR,
+        SWMM_DIVIDER_CUTOFF = unchecked((int)0),
+        SWMM_DIVIDER_OVERFLOW = unchecked((int)1),
+        SWMM_DIVIDER_TABULAR = unchecked((int)2),
+        SWMM_DIVIDER_WEIR = unchecked((int)3),
     }
 }

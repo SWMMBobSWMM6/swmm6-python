@@ -825,7 +825,11 @@ def _st(k, c):
 
 
 def _elem_bytes(code, a, o, n):
-    """The first n bytes of the list a from element o, as the little-endian bytes of its elements."""
+    """The first n bytes of the list a from element o, as the little-endian bytes of its elements. No bytes are no
+    bytes even at a null pointer (a None list): libstdc++ passes the data() of an empty vector, which is nullptr,
+    with a length of 0 (C# Mem.Bytes)."""
+    if n == 0:
+        return b''
     size, _, wc, mask = _EL[code]
     k = (n + size - 1) // size
     els = a[o:o + k]
@@ -862,7 +866,9 @@ def _elem_write(code, a, o, data):
 
 
 def _cp_bytes(p, n):
-    """n bytes of a CPtr's buffer from its offset."""
+    """n bytes of a CPtr's buffer from its offset (none at a null pointer when n is 0)."""
+    if n == 0:
+        return b''
     B = p.B
     O = p.O
     if type(B) is bytearray or type(B) is bytes:
@@ -873,6 +879,8 @@ def _cp_bytes(p, n):
 
 
 def _cp_write(p, data):
+    if len(data) == 0:          # no bytes, even at a null pointer
+        return
     B = p.B
     O = p.O
     if O + len(data) > len(B):
@@ -965,7 +973,8 @@ __all__ += ['Mem_memcpy_PtrT_PtrU_ul__' + s for s in ('IB', 'LD', 'DL', 'BI', 'I
 
 
 def Mem_memcpy_CPtr_CPtr_ul(d, s, n):
-    _cp_write(d, _cp_bytes(s, n))
+    if n != 0:                  # memcpy(d, s, 0) reads and writes nothing, even at null pointers
+        _cp_write(d, _cp_bytes(s, n))
     return d
 
 
@@ -987,18 +996,19 @@ for _c in ('B', 'D', 'F', 'I', 'L', 'S', 'Z'):
 
 
 def Mem_fwrite_CPtr_ul_ul_CFile(p, size, count, f):
-    """fwrite of size*count bytes of a char buffer; returns count."""
-    f.S.write(_cp_bytes(p, size * count))
+    """fwrite of size*count bytes of a char buffer (none, even at a null pointer, when that is 0); returns count."""
+    if size * count != 0:
+        f.S.write(_cp_bytes(p, size * count))
     return count
 
 
 def Mem_fread_CPtr_ul_ul_CFile(p, size, count, f):
     """fread of size*count bytes into a char buffer: the number of whole items read; a short read sets the
-    end-of-file flag."""
+    end-of-file flag (the error flag for a directory: CFile.ReadFailed)."""
     want = size * count
     b = f.S.read(want) if want else b''
     if len(b) < want:
-        f.Eof = True
+        f.ReadFailed()
     _cp_write(p, b)
     return len(b) // size if size else 0
 
@@ -1015,11 +1025,12 @@ def _fread_typed(code):
         want = size * count
         b = f.S.read(want) if want else b''
         if len(b) < want:
-            f.Eof = True
+            f.ReadFailed()
         _elem_write(code, p.a, p.o, b)
         return len(b) // size if size else 0
     fr.__doc__ = ('fread of size*count bytes into a typed pointer: the bytes read are copied in (a partial element '
-                  'too); the number of whole items read; a short read sets the end-of-file flag.')
+                  'too); the number of whole items read; a short read sets the end-of-file flag (the error flag '
+                  'for a directory: CFile.ReadFailed).')
     return fr
 
 
@@ -1035,9 +1046,12 @@ def Bytes_View_CPtr(p):
 
 def _view(code):
     def v(p):
-        from cpp import CPtr
+        from cpp import CPtr, CPtr_ZERO
+        if p.a is None and p.at is None:
+            return CPtr_ZERO            # (const char*) of a null pointer is null
         return CPtr(bytearray(_all_bytes(code, p.a, p.o)), 0)
-    v.__doc__ = 'The bytes of the numbers p points at, to the end of its array, as a char* for reading (a copy).'
+    v.__doc__ = ('The bytes of the numbers p points at, to the end of its array, as a char* for reading (a copy); '
+                 'a null pointer gives the null char*.')
     return v
 
 

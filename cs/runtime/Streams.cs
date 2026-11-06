@@ -4,6 +4,7 @@
 // Reading numbers goes through strtod / strtol as libstdc++'s num_get does for ordinary input.
 // Written by Claude (Anthropic) for the SWMM6 ports; see AI-USE.md.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -123,7 +124,7 @@ namespace Cpp
         public OStream Manip_noboolalpha() { flagsv &= ~Ios.boolalpha; return this; }
         public OStream Manip_showpoint() { flagsv |= Ios.showpoint; return this; }
         public OStream Manip_noshowpoint() { flagsv &= ~Ios.showpoint; return this; }
-        public OStream write(CPtr p, long n) { Raw(p.B, p.O, (int)n); return this; }
+        public OStream write(CPtr p, long n) { if (n != 0) Raw(p.B, p.O, (int)n); return this; }
         public OStream write<T>(Ptr<T> p, long n) where T : struct { var b = Mem.BytesOf(p, (int)n); Raw(b, 0, b.Length); return this; }
         public virtual OStream flush() { s?.Flush(); return this; }
         public virtual long tellp() => s != null ? s.Position : (mem?.Position ?? 0);
@@ -169,18 +170,25 @@ namespace Cpp
         protected int pos, len;
         protected Stream? src;
         public long gcountv;
+        /// <summary>An ifstream opened on a directory: libstdc++ opens it (open(2) of a directory for reading
+        /// succeeds) and the first read fails with EISDIR, which basic_filebuf::underflow throws as ios_base::failure
+        /// and the extraction catches: badbit and failbit, not eofbit.</summary>
+        protected bool dir;
 
         protected bool Fill()
         {
             if (pos < len) return true;
+            if (dir) { badbit = true; failbit = true; return false; }
             if (src == null) return false;
             if (buf.Length == 0) buf = new byte[1 << 16];
             len = src.Read(buf, 0, buf.Length);
             pos = 0;
             return len > 0;
         }
-        public int peek() { if (!Fill()) { eofbit = true; return -1; } return buf[pos]; }
-        public int get() { if (!Fill()) { eofbit = true; failbit = true; return -1; } gcountv = 1; return buf[pos++]; }
+        /// <summary>A read found no more input: the end of the input sets eofbit; a failed read (dir) set badbit instead.</summary>
+        protected void AtEnd() { if (!dir) eofbit = true; }
+        public int peek() { if (!Fill()) { AtEnd(); return -1; } return buf[pos]; }
+        public int get() { if (!Fill()) { AtEnd(); failbit = true; return -1; } gcountv = 1; return buf[pos++]; }
         public IStream get(ref sbyte c) { int x = get(); if (x >= 0) c = (sbyte)x; return this; }
         public IStream ignore(long n = 1, int delim = -1) { for (long i = 0; i < n; i++) { int c = get(); if (c < 0 || c == delim) break; } failbit = failbit && !eofbit; return this; }
         public long gcount() => gcountv;
@@ -190,7 +198,7 @@ namespace Cpp
             long got = 0;
             while (got < n) { if (!Fill()) break; int k = (int)Math.Min(n - got, len - pos); Array.Copy(buf, pos, p.B, p.O + got, k); pos += k; got += k; }
             gcountv = got;
-            if (got < n) { eofbit = true; failbit = true; }
+            if (got < n) { AtEnd(); failbit = true; }
             return this;
         }
         public IStream read<T>(Ptr<T> p, long n) where T : struct
@@ -207,7 +215,7 @@ namespace Cpp
             bool any = false;
             while (true)
             {
-                if (!Fill()) { eofbit = true; if (!any) failbit = true; return any; }
+                if (!Fill()) { AtEnd(); if (!any) failbit = true; return any; }
                 int c = buf[pos++];
                 any = true;
                 if (c == delim) return true;
@@ -221,20 +229,56 @@ namespace Cpp
             SkipWs();
             var t = new Str();
             while (Fill() && !(buf[pos] == ' ' || buf[pos] == '\t' || buf[pos] == '\n' || buf[pos] == '\r' || buf[pos] == '\v' || buf[pos] == '\f')) t.push_back(buf[pos++]);
-            if (t.n == 0) { failbit = true; if (!Fill()) eofbit = true; }
-            else if (!Fill()) eofbit = true;
+            if (t.n == 0) { failbit = true; if (!Fill()) AtEnd(); }
+            else if (!Fill()) AtEnd();
             return t;
         }
         public IStream Get(Str s) { var t = Token(); if (t.n > 0) s.Assign(t); return this; }
         /// <summary>is &gt;&gt; std::ws: skip whitespace (eof is set if the input ends there, failbit is not).</summary>
-        public IStream Manip_ws() { while (true) { if (!Fill()) { eofbit = true; break; } int c = buf[pos]; if (c == ' ' || (c >= 9 && c <= 13)) pos++; else break; } return this; }
+        public IStream Manip_ws() { while (true) { if (!Fill()) { AtEnd(); break; } int c = buf[pos]; if (c == ' ' || (c >= 9 && c <= 13)) pos++; else break; } return this; }
+        /// <summary>is &gt;&gt; v for a double, as libstdc++ does it: the sentry skips white space (at the end of the
+        /// input: eof and fail, v unchanged); num_get's _M_extract_float takes the characters a C-locale number can
+        /// have (a sign, one of any leading zeros, digits, one '.', and an 'e' after a digit with its sign), stopping
+        /// at the first other one, which stays in the stream ("0x10" is read as 0, then x10 is left); and the gnu
+        /// __convert_to_v converts them with strtod: not all of them converted (nothing, "1e", "inf") is failbit
+        /// with v = 0, and an overflow (strtod's +-inf) is failbit with v = +-DBL_MAX. An underflow is no error.
+        /// eofbit when the number ends the input.</summary>
         public IStream Get(ref double v)
         {
-            var t = Token(); if (t.n == 0) { v = 0; return this; }
-            var p = t.c_str(); var end = p;
-            double r = R.strtod(p, ref end);
-            if (end.O != t.n) { failbit = true; v = 0; return this; }
-            v = r; return this;
+            if (!good()) { failbit = true; return this; }     // the sentry: a stream not good extracts nothing
+            SkipWs();
+            if (!Fill()) { AtEnd(); failbit = true; return this; }
+            var acc = new List<byte>(32);
+            bool more = true;
+            int c = buf[pos];
+            void Next() { pos++; more = Fill(); c = more ? buf[pos] : -1; }
+            if (c == '+' || c == '-') { acc.Add((byte)c); Next(); }
+            bool mantissa = false, dec = false, sci = false;
+            while (more && c == '0') { if (!mantissa) { acc.Add((byte)'0'); mantissa = true; } Next(); }
+            while (more)
+            {
+                if (c >= '0' && c <= '9') { acc.Add((byte)c); mantissa = true; }
+                else if (c == '.' && !dec && !sci) { acc.Add((byte)'.'); dec = true; }
+                else if ((c == 'e' || c == 'E') && !sci && mantissa)
+                {
+                    acc.Add((byte)'e'); sci = true;
+                    Next();
+                    if (!more) break;
+                    if (c == '+' || c == '-') acc.Add((byte)c);
+                    else continue;              // look at this character again
+                }
+                else break;
+                Next();
+            }
+            if (!more) AtEnd();
+            acc.Add(0);
+            var a = acc.ToArray();
+            int n = R.ScanDouble(a, 0, int.MaxValue, out double r, false);
+            if (n == 0 || a[n] != 0) { v = 0; failbit = true; }
+            else if (double.IsPositiveInfinity(r)) { v = double.MaxValue; failbit = true; }
+            else if (double.IsNegativeInfinity(r)) { v = -double.MaxValue; failbit = true; }
+            else v = r;
+            return this;
         }
         public IStream Get(ref float v) { double d = 0; Get(ref d); v = (float)d; return this; }
         public IStream Get(ref int v)
@@ -290,14 +334,24 @@ namespace Cpp
         public IFStream(FsPath path, int mode = Ios.@in) { open(path.p, mode); }
         public void open(Str path, int mode = Ios.@in)
         {
-            try { src = new FileStream(path.ToString(), FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 1 << 16); failbit = false; pos = len = 0; }
+            dir = false;
+            try
+            {
+                if (Directory.Exists(path.ToString()))
+                {
+                    // libstdc++ opens a directory for reading; every read then fails (see IStream.dir)
+                    src = Stream.Null; dir = true; failbit = false; pos = len = 0;
+                    return;
+                }
+                src = new FileStream(path.ToString(), FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 1 << 16); failbit = false; pos = len = 0;
+            }
             catch (Exception) { src = null; failbit = true; }
         }
         public void open(FsPath path, int mode = Ios.@in) => open(path.p, mode);
         public bool is_open() => src != null;
-        public void close() { src?.Dispose(); src = null; }
+        public void close() { src?.Dispose(); src = null; dir = false; }
         public void Dispose() => close();
-        public void MoveFrom(IFStream o) { src = o.src; buf = o.buf; pos = o.pos; len = o.len; o.src = null; }
+        public void MoveFrom(IFStream o) { src = o.src; buf = o.buf; pos = o.pos; len = o.len; dir = o.dir; o.src = null; o.dir = false; }
     }
 
     public class FStream : OStream, IDisposable

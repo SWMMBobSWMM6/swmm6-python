@@ -151,21 +151,38 @@ namespace Cpp
             else eq = a.has && EqualityComparer<T>.Default.Equals(a.val, (T)b);
             return op == "==" ? eq : !eq;
         }
-        /// <summary>std::from_chars for double: strtod's result on the same characters (the engine's inputs are
-        /// plain decimal numbers, where both are correctly rounded).</summary>
+        /// <summary>std::from_chars for double (chars_format::general), as libstdc++ has it: the value strtod reads
+        /// from the same characters (both are correctly rounded), except that a sign other than '-', leading white
+        /// space and a hexadecimal prefix are not read ("0x10" is 0 and stops at the x), and a value too large or too
+        /// small for a double (an overflow to inf, or a nonzero number read as zero) is result_out_of_range (34) with
+        /// the value left unchanged. As the Java and Go runtimes have it (java/src/cpp/Std.java).</summary>
         public static FromCharsResult from_chars(CPtr first, CPtr last, ref double v)
         {
             int n = last.O - first.O;
-            var tmp = new byte[n + 1];
-            Array.Copy(first.B, first.O, tmp, 0, n);
+            var tmp = new byte[n + 2];
+            if (n > 0) Array.Copy(first.B, first.O, tmp, 0, n);
+            int k = tmp[0] == (byte)'-' ? 1 : 0;
+            int c = tmp[k];
+            int lc = c >= 'A' && c <= 'Z' ? c + 32 : c;
+            if (!((c >= '0' && c <= '9') || c == '.' || lc == 'i' || lc == 'n')) return new FromCharsResult { ptr = first, ec = 22 };
+            if (c == '0' && (tmp[k + 1] == (byte)'x' || tmp[k + 1] == (byte)'X')) tmp[k + 1] = 0;   // read the 0 alone
             var p = new CPtr(tmp, 0); var end = p;
-            // from_chars rejects a leading '+' and leading spaces, which strtod would accept
-            if (n == 0 || tmp[0] == (byte)'+' || tmp[0] == (byte)' ' || tmp[0] == (byte)'\t')
-                return new FromCharsResult { ptr = first, ec = 22 };
             double r = R.strtod(p, ref end);
             if (end.O == 0) return new FromCharsResult { ptr = first, ec = 22 };
+            var res = new FromCharsResult { ptr = first + end.O, ec = 0 };
+            if (double.IsInfinity(r) && lc != 'i') return new FromCharsResult { ptr = res.ptr, ec = 34 };   // overflow
+            if (r == 0)
+            {
+                // underflow: a nonzero digit before the exponent
+                for (int j = k; j < end.O; j++)
+                {
+                    int d = tmp[j];
+                    if (d == 'e' || d == 'E') break;
+                    if (d >= '1' && d <= '9') return new FromCharsResult { ptr = res.ptr, ec = 34 };
+                }
+            }
             v = r;
-            return new FromCharsResult { ptr = first + end.O, ec = 0 };
+            return res;
         }
         /// <summary>std::from_chars for integers, base 10: an optional '-' (signed types only), digits; an empty
         /// match is invalid_argument (22) with ptr = first; a value out of the type's range is
@@ -286,14 +303,17 @@ namespace Cpp
         public static Ptr<T> Calloc<T>(ulong n, ulong size) where T : struct =>
             new Ptr<T>(new T[(int)(n * size / (ulong)System.Runtime.CompilerServices.Unsafe.SizeOf<T>())], 0);
         public static void Free(object? p) { }
+        /// <summary>The nbytes bytes at p. A null p with no bytes is no bytes: libstdc++ passes the data() of an
+        /// empty vector, which is nullptr (Vec.data), with a length of 0 (os.write(v.data(), 0), memcpy(d, s, 0)).</summary>
         static Span<byte> Bytes<T>(Ptr<T> p, int nbytes) where T : struct =>
+            p.a == null && nbytes == 0 ? Span<byte>.Empty :
             MemoryMarshal.AsBytes(new Span<T>(p.a, (int)p.o, p.a.Length - (int)p.o)).Slice(0, nbytes);
         static Span<byte> Bytes(CPtr p, int nbytes) => new Span<byte>(p.B, p.O, nbytes);
 
         public static Ptr<T> memcpy<T, U>(Ptr<T> d, Ptr<U> s, ulong n) where T : struct where U : struct { Bytes(s, (int)n).CopyTo(Bytes(d, (int)n)); return d; }
         public static Ptr<T> memcpy<T>(Ptr<T> d, CPtr s, ulong n) where T : struct { Bytes(s, (int)n).CopyTo(Bytes(d, (int)n)); return d; }
         public static CPtr memcpy<U>(CPtr d, Ptr<U> s, ulong n) where U : struct { Bytes(s, (int)n).CopyTo(Bytes(d, (int)n)); return d; }
-        public static CPtr memcpy(CPtr d, CPtr s, ulong n) { Array.Copy(s.B, s.O, d.B, d.O, (int)n); return d; }
+        public static CPtr memcpy(CPtr d, CPtr s, ulong n) { if (n != 0) Array.Copy(s.B, s.O, d.B, d.O, (int)n); return d; }
         public static Ptr<T> memset<T>(Ptr<T> d, int c, ulong n) where T : struct { Bytes(d, (int)n).Fill((byte)c); return d; }
         public static CPtr memset(CPtr d, int c, ulong n) { new Span<byte>(d.B, d.O, (int)n).Fill((byte)c); return d; }
 
@@ -303,14 +323,14 @@ namespace Cpp
             f.S.Write(b, 0, b.Length);
             return count;
         }
-        public static ulong fwrite(CPtr p, ulong size, ulong count, CFile f) { f.S.Write(p.B, p.O, (int)(size * count)); return count; }
+        public static ulong fwrite(CPtr p, ulong size, ulong count, CFile f) { if (size * count != 0) f.S.Write(p.B, p.O, (int)(size * count)); return count; }
         public static ulong fread<T>(Ptr<T> p, ulong size, ulong count, CFile f) where T : struct
         {
             int want = (int)(size * count);
             var b = new byte[want];
             int got = 0;
             while (got < want) { int k = f.S.Read(b, got, want - got); if (k <= 0) break; got += k; }
-            if (got < want) f.Eof = true;
+            if (got < want) f.ReadFailed();
             new Span<byte>(b, 0, got).CopyTo(Bytes(p, got));
             return size == 0 ? 0 : (ulong)got / size;
         }
@@ -318,7 +338,7 @@ namespace Cpp
         {
             int want = (int)(size * count), got = 0;
             while (got < want) { int k = f.S.Read(p.B, p.O + got, want - got); if (k <= 0) break; got += k; }
-            if (got < want) f.Eof = true;
+            if (got < want) f.ReadFailed();
             return size == 0 ? 0 : (ulong)got / size;
         }
         public static byte[] BytesOf<T>(Ptr<T> p, int n) where T : struct => Bytes(p, n).ToArray();
@@ -330,6 +350,7 @@ namespace Cpp
         /// <summary>The bytes of the numbers p points at, as a char* for reading (a copy).</summary>
         public static CPtr View<T>(Ptr<T> p) where T : struct
         {
+            if (p.a == null && p.at == null) return CPtr.Null;     // (const char*) of a null pointer is null
             var span = MemoryMarshal.AsBytes(new Span<T>(p.a, (int)p.o, p.a.Length - (int)p.o));
             return new CPtr(span.ToArray(), 0);
         }

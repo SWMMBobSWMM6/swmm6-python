@@ -296,6 +296,36 @@ namespace openswmm.fv
                 throw;
             }
         }
+        public override global::openswmm.fv.INetworkSolver.RunStats run_stats()
+        {
+            global::openswmm.fv.INetworkSolver.RunStats s = new global::openswmm.fv.INetworkSolver.RunStats();
+            s.nsteps = total_steps_;
+            s.nflux = total_flux_;
+            s.last_h = last_h_;
+            s.min_h = min_h_;
+            s.avg_h = (((total_steps_ > ((long)0))) ? (sim_time_ / ((double)total_steps_)) : 0.0);
+            if ((active_n_ > ((long)0)))
+            {
+                s.active_frac_mean = (active_sum_ / ((double)active_n_));
+                s.active_frac_min = active_min_;
+                s.active_frac_max = active_max_;
+            }
+            s.n_tiers = global::Cpp.M.min(lts_tiers_, global::openswmm.fv._F.kMaxLtsTiers);
+            {
+                int k = 0;
+                for (; (k < s.n_tiers); ++k)
+                {
+                    (new global::Cpp.Ptr<long>(s.tier_cells, 0))[k] = tier_occupancy_[((ulong)k)];
+                }
+            }
+            s.dt_argmin_pressurized = dt_argmin_pressurized_;
+            s.dt_argmin_band = dt_argmin_band_;
+            s.dt_argmin_free = dt_argmin_free_;
+            s.dt_argmin_node = dt_argmin_node_;
+            s.n_macro_cycles = n_macro_cycles_;
+            s.n_macro_rejected = n_macro_rejected_;
+            return global::openswmm.fv.INetworkSolver.RunStats.MoveNew(s);
+        }
         public double nodeVolumeFromDepth(int node, double depth)
         {
             ulong un = ((ulong)node);
@@ -2549,7 +2579,19 @@ namespace openswmm.fv
             }
             global::openswmm.perf.GatedTimer _pt = global::openswmm.perf.GatedTimer.New_rd(ref global::openswmm.perf._F.sec_fv_nodeupdate);
             int nn = mesh_.n_nodes();
-            throw new global::System.NotImplementedException("TODO default argument with no expression"); // line 3050
+            refreshDummyFlows(dt, forcing, (global::Gen.FN119)((ulong un) =>
+{
+    double sum = 0.0;
+    {
+        int p = mesh_.node_face_ptr[un];
+        for (; (p < mesh_.node_face_ptr[(un + ((ulong)1))]); ++p)
+        {
+            ulong up = ((ulong)p);
+            sum += (mesh_.node_face_sign[up] * f_mass_[((ulong)mesh_.node_face_idx[up])]);
+        }
+    }
+    return (sum * dt);
+}), true);
             bookLateralSpills(null);
             {
                 int n = 0;
@@ -3793,7 +3835,10 @@ namespace openswmm.fv
         }
         public void fireNodes(global::Cpp.Vec<int> nodes, double dt0, global::openswmm.fv.FvStepForcing forcing)
         {
-            throw new global::System.NotImplementedException("TODO default argument with no expression"); // line 4497
+            refreshDummyFlows(dt0, forcing, (global::Gen.FN119)((ulong un) =>
+{
+    return acc_nvol_[un];
+}), true);
             if (water_tracking_)
             {
                 bookStructureWater(dt0, forcing);

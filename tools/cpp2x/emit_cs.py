@@ -744,7 +744,9 @@ class Emitter:
         captured = lambda_captured_keys(b) & set(fn.refs) & {p.get('local') for p in params}
         if captured:
             ren = {}
-            for k in captured:
+            # in parameter order: a set's order follows Python's per-run string hash, which made regeneration
+            # reorder these copy-in/copy-out lines from run to run
+            for k in [p.get('local') for p in params if p.get('local') in captured]:
                 nm = fn.names[k]
                 ren[k] = nm
                 fn.refs.discard(k)
@@ -1033,6 +1035,10 @@ class Emitter:
         for c in e.get('enumerators', []):
             v = None
             for x in kids(c):
+                # an unscoped enum without a fixed type whose values are all nonnegative has unsigned int as its
+                # underlying type, and clang wraps each initializer in a cast to it: look through the cast
+                while x.get('kind') == 'ImplicitCastExpr' and kids(x):
+                    x = kids(x)[0]
                 if x.get('kind') == 'ConstantExpr' and 'value' in x:
                     v = x['value']
             out.append(ind + '    %s%s,' % (ident(c.get('name')), (' = ' + ('unchecked((%s)%s)' % (ut, v))) if v is not None else ''))

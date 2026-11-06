@@ -1,0 +1,4 @@
+py_x2: resuming, 450 models already done, 2 to run
+py_x2: 452 models  PASS 450, TIMEOUT+RPTDIFF+OUTDIFF 2
+  TIMEOUT+RPTDIFF+OUTDIFF ../../../../tmp/claude-0/-home-claude/9f3dde4c-f353-52c4-b476-e410dd8d4e21/scratchpad/swmm6/eng/tests/unit/engine/data/legacy_small.inp  (1649, 'len 1957', 'len 1649')
+  TIMEOUT+RPTDIFF+OUTDIFF ../../../../tmp/claude-0/-home-claude/9f3dde4c-f353-52c4-b476-e410dd8d4e21/scratchpad/swmm6/eng/tests/unit/engine/data/refactored_small.inp  (1649, 'len 1957', 'len 1649')

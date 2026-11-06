@@ -87,11 +87,11 @@ namespace _global
     }
     public enum SWMM_NodeCoupling2DType : int
     {
-        SWMM_2D_COUPLING_NONE,
-        SWMM_2D_COUPLING_MANHOLE,
-        SWMM_2D_COUPLING_GRATE,
-        SWMM_2D_COUPLING_CURB,
-        SWMM_2D_COUPLING_OPEN,
-        SWMM_2D_COUPLING_OUTFALL,
+        SWMM_2D_COUPLING_NONE = unchecked((int)0),
+        SWMM_2D_COUPLING_MANHOLE = unchecked((int)1),
+        SWMM_2D_COUPLING_GRATE = unchecked((int)2),
+        SWMM_2D_COUPLING_CURB = unchecked((int)3),
+        SWMM_2D_COUPLING_OPEN = unchecked((int)4),
+        SWMM_2D_COUPLING_OUTFALL = unchecked((int)5),
     }
 }

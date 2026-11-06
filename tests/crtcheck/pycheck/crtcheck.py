@@ -368,6 +368,19 @@ def units():
     check('strtod no number', R_strtod_CPtr_CPtrr(s, end) == 0.0 and CPtr_op_Eq(end.v, s))
     check('strtod huge exponent', R_strtod_CPtr(R_Lit('1e99999999999')) == math.inf
           and R_strtod_CPtr(R_Lit('1e-99999999999')) == 0.0)
+    # glibc's ERANGE (lesson 22): overflow, a nonzero number read as zero, a tiny inexact result; not an exact
+    # subnormal, nor a number that rounds up to DBL_MIN
+    er = []
+    for t, want in (('1e999', 1), ('-1e999', 1), ('1e-400', 1), ('2.2250738585072011e-308', 1),
+                    ('2.22507385850720138e-308', 0), ('2.2250738585072014e-308', 0), ('4.9e-324', 1), ('1.5', 0),
+                    ('0', 0), ('0e-999', 0), ('0x1p-1080', 1), ('0x1p99999', 1), ('inf', 0), ('abc', 0),
+                    ('4.940656458412465441765687928682213723651e-324', 1),
+                    ('4.940656458412465441248710587739e-324', 1), ('0x3p-1074', 0),
+                    (str(3 * 5 ** 1074) + 'e-1074', 0)):              # 3 * 2^-1074 written exactly
+        R_strtod_CPtr(R_Lit(t))
+        if (1 if cpp.R_get_ERange() else 0) != want:
+            er.append(t)
+    check('strtod ERANGE', not er, er)
     check('atof', R_atof(R_Lit(' -2.5e1x')) == -25.0)
 
     # raw memory
@@ -446,7 +459,14 @@ def units():
               pk, hex(part[0]), hex(part[1]))
         R_fclose(fp)
         check('fopen missing', R_fopen(R_Lit(os.path.join(dr, 'none')), R_Lit('r')) is None)
-        check('fopen directory', R_fopen(R_Lit(dr), R_Lit('r')) is None and R_fopen(R_Lit(dr), R_Lit('w')) is None)
+        # a directory: "r" opens, as glibc opens it, and every read fails with the error flag set, not end-of-file
+        # (lesson 24; C# CFile.Dir); "r+" and "w" fail
+        dfp = R_fopen(R_Lit(dr), R_Lit('r'))
+        dline = R_Buf_i(8)
+        check('fopen directory', dfp is not None and R_fgets(dline, 8, dfp).get_IsNull() and R_feof(dfp) == 0
+              and cpp.R_ferror(dfp) == 1 and R_fgetc(dfp) == -1 and R_feof(dfp) == 0 and R_fclose(dfp) == 0
+              and R_fopen(R_Lit(dr), R_Lit('r+')) is None and R_fopen(R_Lit(dr), R_Lit('w')) is None)
+        check('ferror of a file', cpp.R_ferror(R_fopen(name, R_Lit('r'))) == 0)
         check('fopen bad mode', R_fopen(name, R_Lit('x')) is None)
         # append mode: writes go at the end, no seeking before the old end
         an = R_Lit(os.path.join(dr, 'a.txt'))

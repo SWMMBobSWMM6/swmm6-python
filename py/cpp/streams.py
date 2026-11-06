@@ -1,11 +1,12 @@
 # streams.py - part D of the Python runtime: a port of cs/runtime/Streams.cs, the iostreams the engine uses, with
 # libstdc++'s formatting: a double is written with the printf format libstdc++'s num_put builds from the stream flags
 # (%.*g by default, %.*f for fixed, %.*e for scientific, %a for fixed|scientific, '#' for showpoint) through part C's
-# glibc-exact formatter (R.Format); width and fill are applied afterwards and width resets. Reading numbers goes
-# through strtod / strtol as libstdc++'s num_get does for ordinary input (a token that does not convert whole sets
-# failbit and stores 0; an int out of range stores the nearest limit). getline consumes the delimiter; at the end of
-# the input it sets eof, and fail too when nothing at all was read. seekg clears eof; on a file, ios::cur is relative
-# to the logical read position (the fixed C#).
+# glibc-exact formatter (R.Format); width and fill are applied afterwards and width resets. A double is read as
+# libstdc++'s num_get reads it (the characters a number can have, converted by strtod; an overflow fails and stores
+# +-DBL_MAX); an integer is a token converted by strtol (a token that does not convert whole sets failbit and stores
+# 0; an int out of range stores the nearest limit). getline consumes the delimiter; at the end of the input it sets
+# eof, and fail too when nothing at all was read. seekg clears eof; on a file, ios::cur is relative to the logical
+# read position (the fixed C#). An ifstream on a directory opens, and its first read sets badbit and failbit.
 #
 # What the C# streams write to and read from (FileStream, MemoryStream, the console) is fsnet.py's .NET behaviour.
 # cout and cerr write through to file descriptors 1 and 2 at once, as .NET's console streams do, after flushing the
@@ -75,16 +76,19 @@ except ImportError:                                # only when this module is us
         __slots__ = ()
 
 _bound = False
-_CPtr = _CPtr_Diff = _strtod = _Format = _FMTS = _fflush = None
+_CPtr = _CPtr_Diff = _strtod = _scan_double = _Format = _FMTS = _fflush = None
+_INF = float('inf')
+_DBL_MAX = 1.7976931348623157e308
 
 
 def _bind():
     """Resolve the names of parts A and C this module uses (through the package, which exports every runtime name)."""
-    global _bound, _CPtr, _CPtr_Diff, _strtod, _Format, _FMTS, _fflush
+    global _bound, _CPtr, _CPtr_Diff, _strtod, _scan_double, _Format, _FMTS, _fflush
     p = sys.modules[__package__]
     _CPtr = _rt.cptr_class()
     _CPtr_Diff = p.CPtr_Diff
     _strtod = p.R_strtod_CPtr_CPtrr
+    _scan_double = p.R_ScanDouble
     _fflush = p.R_fflush
     _Format = _rt.formatter()
     lit = p.R_Lit
@@ -140,7 +144,11 @@ def _pod_start(p, size, n):
 
 
 def pod_of(code, p, n):
-    """Mem.BytesOf(p, n) for a Ptr of element code B, Z, S, I, L, F or D."""
+    """Mem.BytesOf(p, n) for a Ptr of element code B, Z, S, I, L, F or D. A null p with no bytes is no bytes:
+    libstdc++ passes the data() of an empty vector, which is nullptr, with a length of 0 (os.write(v.data(), 0);
+    C# Mem.Bytes)."""
+    if n == 0 and p.a is None:
+        return b''
     size, fc = _POD[code]
     a, o = _pod_start(p, size, n)
     k = (n + size - 1) // size
@@ -158,8 +166,11 @@ def pod_of(code, p, n):
 
 
 def pod_into(code, p, src, n):
-    """Mem.BytesInto(p, src, 0, n): the first n bytes of the numbers p points at replaced by src[0:n]."""
+    """Mem.BytesInto(p, src, 0, n): the first n bytes of the numbers p points at replaced by src[0:n] (nothing, even
+    at a null pointer, when n is 0)."""
     if n <= 0:
+        if n == 0 and p.a is None:
+            return
         _pod_start(p, _POD[code][0], 0)
         return
     size, fc = _POD[code]
@@ -486,8 +497,9 @@ class OStream(IosBase):
         return self
 
     def write_CPtr_l(self, p, n):
-        """write(p, n): n raw bytes."""
-        self.Raw(_span(p.B, p.O, _i32(n)))
+        """write(p, n): n raw bytes (none, even at a null pointer, when n is 0)."""
+        if n != 0:
+            self.Raw(_span(p.B, p.O, _i32(n)))
         return self
 
     # write((const char*)p, n) of an array of numbers: its first n bytes (Mem.BytesOf)
@@ -742,8 +754,11 @@ class _Ref(object):
 
 class IStream(IosBase):
     """std::istream as the C# port has it: a buffer of bytes (the whole string of an istringstream, or the last block
-    of up to 64 KiB read from an ifstream's file) and the read position in it."""
-    __slots__ = ('buf', 'pos', 'len', 'src', 'gcountv')
+    of up to 64 KiB read from an ifstream's file) and the read position in it. dir: an ifstream opened on a
+    directory: libstdc++ opens it (open(2) of a directory for reading succeeds) and the first read fails with EISDIR,
+    which basic_filebuf::underflow throws as ios_base::failure and the extraction catches: badbit and failbit, not
+    eofbit (C# Cpp.IStream.dir)."""
+    __slots__ = ('buf', 'pos', 'len', 'src', 'gcountv', 'dir')
 
     def __init__(self):
         IosBase.__init__(self)
@@ -752,6 +767,7 @@ class IStream(IosBase):
         self.len = 0
         self.src = None
         self.gcountv = 0
+        self.dir = False
 
     def Fill(self):
         pos = self.pos
@@ -759,6 +775,10 @@ class IStream(IosBase):
             if pos < 0:
                 raise IndexError('Index was outside the bounds of the array.')
             return True
+        if self.dir:
+            self.badbit = True
+            self.failbit = True
+            return False
         src = self.src
         if src is None:
             return False
@@ -768,15 +788,20 @@ class IStream(IosBase):
         self.pos = 0
         return self.len > 0
 
+    def AtEnd(self):
+        """A read found no more input: the end of the input sets eofbit; a failed read (dir) set badbit instead."""
+        if not self.dir:
+            self.eofbit = True
+
     def peek(self):
         if not self.Fill():
-            self.eofbit = True
+            self.AtEnd()
             return -1
         return self.buf[self.pos]
 
     def get_(self):
         if not self.Fill():
-            self.eofbit = True
+            self.AtEnd()
             self.failbit = True
             return -1
         self.gcountv = 1
@@ -829,7 +854,7 @@ class IStream(IosBase):
             got += k
         self.gcountv = got
         if got < n:
-            self.eofbit = True
+            self.AtEnd()
             self.failbit = True
         return self
 
@@ -881,7 +906,7 @@ class IStream(IosBase):
         d = delim if 0 <= delim <= 255 else -1
         while True:
             if not self.Fill():
-                self.eofbit = True
+                self.AtEnd()
                 if not anyb:
                     self.failbit = True
                 return anyb
@@ -937,9 +962,9 @@ class IStream(IosBase):
         if not tok:
             self.failbit = True
             if not self.Fill():
-                self.eofbit = True
+                self.AtEnd()
         elif not self.Fill():
-            self.eofbit = True
+            self.AtEnd()
         return tok
 
     def Get_Str(self, s):
@@ -954,7 +979,7 @@ class IStream(IosBase):
         """is >> std::ws: skip whitespace (eof is set if the input ends there, failbit is not)."""
         while True:
             if not self.Fill():
-                self.eofbit = True
+                self.AtEnd()
                 break
             buf = self.buf
             pos = self.pos
@@ -966,21 +991,77 @@ class IStream(IosBase):
                 break
         return self
 
+    def _next_c(self):
+        """Past the current character: the next one, or -1 at the end of the input (Get_dr's Next)."""
+        self.pos += 1
+        if self.Fill():
+            return self.buf[self.pos]
+        return -1
+
     def Get_dr(self, v):
-        t = self._token()
-        if not t:
-            v.v = 0.0
+        """is >> v for a double, as libstdc++ does it (C# Cpp.IStream.Get(ref double), Java IStream.Get_dr): the
+        sentry (a stream not good extracts nothing; white space skipped; at the end of the input eof and fail, v
+        unchanged); num_get's _M_extract_float takes the characters a C-locale number can have (a sign, one of any
+        leading zeros, digits, one '.', and an 'e' after a digit with its sign), stopping at the first other one,
+        which stays in the stream ("0x10" is read as 0, then x10 is left); the gnu __convert_to_v converts them with
+        strtod: not all of them converted (nothing, "1e", "inf") is failbit with v = 0, an overflow (+-inf) is
+        failbit with v = +-DBL_MAX, an underflow is no error. eofbit when the number ends the input."""
+        if self.failbit or self.eofbit or self.badbit:     # the sentry: a stream not good extracts nothing
+            self.failbit = True
             return self
+        self.SkipWs()
+        if not self.Fill():
+            self.AtEnd()
+            self.failbit = True
+            return self
+        acc = bytearray()
+        c = self.buf[self.pos]
+        if c == 43 or c == 45:                              # the sign
+            acc.append(c)
+            c = self._next_c()
+        mantissa = dec = sci = False
+        while c == 48:                                      # leading zeros, one kept
+            if not mantissa:
+                acc.append(48)
+                mantissa = True
+            c = self._next_c()
+        while c >= 0:
+            if 48 <= c <= 57:
+                acc.append(c)
+                mantissa = True
+            elif c == 46 and not dec and not sci:
+                acc.append(46)
+                dec = True
+            elif (c == 101 or c == 69) and not sci and mantissa:
+                acc.append(101)
+                sci = True
+                c = self._next_c()
+                if c < 0:
+                    break
+                if c == 43 or c == 45:
+                    acc.append(c)
+                else:
+                    continue                                # look at this character again
+            else:
+                break
+            c = self._next_c()
+        if c < 0:
+            self.AtEnd()
+        acc.append(0)
         if not _bound:
             _bind()
-        p = _CPtr(bytearray(t) + b'\0', 0)
-        end = _Ref(p)
-        r = _strtod(p, end)
-        if _CPtr_Diff(end.v, p) != len(t):
-            self.failbit = True
+        r, n, _ = _scan_double(acc, 0, False)
+        if n <= 0 or acc[n] != 0:
             v.v = 0.0
-            return self
-        v.v = r
+            self.failbit = True
+        elif r == _INF:
+            v.v = _DBL_MAX
+            self.failbit = True
+        elif r == -_INF:
+            v.v = -_DBL_MAX
+            self.failbit = True
+        else:
+            v.v = r
         return self
 
     def Get_fr(self, v):
@@ -1141,16 +1222,25 @@ def NewIStringStream_Str_i(s, mode):
 # ------------------------------------------------------------------------------------------------- IFStream
 
 class IFStream(IStream, _IDisposable):
-    """std::ifstream over a FileStream: a missing file, or a directory, leaves the stream closed with failbit set.
-    Dispose is the destructor, which closes the file."""
+    """std::ifstream over a FileStream: a missing file leaves the stream closed with failbit set; a directory opens,
+    as libstdc++ opens it, and every read then fails (IStream.dir). Dispose is the destructor, which closes the
+    file."""
     __slots__ = ()
 
     def open_Str_i(self, path, mode=8):
         if self.src is not None:
             self.src.close()
             self.src = None
+        self.dir = False
         try:
-            fd = _net.open_fd(_net.latin1_str(path.b[:path.n]), _net.READ)
+            name = _net.latin1_str(path.b[:path.n])
+            if _net.dir_exists(name):
+                # libstdc++ opens a directory for reading; every read then fails (see IStream.dir)
+                self.dir = True
+                self.failbit = False
+                self.pos = self.len = 0
+                return
+            fd = _net.open_fd(name, _net.READ)
             self.src = _net.FileIn(fd)
             self.failbit = False
             self.pos = self.len = 0
@@ -1162,13 +1252,14 @@ class IFStream(IStream, _IDisposable):
         self.open_Str_i(path.p, mode)
 
     def is_open(self):
-        return self.src is not None
+        return self.src is not None or self.dir
 
     def close(self):
         src = self.src
         if src is not None:
             self.src = None
             src.close()
+        self.dir = False
 
     def Dispose(self):
         self.close()
@@ -1178,7 +1269,9 @@ class IFStream(IStream, _IDisposable):
         self.buf = o.buf
         self.pos = o.pos
         self.len = o.len
+        self.dir = o.dir
         o.src = None
+        o.dir = False
 
 
 def NewIFStream():

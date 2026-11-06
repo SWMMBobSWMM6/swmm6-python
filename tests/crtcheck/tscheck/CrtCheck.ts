@@ -447,7 +447,15 @@ function units(): number {
 			check('fread partial element', pk === 1 && part[0] === 0x0009ffff && part[1] === 0x22220000 && R.feof(fp) === 1, pk, part[0].toString(16), part[1].toString(16));
 			R.fclose(fp);
 			check('fopen missing', R.fopen(R.Lit(path.join(dir, 'none')), R.Lit('r')) === null);
-			check('fopen directory', R.fopen(R.Lit(dir), R.Lit('r')) === null && R.fopen(R.Lit(dir), R.Lit('w')) === null);
+			{
+				// glibc opens a directory for reading and the first read fails with EISDIR: the error indicator is set,
+				// end-of-file is not; any mode that writes refuses it (lessons/24)
+				const d = R.fopen(R.Lit(dir), R.Lit('r'));
+				const lb = R.Buf_i(8);
+				check('fopen directory', d !== null && R.fgets(lb, 8, d).get_IsNull() && R.feof(d) === 0 && R.ferror(d) !== 0
+					&& R.fopen(R.Lit(dir), R.Lit('w')) === null && R.fopen(R.Lit(dir), R.Lit('r+')) === null);
+				if (d !== null) R.fclose(d);
+			}
 			check('fopen bad mode', R.fopen(name, R.Lit('x')) === null);
 			// append mode: writes go at the end, no seeking before the old end
 			const an = R.Lit(path.join(dir, 'a.txt'));

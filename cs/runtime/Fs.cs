@@ -204,11 +204,11 @@ namespace Cpp
         public static int tolower(int c) => (c >= 'A' && c <= 'Z') ? c + 32 : c;
         public static long atol(CPtr s) { var e = s; return strtol(s, ref e, 10); }
         public static long strtol0(CPtr s, int b = 10) { var e = s; return strtol(s, ref e, b); }
-        public static int ferror(CFile f) => 0;
+        public static int ferror(CFile f) => f != null && f.Err ? 1 : 0;
         public static int fileno(CFile f) => 3;
         public static int setvbuf(CFile f, CPtr b, int mode, ulong size) => 0;
         public static int rename(CPtr a, CPtr b) { try { File.Move(Str(a), Str(b), true); return 0; } catch (Exception) { return -1; } }
-        public static int fgetc(CFile f) { int c = f.S.ReadByte(); if (c < 0) f.Eof = true; return c; }
+        public static int fgetc(CFile f) { int c = f.S.ReadByte(); if (c < 0) f.ReadFailed(); return c; }
         public static long time(object? p) => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
         public static CPtr strncpy(CPtr d, CPtr s, ulong n)

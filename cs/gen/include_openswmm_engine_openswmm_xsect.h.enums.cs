@@ -4,7 +4,7 @@
 namespace _global {
     public enum SWMM_UnitSystem : int
     {
-        SWMM_UNITS_US,
-        SWMM_UNITS_SI,
+        SWMM_UNITS_US = unchecked((int)0),
+        SWMM_UNITS_SI = unchecked((int)1),
     }
 }

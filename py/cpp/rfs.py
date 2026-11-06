@@ -285,7 +285,8 @@ def R_strtol0(s, b=10):
 
 
 def R_ferror(f):
-    return 0
+    """ferror: the error flag, set by a read of a directory opened with fopen (CFile.Err; C# Fs.cs ferror)."""
+    return 1 if f is not None and f.Err else 0
 
 
 def R_fileno(f):
@@ -306,7 +307,8 @@ def R_rename(a, b):
 
 
 def R_fgetc(f):
-    """f.S.ReadByte(), the end of the file setting its eof flag (Mem.fread of one byte does exactly that)."""
+    """f.S.ReadByte(), the end of the file setting its eof flag, or for a directory its error flag
+    (CFile.ReadFailed; Mem.fread of one byte does exactly that)."""
     if _fread is None:
         _c()
     tmp = _CPtr(bytearray(1), 0)

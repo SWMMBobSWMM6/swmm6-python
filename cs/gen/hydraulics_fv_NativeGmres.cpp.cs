@@ -19,8 +19,7 @@ namespace openswmm.fv
             {
                 release();
             }
-            throw new global::System.NotImplementedException("TODO vector::max_size"); // line 96
-            ulong limit = default!;
+            ulong limit = global::Cpp.M.min((controls.workspace_limit_bytes / 8UL), ((ulong)1152921504606846975UL));
             ulong count = ((ulong)0);
             var addProduct = (global::Gen.FN97)((ulong a, ulong c) =>
 {

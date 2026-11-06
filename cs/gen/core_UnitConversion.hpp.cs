@@ -165,17 +165,17 @@ namespace openswmm.ucf
     }
     public enum Quantity : int
     {
-        RAINFALL,
-        RAINDEPTH,
-        EVAPRATE,
-        LENGTH,
-        LANDAREA,
-        VOLUME,
-        WINDSPEED,
-        TEMPERATURE,
-        MASS,
-        GWFLOW,
-        FLOW,
+        RAINFALL = unchecked((int)0),
+        RAINDEPTH = unchecked((int)1),
+        EVAPRATE = unchecked((int)2),
+        LENGTH = unchecked((int)3),
+        LANDAREA = unchecked((int)4),
+        VOLUME = unchecked((int)5),
+        WINDSPEED = unchecked((int)6),
+        TEMPERATURE = unchecked((int)7),
+        MASS = unchecked((int)8),
+        GWFLOW = unchecked((int)9),
+        FLOW = unchecked((int)10),
     }
 }
 namespace openswmm.ucf.detail

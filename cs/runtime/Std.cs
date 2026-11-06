@@ -103,7 +103,10 @@ namespace Cpp
         public ref T at(ulong i) { if (i >= (ulong)n) throw new OutOfRange("vector::_M_range_check: __n (which is " + i + ") >= this->size() (which is " + n + ")"); return ref a[i]; }
         public ref T front() => ref a[0];
         public ref T back() => ref a[n - 1];
-        public Ptr<T> data() => new Ptr<T>(a, 0);
+        /// <summary>libstdc++'s data() is the start of the storage, which is nullptr until the vector first allocates
+        /// (capacity 0): DynamicWave's nodeNewSurfAreaDataMut() is null in an FV run, and the structure code tests
+        /// it (scatterOrificeSurfArea: if (node_new_surf_area == nullptr) return).</summary>
+        public Ptr<T> data() => a.Length == 0 ? default : new Ptr<T>(a, 0);
 
         void Grow(int need)
         {

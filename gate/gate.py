@@ -36,10 +36,12 @@ def run(args, mid, path):
         p = subprocess.run(args.engine.split() + [os.path.basename(path), out + '/r.rpt', out + '/r.out'],
                            cwd=os.path.dirname(path), capture_output=True, timeout=args.timeout)
         rc = p.returncode; err = p.stderr.decode(errors='replace')[-2000:]
+        if rc < 0:
+            rc = 128 - rc     # killed by signal N: the reference's exit code was recorded by bash, as 128 + N
     except subprocess.TimeoutExpired:
         rc = 'timeout'; err = ''
     sec = time.time() - t0
-    ref = os.path.join(HERE, 'ref_outputs', mid)
+    ref = os.path.join(args.ref, mid)
     a, b = rpt_lines(ref + '/r.rpt'), rpt_lines(out + '/r.rpt')
     st = []
     try:
@@ -89,10 +91,14 @@ def main():
     ap.add_argument('--ids'); ap.add_argument('-j', type=int, default=2); ap.add_argument('--timeout', type=float, default=120)
     ap.add_argument('--prune', action='store_true')
     ap.add_argument('--resume', action='store_true')
+    ap.add_argument('--models', default=os.path.join(HERE, 'models_all.tsv'), help='id<TAB>path list (default the 480)')
+    ap.add_argument('--ref', default=os.path.join(HERE, 'ref_outputs'), help='reference outputs, one folder per id')
+    ap.add_argument('--root', help='folder that relative model paths start from (default: the corpus checkout, SWMM_CORPUS); '
+                                   'for gate/models_extra.tsv, the folder holding clones of openswmm.engine and swmm6-rust')
     args = ap.parse_args()
-    models = [l.rstrip('\n').split('\t', 1) for l in open(os.path.join(HERE, 'models_all.tsv'))]
-    # paths may be relative to the corpus checkout (SWMM_CORPUS, default: next to this repository)
-    corpus = os.environ.get('SWMM_CORPUS', os.path.join(HERE, '..', '..', '1729-SWMM5-Models-2030'))
+    models = [l.rstrip('\n').split('\t', 1) for l in open(args.models) if l.strip()]
+    # paths may be relative to the corpus checkout (SWMM_CORPUS, default: next to this repository) or to --root
+    corpus = args.root or os.environ.get('SWMM_CORPUS', os.path.join(HERE, '..', '..', '1729-SWMM5-Models-2030'))
     models = [[m, p if os.path.isabs(p) else os.path.join(corpus, p)] for m, p in models]
     if args.ids:
         keep = set(open(args.ids).read().split())

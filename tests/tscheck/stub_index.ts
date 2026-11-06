@@ -1,6 +1,7 @@
 // stub_index.ts - stands in for ts/src/cpp/index.ts when run.sh checks part A alone: part A's files, plus the few
-// members of parts B and C that part A calls at run time (SysException, Less.Fn, R.strtod_CPtr_CPtrr) and that the
-// checks call (R.Lit, R.Str). The stubs do only what the checks need (strtod reads plain decimal numbers). run.sh with
+// members of parts B and C that part A calls at run time (SysException, Less.Fn, R.strtod_CPtr_CPtrr, R.ERange) and
+// that the checks call (R.Lit, R.Str). The stubs do only what the checks need (strtod reads plain decimal numbers and
+// never sets ERange). run.sh with
 // REAL=1 uses the real index.ts and every part instead.
 // Written by Claude (Anthropic) for the SWMM6 ports; see AI-USE.md.
 export * from './a_long.js';
@@ -27,6 +28,7 @@ export class Less {
 export class R {
 	static Lit(s: string): CPtr { const b = new Uint8Array(s.length + 1); for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i) & 0xFF; return new CPtr(b, 0); }
 	static Str(p: CPtr): string { return p.toString(); }
+	static readonly ERange = false;
 	static strtod_CPtr_CPtrr(p: CPtr, end: Ref<CPtr>): number {
 		const s = p.toString();
 		const m = /^[ \t\n\v\f\r]*([+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?)/.exec(s);

@@ -4,13 +4,13 @@
 namespace _global {
     public enum SWMM_WaterAgeSource : int
     {
-        SWMM_AGE_SRC_RAINFALL,
-        SWMM_AGE_SRC_DWF,
-        SWMM_AGE_SRC_GW,
-        SWMM_AGE_SRC_RDII,
-        SWMM_AGE_SRC_EXTERNAL_INFLOW,
-        SWMM_AGE_SRC_IFACE,
-        SWMM_AGE_SRC_INITIAL_STATE,
-        SWMM_AGE_SRC_COUNT,
+        SWMM_AGE_SRC_RAINFALL = unchecked((int)0),
+        SWMM_AGE_SRC_DWF = unchecked((int)1),
+        SWMM_AGE_SRC_GW = unchecked((int)2),
+        SWMM_AGE_SRC_RDII = unchecked((int)3),
+        SWMM_AGE_SRC_EXTERNAL_INFLOW = unchecked((int)4),
+        SWMM_AGE_SRC_IFACE = unchecked((int)5),
+        SWMM_AGE_SRC_INITIAL_STATE = unchecked((int)6),
+        SWMM_AGE_SRC_COUNT = unchecked((int)7),
     }
 }

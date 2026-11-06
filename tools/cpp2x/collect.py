@@ -34,6 +34,7 @@ class TU:
         self.cur_line = None
         self.nsname = {}       # anonymous namespace id -> '(anon:<file>)'
         self.nsscope = {}      # namespace decl id -> its scope (for a class first named inside a class body)
+        self.spec_params = {}  # class template specialization id -> its template's parameter types (None: a type)
 
     def _bare(self, B):
         if not B:
@@ -77,12 +78,41 @@ def rel(path, src):
     return os.path.relpath(p, src) if p.startswith(src) else p
 
 
-def targ(c):
-    """One template argument, spelled as clang spells it."""
+def tstr_of(c):
+    t = c.get('type') or {}
+    return t.get('desugaredQualType') or t.get('qualType')
+
+
+def unfold_array_filler(e):
+    """clang's JSON dumper names a node's whole child array after its first child's label. An InitListExpr with an
+    array filler visits the filler first, labelled "array_filler", so the list's elements follow it there and the
+    node has no "inner": int a[7] = {x, y} dumps as "array_filler": [ImplicitValueInitExpr, x, y]. Put the
+    elements back where every pass looks for children, leaving the filler alone under its label."""
+    stack = [e]
+    while stack:
+        n = stack.pop()
+        af = n.get('array_filler')
+        if isinstance(af, list) and len(af) > 1:
+            n['inner'] = af[1:] + n.get('inner', [])
+            n['array_filler'] = af[:1]
+        for c in n.get('inner', ()):
+            if isinstance(c, dict):
+                stack.append(c)
+        for c in n.get('array_filler', ()):
+            if isinstance(c, dict):
+                stack.append(c)
+
+
+def targ(c, ptype=None):
+    """One template argument, spelled as clang spells it in a type name. ptype is the template parameter's type."""
     t = c.get('type')
     if t:
         return t.get('desugaredQualType') or t.get('qualType')
     if 'value' in c:
+        if ptype == 'bool' and str(c['value']) in ('-1', '0', '1'):
+            # clang 18's JSON dumper prints a bool argument as a 1-bit signed integer (true is -1), where type
+            # names say Batch<true>: the key must be spelled the way the types that name it are
+            return 'false' if str(c['value']) == '0' else 'true'
         return str(c['value'])
     if c.get('inner'):
         return targ(c['inner'][0]) if c['inner'][0].get('kind') == 'TemplateArgument' else '?'
@@ -130,8 +160,10 @@ def index(tu, n, scope, parent, in_func=False):
         else:
             key = '::'.join(scope + ['(anon@%s:%s)' % (rel(f, tu.src), tu.line(n))])
         if k == 'ClassTemplateSpecializationDecl':
-            key = '::'.join(scope + [nm + '<' + ', '.join(targ(c) for c in n.get('inner', [])
-                                                         if c.get('kind') == 'TemplateArgument') + '>'])
+            ptypes = tu.spec_params.get(n.get('id'), [])
+            targs = [c for c in n.get('inner', []) if c.get('kind') == 'TemplateArgument']
+            key = '::'.join(scope + [nm + '<' + ', '.join(targ(c, ptypes[i] if i < len(ptypes) else None)
+                                                         for i, c in enumerate(targs)) + '>'])
     elif k == 'FieldDecl':
         key = (parent or '?') + '::' + (nm or '(anon@%s)' % tu.line(n))
     elif k == 'EnumConstantDecl':
@@ -150,15 +182,21 @@ def index(tu, n, scope, parent, in_func=False):
             index(tu, c, scope, key)
         return
     if k in ('ClassTemplateDecl', 'FunctionTemplateDecl'):
+        # the template's parameters come first; its specializations follow and take their argument spelling from them
+        ptypes = [tstr_of(c) if c.get('kind') == 'NonTypeTemplateParmDecl' else None for c in n.get('inner', [])
+                  if c.get('kind') in ('TemplateTypeParmDecl', 'NonTypeTemplateParmDecl', 'TemplateTemplateParmDecl')]
         for c in n.get('inner', []):
+            if c.get('kind') == 'ClassTemplateSpecializationDecl' and 'id' in c:
+                tu.spec_params[c['id']] = ptypes
             index(tu, c, scope, parent)
         return
     if k in ('LinkageSpecDecl', 'ExportDecl'):
         for c in n.get('inner', []):
             index(tu, c, scope, parent)
         return
-    # walk into everything else for the file tracking (function bodies, initializers)
-    for c in n.get('inner', []):
+    # walk into everything else for the file tracking (function bodies, initializers); an array filler is
+    # printed before the list's elements (see unfold_array_filler)
+    for c in n.get('array_filler', [])[:1] + n.get('inner', []):
         index(tu, c, scope, parent, in_func or k in FUNC_KINDS)
 
 
@@ -182,6 +220,20 @@ def local_types(n):
 
 # what only the first (in-class) declaration of a function says: the out-of-line definition repeats none of it
 DECL_ONLY = ('virtual', 'pure', 'storageClass', 'access', 'inline', 'explicitlyDeleted', 'explicitlyDefaulted')
+
+
+def merge_defaults(keep, other):
+    """Give the copy kept the default arguments only the other copy has. The specializations of a member function
+    template whose argument is a closure type share one key (the closure is erased, so their C# is one method), and
+    clang instantiates a default argument only in the specializations whose calls use it: refreshDummyFlows(dt,
+    forcing, [&](...){...}) relies on `bool book_receipts = true`, which the first specialization kept may lack."""
+    kp = [c for c in keep.get('inner', []) if c.get('kind') == 'ParmVarDecl']
+    op = [c for c in other.get('inner', []) if c.get('kind') == 'ParmVarDecl']
+    if len(kp) == len(op):
+        for a, b in zip(op, kp):
+            if a.get('init') and not b.get('init'):
+                b['init'] = a['init']
+                b['inner'] = a.get('inner', [])
 
 
 def merge_decl(defn, decl):
@@ -289,6 +341,8 @@ class Store:
             self.decls[key] = d
         elif d['kind'] in FUNC_KINDS and has_body(old) and not has_body(d):
             merge_decl(old, d)
+        elif d['kind'] in FUNC_KINDS:
+            merge_defaults(old, d)
         elif d['kind'] in RECORD_KINDS:
             # keep the definition; union of member keys (implicit members appear only where they are used)
             if d.get('completeDefinition') and not old.get('completeDefinition'):
@@ -412,6 +466,7 @@ def main():
         with gzip.open(os.path.join(astdir, fn), 'rt') as g:
             for line in g:
                 e = json.loads(line)
+                unfold_array_filler(e)
                 tu.cur = e.pop('_file')
                 elems.append((tu.cur, e))
         for f0, e in elems:

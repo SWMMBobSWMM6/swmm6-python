@@ -4,24 +4,24 @@
 namespace _global {
     public enum SWMM_AquiferParam : int
     {
-        SWMM_AQUIFER_POROSITY,
-        SWMM_AQUIFER_WILTING_POINT,
-        SWMM_AQUIFER_FIELD_CAPACITY,
-        SWMM_AQUIFER_CONDUCTIVITY,
-        SWMM_AQUIFER_CONDUCT_SLOPE,
-        SWMM_AQUIFER_TENSION_SLOPE,
-        SWMM_AQUIFER_UPPER_EVAP_FRAC,
-        SWMM_AQUIFER_LOWER_EVAP_DEPTH,
-        SWMM_AQUIFER_LOWER_LOSS_COEFF,
-        SWMM_AQUIFER_BOTTOM_ELEV,
-        SWMM_AQUIFER_WATER_TABLE_ELEV,
-        SWMM_AQUIFER_UPPER_MOISTURE,
+        SWMM_AQUIFER_POROSITY = unchecked((int)0),
+        SWMM_AQUIFER_WILTING_POINT = unchecked((int)1),
+        SWMM_AQUIFER_FIELD_CAPACITY = unchecked((int)2),
+        SWMM_AQUIFER_CONDUCTIVITY = unchecked((int)3),
+        SWMM_AQUIFER_CONDUCT_SLOPE = unchecked((int)4),
+        SWMM_AQUIFER_TENSION_SLOPE = unchecked((int)5),
+        SWMM_AQUIFER_UPPER_EVAP_FRAC = unchecked((int)6),
+        SWMM_AQUIFER_LOWER_EVAP_DEPTH = unchecked((int)7),
+        SWMM_AQUIFER_LOWER_LOSS_COEFF = unchecked((int)8),
+        SWMM_AQUIFER_BOTTOM_ELEV = unchecked((int)9),
+        SWMM_AQUIFER_WATER_TABLE_ELEV = unchecked((int)10),
+        SWMM_AQUIFER_UPPER_MOISTURE = unchecked((int)11),
     }
 }
 namespace _global {
     public enum SWMM_GwfType : int
     {
-        SWMM_GWF_LATERAL,
-        SWMM_GWF_DEEP,
+        SWMM_GWF_LATERAL = unchecked((int)0),
+        SWMM_GWF_DEEP = unchecked((int)1),
     }
 }

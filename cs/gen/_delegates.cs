@@ -145,7 +145,7 @@ namespace Gen
     public delegate int FN225(global::_global.OpenSwmmGpuProbe a0);
     public delegate object FN226(global::_global.OpenSwmmGpuProbe a0);
     public delegate void FN227(global::Cpp.Pair<int, int> a0);
-    public delegate double FN228(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1.Coefficient a0);
+    public delegate double FN228(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient a0);
     public delegate bool FN229(global::openswmm.richards.Column a0);
     public delegate void FN23(global::Cpp.Ptr<ulong> a0, global::Cpp.Ptr<ulong> a1);
     public delegate void FN230(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.BoundaryRates a0, global::Cpp.Vec<double> a1, global::Cpp.Vec<double> a2);

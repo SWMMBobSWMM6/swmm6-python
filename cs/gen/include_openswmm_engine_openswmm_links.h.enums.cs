@@ -4,67 +4,67 @@
 namespace _global {
     public enum SWMM_LinkType : int
     {
-        SWMM_LINK_CONDUIT,
-        SWMM_LINK_PUMP,
-        SWMM_LINK_ORIFICE,
-        SWMM_LINK_WEIR,
-        SWMM_LINK_OUTLET,
+        SWMM_LINK_CONDUIT = unchecked((int)0),
+        SWMM_LINK_PUMP = unchecked((int)1),
+        SWMM_LINK_ORIFICE = unchecked((int)2),
+        SWMM_LINK_WEIR = unchecked((int)3),
+        SWMM_LINK_OUTLET = unchecked((int)4),
     }
 }
 namespace _global {
     public enum SWMM_XSectShape : int
     {
-        SWMM_XSECT_CIRCULAR,
-        SWMM_XSECT_FILLED_CIRCULAR,
-        SWMM_XSECT_RECT_CLOSED,
-        SWMM_XSECT_RECT_OPEN,
-        SWMM_XSECT_TRAPEZOIDAL,
-        SWMM_XSECT_TRIANGULAR,
-        SWMM_XSECT_PARABOLIC,
-        SWMM_XSECT_POWER,
-        SWMM_XSECT_MOD_BASKET,
-        SWMM_XSECT_EGGSHAPED,
-        SWMM_XSECT_HORSESHOE,
-        SWMM_XSECT_GOTHIC,
-        SWMM_XSECT_CATENARY,
-        SWMM_XSECT_SEMIELLIPTICAL,
-        SWMM_XSECT_BASKETHANDLE,
-        SWMM_XSECT_SEMICIRCULAR,
-        SWMM_XSECT_RECT_TRIANG,
-        SWMM_XSECT_RECT_ROUND,
-        SWMM_XSECT_HORIZ_ELLIPSE,
-        SWMM_XSECT_VERT_ELLIPSE,
-        SWMM_XSECT_ARCH,
-        SWMM_XSECT_IRREGULAR,
-        SWMM_XSECT_CUSTOM,
-        SWMM_XSECT_FORCE_MAIN,
-        SWMM_XSECT_STREET,
-        SWMM_XSECT_DUMMY,
+        SWMM_XSECT_CIRCULAR = unchecked((int)0),
+        SWMM_XSECT_FILLED_CIRCULAR = unchecked((int)1),
+        SWMM_XSECT_RECT_CLOSED = unchecked((int)2),
+        SWMM_XSECT_RECT_OPEN = unchecked((int)3),
+        SWMM_XSECT_TRAPEZOIDAL = unchecked((int)4),
+        SWMM_XSECT_TRIANGULAR = unchecked((int)5),
+        SWMM_XSECT_PARABOLIC = unchecked((int)6),
+        SWMM_XSECT_POWER = unchecked((int)7),
+        SWMM_XSECT_MOD_BASKET = unchecked((int)8),
+        SWMM_XSECT_EGGSHAPED = unchecked((int)9),
+        SWMM_XSECT_HORSESHOE = unchecked((int)10),
+        SWMM_XSECT_GOTHIC = unchecked((int)11),
+        SWMM_XSECT_CATENARY = unchecked((int)12),
+        SWMM_XSECT_SEMIELLIPTICAL = unchecked((int)13),
+        SWMM_XSECT_BASKETHANDLE = unchecked((int)14),
+        SWMM_XSECT_SEMICIRCULAR = unchecked((int)15),
+        SWMM_XSECT_RECT_TRIANG = unchecked((int)16),
+        SWMM_XSECT_RECT_ROUND = unchecked((int)17),
+        SWMM_XSECT_HORIZ_ELLIPSE = unchecked((int)18),
+        SWMM_XSECT_VERT_ELLIPSE = unchecked((int)19),
+        SWMM_XSECT_ARCH = unchecked((int)20),
+        SWMM_XSECT_IRREGULAR = unchecked((int)21),
+        SWMM_XSECT_CUSTOM = unchecked((int)22),
+        SWMM_XSECT_FORCE_MAIN = unchecked((int)23),
+        SWMM_XSECT_STREET = unchecked((int)24),
+        SWMM_XSECT_DUMMY = unchecked((int)25),
     }
 }
 namespace _global {
     public enum SWMM_OrificeType : int
     {
-        SWMM_ORIFICE_SIDE,
-        SWMM_ORIFICE_BOTTOM,
+        SWMM_ORIFICE_SIDE = unchecked((int)0),
+        SWMM_ORIFICE_BOTTOM = unchecked((int)1),
     }
 }
 namespace _global {
     public enum SWMM_WeirType : int
     {
-        SWMM_WEIR_TRANSVERSE,
-        SWMM_WEIR_SIDEFLOW,
-        SWMM_WEIR_VNOTCH,
-        SWMM_WEIR_TRAPEZOIDAL,
-        SWMM_WEIR_ROADWAY,
+        SWMM_WEIR_TRANSVERSE = unchecked((int)0),
+        SWMM_WEIR_SIDEFLOW = unchecked((int)1),
+        SWMM_WEIR_VNOTCH = unchecked((int)2),
+        SWMM_WEIR_TRAPEZOIDAL = unchecked((int)3),
+        SWMM_WEIR_ROADWAY = unchecked((int)4),
     }
 }
 namespace _global {
     public enum SWMM_OutletRatingType : int
     {
-        SWMM_OUTLET_FUNCTIONAL_HEAD,
-        SWMM_OUTLET_FUNCTIONAL_DEPTH,
-        SWMM_OUTLET_TABULAR_HEAD,
-        SWMM_OUTLET_TABULAR_DEPTH,
+        SWMM_OUTLET_FUNCTIONAL_HEAD = unchecked((int)0),
+        SWMM_OUTLET_FUNCTIONAL_DEPTH = unchecked((int)1),
+        SWMM_OUTLET_TABULAR_HEAD = unchecked((int)2),
+        SWMM_OUTLET_TABULAR_DEPTH = unchecked((int)3),
     }
 }

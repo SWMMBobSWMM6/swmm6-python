@@ -193,11 +193,11 @@ namespace openswmm.richards
 {
     if ((packed && (c_2.size() >= ((ulong)8))))
     {
-        throw new global::System.NotImplementedException("TODO type openswmm::richards::(anonymous namespace)::Batch"); // line 587
+        (global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.New_vec_pColumn_vec_pReport(global::Cpp.Mv.Take(ref c_2), global::Cpp.Mv.Take(ref r_4))).run(dt);
     }
     else
     {
-        throw new global::System.NotImplementedException("TODO type openswmm::richards::(anonymous namespace)::Batch"); // line 589
+        (global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false.New_vec_pColumn_vec_pReport(global::Cpp.Mv.Take(ref c_2), global::Cpp.Mv.Take(ref r_4))).run(dt);
     }
 });
             bool parallel_complete = false;
@@ -370,7 +370,7 @@ namespace openswmm.richards
 }
 namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
 {
-    public partial class Batch__1 : global::Cpp.ICopy<global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1>
+    public partial class Batch_false : global::Cpp.ICopy<global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false>
     {
         public int n;
         public int lanes;
@@ -392,7 +392,7 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
         public global::Cpp.Vec<double> epsilon;
         public global::Cpp.Vec<byte> done;
         public global::Cpp.Vec<double> coefficients;
-        protected Batch__1(global::Cpp.Raw _) { }
+        protected Batch_false(global::Cpp.Raw _) { }
         public void __init_vec_pColumn_vec_pReport(global::Cpp.Vec<global::openswmm.richards.Column> c, global::Cpp.Vec<global::openswmm.richards.Report> r)
         {
             this.n = ((int)((c.front()).cells).size());
@@ -430,9 +430,6 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
             }
             done.resize(((ulong)lanes));
             {
-                throw new global::System.NotImplementedException("TODO type openswmm::richards::(anonymous namespace)::Batch<>"); // line 127
-            }
-            {
                 int k = 0;
                 for (; (k < n); ++k)
                 {
@@ -444,27 +441,31 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
                             int i = ((k * lanes) + a);
                             y[((ulong)i)] = (columns[((ulong)a)].water)[((ulong)k)];
                             volume[((ulong)i)] = cell.volume;
-                            {
-                                double[] values = new double[] { cell.area, cell.z, cell.dz, cell.theta_s, cell.Ks, cell.wilting, cell.potential_et, cell.material.theta_r, cell.material.alpha, cell.material.n, cell.material.l, cell.material.specific_storage };
-                                throw new global::System.NotImplementedException("TODO type openswmm::richards::(anonymous namespace)::Batch<>"); // line 139
-                            }
                             lower_bound[((ulong)i)] = ((k != 0) ? (cell.material.theta_r * cell.volume) : 0.0);
                         }
                     }
                 }
             }
         }
-        public static global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1 New_vec_pColumn_vec_pReport(global::Cpp.Vec<global::openswmm.richards.Column> c, global::Cpp.Vec<global::openswmm.richards.Report> r) { var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1(global::Cpp.Raw.V); o.__init_vec_pColumn_vec_pReport(c, r); return o; }
-        // TODO constructor rBatch: type Batch
-        // TODO constructor mBatch: type Batch
-        public Batch__1() : this(global::Cpp.Raw.V) { }
-        public global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1 Clone()
+        public static global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false New_vec_pColumn_vec_pReport(global::Cpp.Vec<global::openswmm.richards.Column> c, global::Cpp.Vec<global::openswmm.richards.Report> r) { var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false(global::Cpp.Raw.V); o.__init_vec_pColumn_vec_pReport(c, r); return o; }
+        public void __init_rBatch(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false p)
         {
-            var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1(global::Cpp.Raw.V);
-            o.__CopyFrom_Batch__1(this);
+            __CopyFrom_Batch_false(p);
+        }
+        public static global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false New_rBatch(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false p) { var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false(global::Cpp.Raw.V); o.__init_rBatch(p); return o; }
+        public void __init_mBatch(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false p)
+        {
+            MoveFrom(p);
+        }
+        public static global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false New_mBatch(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false p) { var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false(global::Cpp.Raw.V); o.__init_mBatch(p); return o; }
+        public Batch_false() : this(global::Cpp.Raw.V) { }
+        public global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false Clone()
+        {
+            var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false(global::Cpp.Raw.V);
+            o.__CopyFrom_Batch_false(this);
             return o;
         }
-        protected void __CopyFrom_Batch__1(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1 s)
+        protected void __CopyFrom_Batch_false(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false s)
         {
             this.n = s.n;
             this.lanes = s.lanes;
@@ -487,7 +488,7 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
             this.done = s.done?.Clone();
             this.coefficients = s.coefficients?.Clone();
         }
-        public void Assign(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1 s)
+        public void Assign(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false s)
         {
             if (ReferenceEquals(this, s)) return;
             this.n = s.n;
@@ -511,7 +512,7 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
             this.done.Assign(s.done);
             this.coefficients.Assign(s.coefficients);
         }
-        public void MoveFrom(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1 s)
+        public void MoveFrom(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false s)
         {
             if (ReferenceEquals(this, s)) return;
             this.n = s.n;
@@ -535,14 +536,11 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
             this.done = s.done; s.done = new global::Cpp.Vec<byte>();
             this.coefficients = s.coefficients; s.coefficients = new global::Cpp.Vec<double>();
         }
-        public static global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1 MoveNew(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1 s) { var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1(global::Cpp.Raw.V); o.MoveFrom(s); return o; }
+        public static global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false MoveNew(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false s) { var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false(global::Cpp.Raw.V); o.MoveFrom(s); return o; }
         public global::openswmm.richards.Cell cellAt(int k, int a)
         {
             {
-                ulong i = ((ulong)((k * lanes) + a));
-                throw new global::System.NotImplementedException("TODO type openswmm::richards::(anonymous namespace)::Batch<>"); // line 101
-                object field = default!;
-                return new global::openswmm.richards.Cell() { volume = volume[i], area = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1.Coefficient.Area), z = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1.Coefficient.Z), dz = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1.Coefficient.Dz), theta_s = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1.Coefficient.ThetaS), Ks = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1.Coefficient.Ks), wilting = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1.Coefficient.Wilting), potential_et = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1.Coefficient.PotentialEt), material = new global::openswmm.richards.Material() { theta_r = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1.Coefficient.ThetaR), alpha = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1.Coefficient.Alpha), n = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1.Coefficient.N), l = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1.Coefficient.L), specific_storage = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1.Coefficient.SpecificStorage) } };
+                return (columns[((ulong)a)].cells)[((ulong)k)];
             }
         }
         public void rhs(global::Cpp.Vec<double> w, global::Cpp.Vec<double> f, global::Cpp.Vec<double> faces, global::Cpp.Vec<double> et, global::Cpp.Vec<byte> inactive, global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.BoundaryRates rates, global::Cpp.Vec<int> limited)
@@ -1164,7 +1162,7 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
             }
         }
     }
-    public partial class Batch_0 : global::Cpp.ICopy<global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_0>
+    public partial class Batch_true : global::Cpp.ICopy<global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true>
     {
         public int n;
         public int lanes;
@@ -1186,7 +1184,7 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
         public global::Cpp.Vec<double> epsilon;
         public global::Cpp.Vec<byte> done;
         public global::Cpp.Vec<double> coefficients;
-        protected Batch_0(global::Cpp.Raw _) { }
+        protected Batch_true(global::Cpp.Raw _) { }
         public void __init_vec_pColumn_vec_pReport(global::Cpp.Vec<global::openswmm.richards.Column> c, global::Cpp.Vec<global::openswmm.richards.Report> r)
         {
             this.n = ((int)((c.front()).cells).size());
@@ -1224,6 +1222,9 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
             }
             done.resize(((ulong)lanes));
             {
+                coefficients.resize((((ulong)global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient.CoefficientCount) * y.size()));
+            }
+            {
                 int k = 0;
                 for (; (k < n); ++k)
                 {
@@ -1235,23 +1236,41 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
                             int i = ((k * lanes) + a);
                             y[((ulong)i)] = (columns[((ulong)a)].water)[((ulong)k)];
                             volume[((ulong)i)] = cell.volume;
+                            {
+                                double[] values = new double[] { cell.area, cell.z, cell.dz, cell.theta_s, cell.Ks, cell.wilting, cell.potential_et, cell.material.theta_r, cell.material.alpha, cell.material.n, cell.material.l, cell.material.specific_storage };
+                                {
+                                    int p = 0;
+                                    for (; (p < ((int)global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient.CoefficientCount)); ++p)
+                                    {
+                                        coefficients[((((ulong)p) * y.size()) + ((ulong)i))] = (new global::Cpp.Ptr<double>(values, 0))[p];
+                                    }
+                                }
+                            }
                             lower_bound[((ulong)i)] = ((k != 0) ? (cell.material.theta_r * cell.volume) : 0.0);
                         }
                     }
                 }
             }
         }
-        public static global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_0 New_vec_pColumn_vec_pReport(global::Cpp.Vec<global::openswmm.richards.Column> c, global::Cpp.Vec<global::openswmm.richards.Report> r) { var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_0(global::Cpp.Raw.V); o.__init_vec_pColumn_vec_pReport(c, r); return o; }
-        // TODO constructor rBatch: type Batch
-        // TODO constructor mBatch: type Batch
-        public Batch_0() : this(global::Cpp.Raw.V) { }
-        public global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_0 Clone()
+        public static global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true New_vec_pColumn_vec_pReport(global::Cpp.Vec<global::openswmm.richards.Column> c, global::Cpp.Vec<global::openswmm.richards.Report> r) { var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true(global::Cpp.Raw.V); o.__init_vec_pColumn_vec_pReport(c, r); return o; }
+        public void __init_rBatch(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true p)
         {
-            var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_0(global::Cpp.Raw.V);
-            o.__CopyFrom_Batch_0(this);
+            __CopyFrom_Batch_true(p);
+        }
+        public static global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true New_rBatch(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true p) { var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true(global::Cpp.Raw.V); o.__init_rBatch(p); return o; }
+        public void __init_mBatch(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true p)
+        {
+            MoveFrom(p);
+        }
+        public static global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true New_mBatch(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true p) { var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true(global::Cpp.Raw.V); o.__init_mBatch(p); return o; }
+        public Batch_true() : this(global::Cpp.Raw.V) { }
+        public global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true Clone()
+        {
+            var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true(global::Cpp.Raw.V);
+            o.__CopyFrom_Batch_true(this);
             return o;
         }
-        protected void __CopyFrom_Batch_0(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_0 s)
+        protected void __CopyFrom_Batch_true(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true s)
         {
             this.n = s.n;
             this.lanes = s.lanes;
@@ -1274,7 +1293,7 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
             this.done = s.done?.Clone();
             this.coefficients = s.coefficients?.Clone();
         }
-        public void Assign(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_0 s)
+        public void Assign(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true s)
         {
             if (ReferenceEquals(this, s)) return;
             this.n = s.n;
@@ -1298,7 +1317,7 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
             this.done.Assign(s.done);
             this.coefficients.Assign(s.coefficients);
         }
-        public void MoveFrom(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_0 s)
+        public void MoveFrom(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true s)
         {
             if (ReferenceEquals(this, s)) return;
             this.n = s.n;
@@ -1322,11 +1341,16 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
             this.done = s.done; s.done = new global::Cpp.Vec<byte>();
             this.coefficients = s.coefficients; s.coefficients = new global::Cpp.Vec<double>();
         }
-        public static global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_0 MoveNew(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_0 s) { var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_0(global::Cpp.Raw.V); o.MoveFrom(s); return o; }
+        public static global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true MoveNew(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true s) { var o = new global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true(global::Cpp.Raw.V); o.MoveFrom(s); return o; }
         public global::openswmm.richards.Cell cellAt(int k, int a)
         {
             {
-                return (columns[((ulong)a)].cells)[((ulong)k)];
+                ulong i = ((ulong)((k * lanes) + a));
+                var field = (global::Gen.FN228)((global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient p) =>
+{
+    return coefficients[((((ulong)p) * y.size()) + i)];
+});
+                return new global::openswmm.richards.Cell() { volume = volume[i], area = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient.Area), z = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient.Z), dz = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient.Dz), theta_s = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient.ThetaS), Ks = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient.Ks), wilting = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient.Wilting), potential_et = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient.PotentialEt), material = new global::openswmm.richards.Material() { theta_r = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient.ThetaR), alpha = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient.Alpha), n = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient.N), l = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient.L), specific_storage = ((global::Gen.FN228)field)(global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true.Coefficient.SpecificStorage) } };
             }
         }
         public void rhs(global::Cpp.Vec<double> w, global::Cpp.Vec<double> f, global::Cpp.Vec<double> faces, global::Cpp.Vec<double> et, global::Cpp.Vec<byte> inactive, global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.BoundaryRates rates, global::Cpp.Vec<int> limited)
@@ -2004,7 +2028,7 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
             return rate;
         }
     }
-    public partial class Batch__1 : global::Cpp.ICopy<global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch__1>
+    public partial class Batch_true : global::Cpp.ICopy<global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_true>
     {
         public enum Coefficient : int
         {
@@ -2023,7 +2047,7 @@ namespace openswmm.richards._anon_hydrology_RichardsColumn_cpp
             CoefficientCount,
         }
     }
-    public partial class Batch_0 : global::Cpp.ICopy<global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_0>
+    public partial class Batch_false : global::Cpp.ICopy<global::openswmm.richards._anon_hydrology_RichardsColumn_cpp.Batch_false>
     {
         public enum Coefficient : int
         {

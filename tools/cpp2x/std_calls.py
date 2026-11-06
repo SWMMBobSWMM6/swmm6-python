@@ -67,6 +67,16 @@ def algo_fn_arg(fn, x, code):
     return code
 
 
+def ref_variable(x):
+    """Whether expression x names a variable declared as an lvalue reference (a T& parameter or local), which the C#
+    holds as a variable of its own, not as the place it refers to."""
+    x = strip(x)
+    if x.get('kind') != 'DeclRefExpr':
+        return False
+    d = x.get('referencedDecl') or {}
+    return d.get('kind') in ('ParmVarDecl', 'VarDecl') and isinstance(C.parse(tstr(d.get('type'))), C.LRef)
+
+
 def free(fn, nm, rd, args, n):
     t = C.of(n)
     # functions whose pointer arguments are handled here, before any generic translation (a generic &x would box
@@ -155,6 +165,22 @@ def free(fn, nm, rd, args, n):
     if nm in ('move', 'forward', 'as_const'):
         return E(c[0], t, a[0].lv)
     if nm == 'swap':
+        alias = [ref_variable(x) for x in args[:2]]
+        if any(alias):
+            # std::swap(output, accepted) where a C++ reference (a T& parameter, an auto& local) is a C# variable
+            # holding the object: exchanging the variables would leave both referents as they were, so exchange
+            # the contents, as std::swap's three moves do
+            # (an immediately invoked lambda, which every back end of tools/cs2x already translates, rather than a
+            # new runtime helper; each operand is written twice, so only plain names and member accesses qualify)
+            et = C.of(args[0]).strip()
+            k = fn.m.key_of_type(et)
+            if k not in fn.m.records:
+                return todo(fn, 'std::swap through a reference of ' + repr(et), n)
+            if any(strip(x).get('kind') not in ('DeclRefExpr', 'MemberExpr') for x in args[:2]):
+                return todo(fn, 'std::swap through a reference of an expression', n)
+            dt = fn.cs.delegate(C.Func(C.Builtin('void'), []))
+            return E('((%s)(() => { var __t = %s.MoveNew(%s); %s.MoveFrom(%s); %s.MoveFrom(__t); }))()'
+                     % (dt, fn.cs.rec_name(k), c[0], c[0], c[1], c[1]), t)
         return E('%s.Std.swap(ref %s, ref %s)' % (CPP, c[0], c[1]), t)
     if nm == 'exchange':
         return E('%s.Std.exchange(ref %s, %s)' % (CPP, c[0], c[1]), t)
@@ -423,6 +449,14 @@ def method(fn, me, obj_n, args, n):
     sn = std_name(ot)
     ob = fn.x(obj_n)
     o = fn.obj(ob)
+    if isinstance(ot, C.Closure) and nm.startswith('operator ') and isinstance(t.strip(), C.Ptr) and \
+            isinstance(t.strip().t, C.Func):
+        # a captureless lambda converted to a plain function pointer (forcing.refresh = [](void* u, double t) {...}):
+        # clang calls the closure's conversion operator; the C# lambda is already a delegate of that signature
+        dt = fn.cs.cs(t.strip())
+        if ob.code.startswith('(%s)(' % dt):
+            return E(ob.code, t)           # the lambda, already cast to the pointer's delegate
+        return E('((%s)(%s).Invoke)' % (dt, ob.code), t)
     if nm in ('read', 'write') and sn in STREAMS and args:
         p = typed_ptr(fn, args[0])
         rest = [e.code for e in lib_args(fn, args[1:])]
@@ -584,6 +618,10 @@ def vec_method(fn, o, ob, ot, nm, a, args, t, n):
         return E('%s.%s()' % (o, nm), t, True)
     if nm == 'data':
         return E('%s.data()' % o, t)
+    if nm == 'max_size':
+        # libstdc++ on x86-64: min(PTRDIFF_MAX / sizeof(T), allocator's max_size), which is PTRDIFF_MAX / sizeof(T)
+        from cs_func import sizeof
+        return E('((ulong)%dUL)' % (0x7FFFFFFFFFFFFFFF // sizeof(fn, el, n)), t)
     if nm == 'at':
         return E('%s.at(%s)' % (o, c[0]), t, True)
     if nm in ('push_back', 'emplace_back'):

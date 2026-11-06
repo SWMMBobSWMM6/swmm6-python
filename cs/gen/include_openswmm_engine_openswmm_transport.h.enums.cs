@@ -4,8 +4,8 @@
 namespace _global {
     public enum SWMM_TransportDispersionMode : int
     {
-        SWMM_DISPERSION_OFF,
-        SWMM_DISPERSION_FISCHER,
-        SWMM_DISPERSION_VALUE,
+        SWMM_DISPERSION_OFF = unchecked((int)0),
+        SWMM_DISPERSION_FISCHER = unchecked((int)1),
+        SWMM_DISPERSION_VALUE = unchecked((int)2),
     }
 }

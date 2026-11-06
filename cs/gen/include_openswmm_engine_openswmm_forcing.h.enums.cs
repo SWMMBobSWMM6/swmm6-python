@@ -4,45 +4,45 @@
 namespace _global {
     public enum SWMM_ForcingMode : int
     {
-        SWMM_FORCING_NONE,
-        SWMM_FORCING_OVERRIDE,
-        SWMM_FORCING_ADD,
+        SWMM_FORCING_NONE = unchecked((int)0),
+        SWMM_FORCING_OVERRIDE = unchecked((int)1),
+        SWMM_FORCING_ADD = unchecked((int)2),
     }
 }
 namespace _global {
     public enum SWMM_ForcingPersist : int
     {
-        SWMM_FORCING_RESET,
-        SWMM_FORCING_PERSIST,
+        SWMM_FORCING_RESET = unchecked((int)0),
+        SWMM_FORCING_PERSIST = unchecked((int)1),
     }
 }
 namespace _global {
     public enum SWMM_ForcingType : int
     {
-        SWMM_FORCE_NODE_LAT_INFLOW,
-        SWMM_FORCE_NODE_HEAD_BOUNDARY,
-        SWMM_FORCE_NODE_QUALITY,
-        SWMM_FORCE_LINK_FLOW,
-        SWMM_FORCE_LINK_SETTING,
-        SWMM_FORCE_SUBCATCH_RAINFALL,
-        SWMM_FORCE_SUBCATCH_EVAP,
-        SWMM_FORCE_GAGE_RAINFALL,
-        SWMM_FORCE_CLIMATE_TEMPERATURE,
-        SWMM_FORCE_CLIMATE_WIND,
-        SWMM_FORCE_SUBCATCH_SNOWFALL,
-        SWMM_FORCE_CLIMATE_EVAP,
-        SWMM_FORCE_LINK_QUALITY,
-        SWMM_FORCE_ELEM_AIR_TEMPERATURE,
-        SWMM_FORCE_ELEM_HUMIDITY,
-        SWMM_FORCE_ELEM_WIND_SPEED,
-        SWMM_FORCE_ELEM_SHORTWAVE,
-        SWMM_FORCE_LINK_SEEPAGE,
+        SWMM_FORCE_NODE_LAT_INFLOW = unchecked((int)0),
+        SWMM_FORCE_NODE_HEAD_BOUNDARY = unchecked((int)1),
+        SWMM_FORCE_NODE_QUALITY = unchecked((int)2),
+        SWMM_FORCE_LINK_FLOW = unchecked((int)3),
+        SWMM_FORCE_LINK_SETTING = unchecked((int)4),
+        SWMM_FORCE_SUBCATCH_RAINFALL = unchecked((int)5),
+        SWMM_FORCE_SUBCATCH_EVAP = unchecked((int)6),
+        SWMM_FORCE_GAGE_RAINFALL = unchecked((int)7),
+        SWMM_FORCE_CLIMATE_TEMPERATURE = unchecked((int)8),
+        SWMM_FORCE_CLIMATE_WIND = unchecked((int)9),
+        SWMM_FORCE_SUBCATCH_SNOWFALL = unchecked((int)10),
+        SWMM_FORCE_CLIMATE_EVAP = unchecked((int)11),
+        SWMM_FORCE_LINK_QUALITY = unchecked((int)12),
+        SWMM_FORCE_ELEM_AIR_TEMPERATURE = unchecked((int)13),
+        SWMM_FORCE_ELEM_HUMIDITY = unchecked((int)14),
+        SWMM_FORCE_ELEM_WIND_SPEED = unchecked((int)15),
+        SWMM_FORCE_ELEM_SHORTWAVE = unchecked((int)16),
+        SWMM_FORCE_LINK_SEEPAGE = unchecked((int)17),
     }
 }
 namespace _global {
     public enum SWMM_HeatElemKind : int
     {
-        SWMM_HEAT_ELEM_NODE,
-        SWMM_HEAT_ELEM_LINK,
+        SWMM_HEAT_ELEM_NODE = unchecked((int)0),
+        SWMM_HEAT_ELEM_LINK = unchecked((int)1),
     }
 }

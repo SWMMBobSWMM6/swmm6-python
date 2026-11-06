@@ -216,7 +216,7 @@ namespace openswmm.quality
                 return global::openswmm.quality.ConservativeMixing.Result.MoveNew(result);
             }
             result.converged = true;
-            global::Cpp.Std.swap(ref output, ref accepted);
+            ((global::Gen.FN3)(() => { var __t = global::openswmm.quality.MixedScalar.MoveNew(output); output.MoveFrom(accepted); accepted.MoveFrom(__t); }))();
             return global::openswmm.quality.ConservativeMixing.Result.MoveNew(result);
         }
     }

@@ -2169,7 +2169,7 @@ namespace openswmm
                 this.solver_active_min = (-1.0);
                 this.solver_active_mean = (-1.0);
                 this.solver_active_max = (-1.0);
-                this.solver_tier_cells = new long[] { 0, 0, 0, 0, 0, 0, 0, 0 };
+                this.solver_tier_cells = new long[] { ((long)0), 0, 0, 0, 0, 0, 0, 0 };
                 this.solver_n_tiers = 0;
             }
             public static global::openswmm.SimulationContext.MassBalance2D New() { var o = new global::openswmm.SimulationContext.MassBalance2D(global::Cpp.Raw.V); o.__init_d(); return o; }
@@ -2672,7 +2672,7 @@ namespace openswmm
                 this.fv_active_min = (-1.0);
                 this.fv_active_mean = (-1.0);
                 this.fv_active_max = (-1.0);
-                this.fv_tier_cells = new long[] { 0, 0, 0, 0, 0, 0, 0, 0 };
+                this.fv_tier_cells = new long[] { ((long)0), 0, 0, 0, 0, 0, 0, 0 };
                 this.fv_n_tiers = 0;
                 this.fv_dt_argmin_pressurized = ((long)0);
                 this.fv_dt_argmin_band = ((long)0);

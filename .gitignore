@@ -21,3 +21,6 @@ f90/runtime/stub/mod/
 *.smod
 *.o
 go/bin2/
+go/binX/
+gate/ref_outputs_extra/
+cs/binX/

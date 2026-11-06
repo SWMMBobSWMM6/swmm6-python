@@ -221,7 +221,7 @@ namespace openswmm.fv
                 this.active_frac_min = (-1.0);
                 this.active_frac_mean = (-1.0);
                 this.active_frac_max = (-1.0);
-                this.tier_cells = new long[] { 0, 0, 0, 0, 0, 0, 0, 0 };
+                this.tier_cells = new long[] { ((long)0), 0, 0, 0, 0, 0, 0, 0 };
                 this.n_tiers = 0;
                 this.dt_argmin_pressurized = ((long)0);
                 this.dt_argmin_band = ((long)0);

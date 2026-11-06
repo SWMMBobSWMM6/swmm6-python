@@ -49235,11 +49235,15 @@ class Router(ICopy):
         rctx = _o6
         if self.fv_opts_.structure_coupling == 0:
             forcing.refresh_user = rctx
-            raise SysException('NotImplementedException', 'TODO method const (lambda at /tmp/claude-0/-home-claude/9f3dde4c-f353-52c4-b476-e410dd8d4e21/scratchpad/swmm6/eng/src/engine/hydraulics/Routing.cpp:1714:27)::operator void (*)(void *, double)')
+            def _lam7(user, t_elapsed):
+                r_2 = user
+                r_2.self.refreshFvBoundaryFlows(r_2.ctx, t_elapsed, r_2.eval)
+                return
+            forcing.refresh = _lam7
         trace_start_cells = NewVecD()
         trace_start_nodes = NewVecD()
         trace_start_carry = NewVecD()
-        trace_native = (_as7 if isinstance((_as7 := self.fv_solver_), fv_ExplicitFvSolver) else None)
+        trace_native = (_as8 if isinstance((_as8 := self.fv_solver_), fv_ExplicitFvSolver) else None)
         trace_path = R_getenv(R_Lit('OPENSWMM_FV_RECEIPT_TRACE'))
         if (not trace_path.get_IsNull()) and (trace_native is not None):
             trace_start_cells.Assign_VecT(self.fv_state_.cell_a)
@@ -49304,28 +49308,28 @@ class Router(ICopy):
                 n_5 = 0
                 while n_5 < ctx.n_nodes():
                     if (self.fv_mesh_.node_kind.a[n_5 & 0xFFFFFFFFFFFFFFFF] == 1) and (self.fv_lateral_.a[n_5 & 0xFFFFFFFFFFFFFFFF] < 0.0):
-                        refused.a[n_5 & 0xFFFFFFFFFFFFFFFF] += _m8 if 0.0 < (_m8 := ((-self.fv_lateral_.a[n_5 & 0xFFFFFFFFFFFFFFFF]) * dt) + source_port.a[n_5 & 0xFFFFFFFFFFFFFFFF]) else 0.0
+                        refused.a[n_5 & 0xFFFFFFFFFFFFFFFF] += _m9 if 0.0 < (_m9 := ((-self.fv_lateral_.a[n_5 & 0xFFFFFFFFFFFFFFFF]) * dt) + source_port.a[n_5 & 0xFFFFFFFFFFFFFFFF]) else 0.0
                     n_5 += 1
             n_6 = 0
             while n_6 < ctx.n_nodes():
                 un_2 = (n_6 & 0xFFFFFFFFFFFFFFFF)
                 requested = native.withdrawalRates__v().a[un_2]
-                refund = (_m10 if (_m10 := _m9 if 0.0 < (_m9 := refused.a[un_2] / dt if dt else fdiv0(refused.a[un_2], dt)) else 0.0) < requested else requested)
+                refund = (_m11 if (_m11 := _m10 if 0.0 < (_m10 := refused.a[un_2] / dt if dt else fdiv0(refused.a[un_2], dt)) else 0.0) < requested else requested)
                 fraction = ((refund / requested if requested else fdiv0(refund, requested)) if (requested > 0.0) else 0.0)
-                accepted_user = ((_m11 if 0.0 < (_m11 := -user_rate(un_2)) else 0.0) * (1.0 - fraction))
+                accepted_user = ((_m12 if 0.0 < (_m12 := -user_rate(un_2)) else 0.0) * (1.0 - fraction))
                 ctx.mass_balance.step_ext_withdrawal += accepted_user
-                native.withdrawalRates__v().a[un_2] = _m12 if 0.0 < (_m12 := requested - refund) else 0.0
+                native.withdrawalRates__v().a[un_2] = _m13 if 0.0 < (_m13 := requested - refund) else 0.0
                 if refund <= 0.0:
                     n_6 += 1
                     continue
-                def _lam13(q_3, category, sign, *, fraction=fraction):
+                def _lam14(q_3, category, sign, *, fraction=fraction):
                     if q_3.v >= 0.0:
                         return
                     accepted_refund = ((-q_3.v) * fraction)
                     q_3.v += accepted_refund
                     category.v += sign * accepted_refund
                     return
-                reduce = _lam13
+                reduce = _lam14
                 reduce(ArrRef(ctx.nodes.ext_inflow.a, un_2), FR_SimulationContext_MassBalance_step_ext_withdrawal(ctx.mass_balance), -1.0)
                 reduce(ArrRef(ctx.nodes.dwf_inflow.a, un_2), FR_SimulationContext_MassBalance_step_dw_inflow(ctx.mass_balance), 1.0)
                 reduce(ArrRef(ctx.nodes.gw_inflow.a, un_2), FR_SimulationContext_MassBalance_step_gw_inflow(ctx.mass_balance), 1.0)
@@ -49343,7 +49347,7 @@ class Router(ICopy):
                 if (begin_2 < 0) or (count <= 0):
                     row += 1
                     continue
-                requested_2 = (((cd.seep_loss_rate.a[row & 0xFFFFFFFFFFFFFFFF] + cd.evap_loss_rate.a[row & 0xFFFFFFFFFFFFFFFF]) * (_m14 if 1 < (_m14 := cd.barrels.a[row & 0xFFFFFFFFFFFFFFFF]) else 1)) * dt)
+                requested_2 = (((cd.seep_loss_rate.a[row & 0xFFFFFFFFFFFFFFFF] + cd.evap_loss_rate.a[row & 0xFFFFFFFFFFFFFFFF]) * (_m15 if 1 < (_m15 := cd.barrels.a[row & 0xFFFFFFFFFFFFFFFF]) else 1)) * dt)
                 actual = 0.0
                 c_2 = begin_2
                 while c_2 < (((begin_2 + count) + 0x80000000 & 0xFFFFFFFF) - 0x80000000):
@@ -54739,6 +54743,30 @@ class fv_ExplicitFvSolver(fv_INetworkSolver, ICopy):
             raise
 
 
+    def run_stats(self):
+        s = fv_INetworkSolver_RunStats__new()
+        s.nsteps = self.total_steps_
+        s.nflux = self.total_flux_
+        s.last_h = self.last_h_
+        s.min_h = self.min_h_
+        s.avg_h = (self.sim_time_ / _d1 if (_d1 := float(self.total_steps_)) else fdiv0(self.sim_time_, _d1)) if (self.total_steps_ > 0) else 0.0
+        if self.active_n_ > 0:
+            s.active_frac_mean = self.active_sum_ / _d2 if (_d2 := float(self.active_n_)) else fdiv0(self.active_sum_, _d2)
+            s.active_frac_min = self.active_min_
+            s.active_frac_max = self.active_max_
+        s.n_tiers = F_fv_kMaxLtsTiers if F_fv_kMaxLtsTiers < self.lts_tiers_ else self.lts_tiers_
+        k = 0
+        for k in range(0, s.n_tiers):
+            s.tier_cells[k] = self.tier_occupancy_[k]
+        s.dt_argmin_pressurized = self.dt_argmin_pressurized_
+        s.dt_argmin_band = self.dt_argmin_band_
+        s.dt_argmin_free = self.dt_argmin_free_
+        s.dt_argmin_node = self.dt_argmin_node_
+        s.n_macro_cycles = self.n_macro_cycles_
+        s.n_macro_rejected = self.n_macro_rejected_
+        return fv_INetworkSolver_RunStats_MoveNew(s)
+
+
     def nodeVolumeFromDepth(self, node, depth):
         un = (node & 0xFFFFFFFFFFFFFFFF)
         if depth <= 0.0:
@@ -56231,7 +56259,17 @@ class fv_ExplicitFvSolver(fv_INetworkSolver, ICopy):
             self.bookStructureWater(dt, forcing)
         _pt = perf_GatedTimer_New_rd(SR_F_perf_sec_fv_nodeupdate())
         nn = self.mesh_.n_nodes()
-        raise SysException('NotImplementedException', 'TODO default argument with no expression')
+        _arg2 = dt
+        _arg3 = forcing
+        def _lam1(un):
+            v_sum = 0.0
+            p = self.mesh_.node_face_ptr.a[un]
+            while p < self.mesh_.node_face_ptr.a[(un + 1) & 0xFFFFFFFFFFFFFFFF]:
+                up = (p & 0xFFFFFFFFFFFFFFFF)
+                v_sum += self.mesh_.node_face_sign.a[up] * self.f_mass_.a[self.mesh_.node_face_idx.a[up] & 0xFFFFFFFFFFFFFFFF]
+                p += 1
+            return (v_sum * dt)
+        self.refreshDummyFlows(_arg2, _arg3, _lam1, True)
         self.bookLateralSpills(None)
         n = 0
         for n in range(0, nn):
@@ -57003,7 +57041,7 @@ class fv_ExplicitFvSolver(fv_INetworkSolver, ICopy):
 
 
     def fireNodes(self, nodes, dt0, forcing):
-        raise SysException('NotImplementedException', 'TODO default argument with no expression')
+        self.refreshDummyFlows(dt0, forcing, lambda un: self.acc_nvol_.a[un], True)
         if self.water_tracking_:
             self.bookStructureWater(dt0, forcing)
         self.bookLateralSpills(nodes)
@@ -61902,30 +61940,29 @@ class fv_NativeGmres(ICopy):
         m = (_m2 if (_m2 := (_m1 if (_m1 := controls.max_iterations if 1 < controls.max_iterations else 1) < controls.restart else controls.restart) & 0xFFFFFFFFFFFFFFFF) < n else n)
         if self.bytes() > controls.workspace_limit_bytes:
             self.release()
-        raise SysException('NotImplementedException', 'TODO vector::max_size')
-        limit = 0
+        limit = (1152921504606846975 if 1152921504606846975 < (_m3 := controls.workspace_limit_bytes // 8) else _m3)
         count = 0
-        def _lam3(a, c):
+        def _lam4(a, c):
             nonlocal count
             if (a != 0) and (c > (((limit - count) & 0xFFFFFFFFFFFFFFFF) // a)):
                 return False
             count = (count + (a * c)) & 0xFFFFFFFFFFFFFFFF
             return True
-        addProduct = _lam3
+        addProduct = _lam4
         if ((((not addProduct((m + 1) & 0xFFFFFFFFFFFFFFFF, n)) or (not addProduct((m + 1) & 0xFFFFFFFFFFFFFFFF, m))) or (not addProduct(6, n))) or (not addProduct(4, m))) or (not addProduct(1, 1)):
             result.status = 2
             return fv_NativeGmres_Result_MoveNew(result)
         retained = 0
         exceeds = False
-        def _lam5(v, size):
+        def _lam6(v, size):
             nonlocal exceeds, retained
-            capacity = (size if (_m4 := v.capacity()) < size else _m4)
+            capacity = (size if (_m5 := v.capacity()) < size else _m5)
             if capacity > ((limit - retained) & 0xFFFFFFFFFFFFFFFF):
                 exceeds = True
             else:
                 retained = (retained + capacity) & 0xFFFFFFFFFFFFFFFF
             return
-        request = _lam5
+        request = _lam6
         request(self.basis_, ((m + 1) * n) & 0xFFFFFFFFFFFFFFFF)
         request(self.hessenberg_, ((m + 1) * m) & 0xFFFFFFFFFFFFFFFF)
         request(self.cosine_, m)
@@ -61940,14 +61977,14 @@ class fv_NativeGmres(ICopy):
         if exceeds:
             self.release()
         had_workspace = (self.bytes() > 0)
-        def _lam7():
-            def _lam6(v_3, size_3):
+        def _lam8():
+            def _lam7(v_3, size_3):
                 if v_3.capacity() < size_3:
                     v_3.reserve(size_3)
                     result.workspace_growths += 1
                 v_3.resize_ul(size_3)
                 return
-            size_2 = _lam6
+            size_2 = _lam7
             size_2(self.basis_, ((m + 1) * n) & 0xFFFFFFFFFFFFFFFF)
             size_2(self.hessenberg_, ((m + 1) * m) & 0xFFFFFFFFFFFFFFFF)
             size_2(self.cosine_, m)
@@ -61960,7 +61997,7 @@ class fv_NativeGmres(ICopy):
                 v_4 = v__r3[v__i4]
                 size_2(v_4, n)
             return
-        allocate = _lam7
+        allocate = _lam8
         try:
             allocate()
         except Exception as e:
@@ -61980,7 +62017,7 @@ class fv_NativeGmres(ICopy):
         if (not _m_isfinite(bnorm)) or (not _m_isfinite(result.tolerance)):
             result.status = 3
             return fv_NativeGmres_Result_MoveNew(result)
-        def _lam8(in_, out):
+        def _lam9(in_, out):
             result.matvecs += 1
             if not matrix(in_, out):
                 result.status = 4
@@ -61989,8 +62026,8 @@ class fv_NativeGmres(ICopy):
                 result.status = 3
                 return False
             return True
-        apply = _lam8
-        def _lam9(in_2, out_2):
+        apply = _lam9
+        def _lam10(in_2, out_2):
             if inverse is not None:
                 result.preconditioner_applications += 1
                 if not inverse(in_2, out_2):
@@ -62002,8 +62039,8 @@ class fv_NativeGmres(ICopy):
                 result.status = 3
                 return False
             return True
-        precondition = _lam9
-        def _lam10():
+        precondition = _lam10
+        def _lam11():
             if not apply(self.x_.data(), self.image_.data()):
                 return False
             i = 0
@@ -62014,7 +62051,7 @@ class fv_NativeGmres(ICopy):
                 result.status = 3
                 return False
             return True
-        trueResidual = _lam10
+        trueResidual = _lam11
         if not trueResidual():
             return fv_NativeGmres_Result_MoveNew(result)
         if result.true_residual <= result.tolerance:
@@ -62043,9 +62080,9 @@ class fv_NativeGmres(ICopy):
                 h = (lambda row, *, j=j: ArrRef(self.hessenberg_.a, ((j.v * (m + 1)) + row) & 0xFFFFFFFFFFFFFFFF))
                 k = 0
                 while k <= j.v:
-                    _v11 = F_fv__anon_hydraulics_fv_NativeGmres_cpp_dot_NativeGmres(PtrD_op_Add_PtrT_l(self.basis_.data(), ((k * n) + 0x8000000000000000 & 0xFFFFFFFFFFFFFFFF) - 0x8000000000000000), self.w_.data(), n)
-                    h(k).v = _v11
-                    Cell(0.0).v = _v11
+                    _v12 = F_fv__anon_hydraulics_fv_NativeGmres_cpp_dot_NativeGmres(PtrD_op_Add_PtrT_l(self.basis_.data(), ((k * n) + 0x8000000000000000 & 0xFFFFFFFFFFFFFFFF) - 0x8000000000000000), self.w_.data(), n)
+                    h(k).v = _v12
+                    Cell(0.0).v = _v12
                     i_3 = 0
                     for i_3 in range(0, n):
                         self.w_.a[i_3] -= h(k).v * self.basis_.a[((k * n) + i_3) & 0xFFFFFFFFFFFFFFFF]
@@ -62056,10 +62093,10 @@ class fv_NativeGmres(ICopy):
                     k_2 = 0
                     while k_2 <= j.v:
                         correction = F_fv__anon_hydraulics_fv_NativeGmres_cpp_dot_NativeGmres(PtrD_op_Add_PtrT_l(self.basis_.data(), ((k_2 * n) + 0x8000000000000000 & 0xFFFFFFFFFFFFFFFF) - 0x8000000000000000), self.w_.data(), n)
-                        _r12 = h(k_2)
-                        _v13 = _r12.v + correction
-                        _r12.v = _v13
-                        Cell(0.0).v = _v13
+                        _r13 = h(k_2)
+                        _v14 = _r13.v + correction
+                        _r13.v = _v14
+                        Cell(0.0).v = _v14
                         i_4 = 0
                         for i_4 in range(0, n):
                             self.w_.a[i_4] -= correction * self.basis_.a[((k_2 * n) + i_4) & 0xFFFFFFFFFFFFFFFF]
@@ -62069,9 +62106,9 @@ class fv_NativeGmres(ICopy):
                     result.status = 3
                     return fv_NativeGmres_Result_MoveNew(result)
                 breakdown = after <= (1.4210854715202004E-14 * before)
-                _v14 = after
-                h((j.v + 1) & 0xFFFFFFFFFFFFFFFF).v = _v14
-                Cell(0.0).v = _v14
+                _v15 = after
+                h((j.v + 1) & 0xFFFFFFFFFFFFFFFF).v = _v15
+                Cell(0.0).v = _v15
                 if not breakdown:
                     i_5 = 0
                     for i_5 in range(0, n):
@@ -62080,12 +62117,12 @@ class fv_NativeGmres(ICopy):
                 while k_3 < j.v:
                     a_2 = h(k_3).v
                     bnext = h((k_3 + 1) & 0xFFFFFFFFFFFFFFFF).v
-                    _v15 = (self.cosine_.a[k_3] * a_2) + (self.sine_.a[k_3] * bnext)
-                    h(k_3).v = _v15
-                    Cell(0.0).v = _v15
-                    _v16 = ((-self.sine_.a[k_3]) * a_2) + (self.cosine_.a[k_3] * bnext)
-                    h((k_3 + 1) & 0xFFFFFFFFFFFFFFFF).v = _v16
+                    _v16 = (self.cosine_.a[k_3] * a_2) + (self.sine_.a[k_3] * bnext)
+                    h(k_3).v = _v16
                     Cell(0.0).v = _v16
+                    _v17 = ((-self.sine_.a[k_3]) * a_2) + (self.cosine_.a[k_3] * bnext)
+                    h((k_3 + 1) & 0xFFFFFFFFFFFFFFFF).v = _v17
+                    Cell(0.0).v = _v17
                     k_3 += 1
                 rotation = LibM_hypot(h(j.v).v, h((j.v + 1) & 0xFFFFFFFFFFFFFFFF).v)
                 result.iterations += 1
@@ -62094,9 +62131,9 @@ class fv_NativeGmres(ICopy):
                     return fv_NativeGmres_Result_MoveNew(result)
                 self.cosine_.a[j.v] = h(j.v).v / rotation if rotation else fdiv0(h(j.v).v, rotation)
                 self.sine_.a[j.v] = h((j.v + 1) & 0xFFFFFFFFFFFFFFFF).v / rotation if rotation else fdiv0(h((j.v + 1) & 0xFFFFFFFFFFFFFFFF).v, rotation)
-                _v17 = rotation
-                h(j.v).v = _v17
-                Cell(0.0).v = _v17
+                _v18 = rotation
+                h(j.v).v = _v18
+                Cell(0.0).v = _v18
                 h((j.v + 1) & 0xFFFFFFFFFFFFFFFF).v = 0.0
                 Cell(0.0).v = 0.0
                 a_3 = self.g_.a[j.v]
@@ -62113,7 +62150,7 @@ class fv_NativeGmres(ICopy):
                 j_2 = ((i_6 + 1) & 0xFFFFFFFFFFFFFFFF)
                 for j_2 in range(j_2, used):
                     value -= self.hessenberg_.a[((j_2 * (m + 1)) + i_6) & 0xFFFFFFFFFFFFFFFF] * self.y_.a[j_2]
-                self.y_.a[i_6] = value / _d18 if (_d18 := self.hessenberg_.a[((i_6 * (m + 1)) + i_6) & 0xFFFFFFFFFFFFFFFF]) else fdiv0(value, _d18)
+                self.y_.a[i_6] = value / _d19 if (_d19 := self.hessenberg_.a[((i_6 * (m + 1)) + i_6) & 0xFFFFFFFFFFFFFFFF]) else fdiv0(value, _d19)
                 if not _m_isfinite(self.y_.a[i_6]):
                     result.status = 6
                     return fv_NativeGmres_Result_MoveNew(result)
@@ -73191,7 +73228,7 @@ class richards_Job_src_engine_hydrology_RichardsColumn_cpp_596(ICopy):
 
 
 
-class richards__anon_hydrology_RichardsColumn_cpp_Batch__1(ICopy):
+class richards__anon_hydrology_RichardsColumn_cpp_Batch_false(ICopy):
     __slots__ = ('n', 'lanes', 'columns', 'y', 'volume', 'lower_bound', 'reports', 'head', 'K', 'f', 'fp', 'residual', 'lo', 'di', 'up', 'delta', 'perturbed', 'epsilon', 'done', 'coefficients', )
 
     def __init__(self):
@@ -73248,7 +73285,6 @@ class richards__anon_hydrology_RichardsColumn_cpp_Batch__1(ICopy):
             scratch = v__r1[v__i2]
             scratch.resize_ul(self.y.n)
         self.done.resize_ul(self.lanes & 0xFFFFFFFFFFFFFFFF)
-        raise SysException('NotImplementedException', 'TODO type openswmm::richards::(anonymous namespace)::Batch<>')
         k = 0
         for k in range(0, self.n):
             a = 0
@@ -73257,18 +73293,24 @@ class richards__anon_hydrology_RichardsColumn_cpp_Batch__1(ICopy):
                 i = ((((k * self.lanes) + a) + 0x80000000 & 0xFFFFFFFF) - 0x80000000)
                 self.y.a[i & 0xFFFFFFFFFFFFFFFF] = self.columns.a[a].water.a[k]
                 self.volume.a[i & 0xFFFFFFFFFFFFFFFF] = cell.volume
-                values = [cell.area, cell.z, cell.dz, cell.theta_s, cell.Ks, cell.wilting, cell.potential_et, cell.material.theta_r, cell.material.alpha, cell.material.n, cell.material.l, cell.material.specific_storage]
-                raise SysException('NotImplementedException', 'TODO type openswmm::richards::(anonymous namespace)::Batch<>')
                 self.lower_bound.a[i & 0xFFFFFFFFFFFFFFFF] = (cell.material.theta_r * cell.volume) if (k != 0) else 0.0
 
 
+    def m__init_rBatch(self, p):
+        self.m__CopyFrom_Batch_false(p)
+
+
+    def m__init_mBatch(self, p):
+        self.MoveFrom(p)
+
+
     def Clone(self):
-        o = richards__anon_hydrology_RichardsColumn_cpp_Batch__1()
-        o.m__CopyFrom_Batch__1(self)
+        o = richards__anon_hydrology_RichardsColumn_cpp_Batch_false()
+        o.m__CopyFrom_Batch_false(self)
         return o
 
 
-    def m__CopyFrom_Batch__1(self, s):
+    def m__CopyFrom_Batch_false(self, s):
         self.n = s.n
         self.lanes = s.lanes
         self.columns = None if s.columns is None else s.columns.Clone()
@@ -73360,26 +73402,7 @@ class richards__anon_hydrology_RichardsColumn_cpp_Batch__1(ICopy):
 
 
     def cellAt(self, k, a):
-        i = (((((k * self.lanes) + a) + 0x80000000 & 0xFFFFFFFF) - 0x80000000) & 0xFFFFFFFFFFFFFFFF)
-        raise SysException('NotImplementedException', 'TODO type openswmm::richards::(anonymous namespace)::Batch<>')
-        field = None
-        _o1 = richards_Cell__new()
-        _o1.volume = self.volume.a[i]
-        _o1.area = field(0)
-        _o1.z = field(1)
-        _o1.dz = field(2)
-        _o1.theta_s = field(3)
-        _o1.Ks = field(4)
-        _o1.wilting = field(5)
-        _o1.potential_et = field(6)
-        _o2 = richards_Material__new()
-        _o2.theta_r = field(7)
-        _o2.alpha = field(8)
-        _o2.n = field(9)
-        _o2.l = field(10)
-        _o2.specific_storage = field(11)
-        _o1.material = _o2
-        return _o1
+        return self.columns.a[a & 0xFFFFFFFFFFFFFFFF].cells.a[k & 0xFFFFFFFFFFFFFFFF]
 
 
     def rhs(self, w, f, faces, et, inactive, rates, limited):
@@ -73765,7 +73788,7 @@ class richards__anon_hydrology_RichardsColumn_cpp_Batch__1(ICopy):
 
 
 
-class richards__anon_hydrology_RichardsColumn_cpp_Batch_0(ICopy):
+class richards__anon_hydrology_RichardsColumn_cpp_Batch_true(ICopy):
     __slots__ = ('n', 'lanes', 'columns', 'y', 'volume', 'lower_bound', 'reports', 'head', 'K', 'f', 'fp', 'residual', 'lo', 'di', 'up', 'delta', 'perturbed', 'epsilon', 'done', 'coefficients', )
 
     def __init__(self):
@@ -73822,6 +73845,7 @@ class richards__anon_hydrology_RichardsColumn_cpp_Batch_0(ICopy):
             scratch = v__r1[v__i2]
             scratch.resize_ul(self.y.n)
         self.done.resize_ul(self.lanes & 0xFFFFFFFFFFFFFFFF)
+        self.coefficients.resize_ul((12 * self.y.n) & 0xFFFFFFFFFFFFFFFF)
         k = 0
         for k in range(0, self.n):
             a = 0
@@ -73830,16 +73854,28 @@ class richards__anon_hydrology_RichardsColumn_cpp_Batch_0(ICopy):
                 i = ((((k * self.lanes) + a) + 0x80000000 & 0xFFFFFFFF) - 0x80000000)
                 self.y.a[i & 0xFFFFFFFFFFFFFFFF] = self.columns.a[a].water.a[k]
                 self.volume.a[i & 0xFFFFFFFFFFFFFFFF] = cell.volume
+                values = [cell.area, cell.z, cell.dz, cell.theta_s, cell.Ks, cell.wilting, cell.potential_et, cell.material.theta_r, cell.material.alpha, cell.material.n, cell.material.l, cell.material.specific_storage]
+                p = 0
+                for p in range(0, 12):
+                    self.coefficients.a[((p * self.y.n) + (i & 0xFFFFFFFFFFFFFFFF)) & 0xFFFFFFFFFFFFFFFF] = values[p]
                 self.lower_bound.a[i & 0xFFFFFFFFFFFFFFFF] = (cell.material.theta_r * cell.volume) if (k != 0) else 0.0
 
 
+    def m__init_rBatch(self, p):
+        self.m__CopyFrom_Batch_true(p)
+
+
+    def m__init_mBatch(self, p):
+        self.MoveFrom(p)
+
+
     def Clone(self):
-        o = richards__anon_hydrology_RichardsColumn_cpp_Batch_0()
-        o.m__CopyFrom_Batch_0(self)
+        o = richards__anon_hydrology_RichardsColumn_cpp_Batch_true()
+        o.m__CopyFrom_Batch_true(self)
         return o
 
 
-    def m__CopyFrom_Batch_0(self, s):
+    def m__CopyFrom_Batch_true(self, s):
         self.n = s.n
         self.lanes = s.lanes
         self.columns = None if s.columns is None else s.columns.Clone()
@@ -73931,7 +73967,25 @@ class richards__anon_hydrology_RichardsColumn_cpp_Batch_0(ICopy):
 
 
     def cellAt(self, k, a):
-        return self.columns.a[a & 0xFFFFFFFFFFFFFFFF].cells.a[k & 0xFFFFFFFFFFFFFFFF]
+        i = (((((k * self.lanes) + a) + 0x80000000 & 0xFFFFFFFF) - 0x80000000) & 0xFFFFFFFFFFFFFFFF)
+        field = (lambda p: self.coefficients.a[(((p & 0xFFFFFFFFFFFFFFFF) * self.y.n) + i) & 0xFFFFFFFFFFFFFFFF])
+        _o1 = richards_Cell__new()
+        _o1.volume = self.volume.a[i]
+        _o1.area = field(0)
+        _o1.z = field(1)
+        _o1.dz = field(2)
+        _o1.theta_s = field(3)
+        _o1.Ks = field(4)
+        _o1.wilting = field(5)
+        _o1.potential_et = field(6)
+        _o2 = richards_Material__new()
+        _o2.theta_r = field(7)
+        _o2.alpha = field(8)
+        _o2.n = field(9)
+        _o2.l = field(10)
+        _o2.specific_storage = field(11)
+        _o1.material = _o2
+        return _o1
 
 
     def rhs(self, w, f, faces, et, inactive, rates, limited):
@@ -73956,10 +74010,11 @@ class richards__anon_hydrology_RichardsColumn_cpp_Batch_0(ICopy):
             if ((not (inactive is not None)) or (not (inactive.a[a_2] != 0))) and (self.columns.a[a_2].inflow > 0.0):
                 f.a[a_2] += self.columns.a[a_2].inflow
         k = 0
-        for k in range(0, self.n):
+        while k < self.n:
             a_3 = 0
-            for a_3 in range(0, self.lanes):
-                if (inactive is not None) and (inactive.a[a_3] != 0):
+            while a_3 < self.lanes:
+                if (inactive is not None) and (inactive.a[a_3 & 0xFFFFFFFFFFFFFFFF] != 0):
+                    a_3 += 1
                     continue
                 i = ((((k * self.lanes) + a_3) + 0x80000000 & 0xFFFFFFFF) - 0x80000000)
                 c = self.cellAt(k, a_3)
@@ -73972,11 +74027,14 @@ class richards__anon_hydrology_RichardsColumn_cpp_Batch_0(ICopy):
                     _v13 = e
                     et.a[i & 0xFFFFFFFFFFFFFFFF] = _v13
                     Cell(0.0).v = _v13
+                a_3 += 1
+            k += 1
         k_2 = 0
         while k_2 < (((self.n - 1) + 0x80000000 & 0xFFFFFFFF) - 0x80000000):
             a_4 = 0
-            for a_4 in range(0, self.lanes):
-                if (inactive is not None) and (inactive.a[a_4] != 0):
+            while a_4 < self.lanes:
+                if (inactive is not None) and (inactive.a[a_4 & 0xFFFFFFFFFFFFFFFF] != 0):
+                    a_4 += 1
                     continue
                 i_2 = ((((k_2 * self.lanes) + a_4) + 0x80000000 & 0xFFFFFFFF) - 0x80000000)
                 j = (((i_2 + self.lanes) + 0x80000000 & 0xFFFFFFFF) - 0x80000000)
@@ -73999,13 +74057,15 @@ class richards__anon_hydrology_RichardsColumn_cpp_Batch_0(ICopy):
                     _v26 = q
                     faces.a[i_2 & 0xFFFFFFFFFFFFFFFF] = _v26
                     Cell(0.0).v = _v26
+                a_4 += 1
             k_2 += 1
         a_5 = 0
-        for a_5 in range(0, self.lanes):
-            if (inactive is not None) and (inactive.a[a_5] != 0):
+        while a_5 < self.lanes:
+            if (inactive is not None) and (inactive.a[a_5 & 0xFFFFFFFFFFFFFFFF] != 0):
+                a_5 += 1
                 continue
             i_3 = (((((self.n - 1) * self.lanes) + a_5) + 0x80000000 & 0xFFFFFFFF) - 0x80000000)
-            col = self.columns.a[a_5]
+            col = self.columns.a[a_5 & 0xFFFFFFFFFFFFFFFF]
             c_3 = self.cellAt(((self.n - 1) + 0x80000000 & 0xFFFFFFFF) - 0x80000000, a_5)
             area_2 = (FR_richards_Column_bottom_area(col) if (col.bottom_area > 0.0) else FR_richards_Cell_area(c_3)).v
             q_2 = 0.0
@@ -74016,21 +74076,22 @@ class richards__anon_hydrology_RichardsColumn_cpp_Batch_0(ICopy):
                 q_2 = (area_2 * (self.head.a[i_3 & 0xFFFFFFFFFFFFFFFF] - col.bottom_head)) / resistance if resistance else fdiv0(area_2 * (self.head.a[i_3 & 0xFFFFFFFFFFFFFFFF] - col.bottom_head), resistance)
             q_2 *= col.bottom_factor
             if rates is not None:
-                if q_2 > rates.out.a[a_5]:
-                    q_2 = rates.out.a[a_5]
+                if q_2 > rates.out.a[a_5 & 0xFFFFFFFFFFFFFFFF]:
+                    q_2 = rates.out.a[a_5 & 0xFFFFFFFFFFFFFFFF]
                     if limited is not None:
-                        limited.a[a_5] = 1
+                        limited.a[a_5 & 0xFFFFFFFFFFFFFFFF] = 1
                         Cell(0).v = 1
-                elif q_2 < (-rates.in_.a[a_5]):
-                    q_2 = -rates.in_.a[a_5]
+                elif q_2 < (-rates.in_.a[a_5 & 0xFFFFFFFFFFFFFFFF]):
+                    q_2 = -rates.in_.a[a_5 & 0xFFFFFFFFFFFFFFFF]
                     if limited is not None:
-                        limited.a[a_5] = -1
+                        limited.a[a_5 & 0xFFFFFFFFFFFFFFFF] = -1
                         Cell(0).v = -1
             f.a[i_3 & 0xFFFFFFFFFFFFFFFF] -= q_2
             if faces is not None:
                 _v30 = q_2
                 faces.a[i_3 & 0xFFFFFFFFFFFFFFFF] = _v30
                 Cell(0.0).v = _v30
+            a_5 += 1
 
 
     def implicit(self, start, steps, out, success, rates):
@@ -74079,12 +74140,13 @@ class richards__anon_hydrology_RichardsColumn_cpp_Batch_0(ICopy):
                 k_2 = color
                 while k_2 < self.n:
                     a_3 = 0
-                    for a_3 in range(0, self.lanes):
-                        if not (self.done.a[a_3] != 0):
+                    while a_3 < self.lanes:
+                        if not (self.done.a[a_3 & 0xFFFFFFFFFFFFFFFF] != 0):
                             i_2 = ((((k_2 * self.lanes) + a_3) + 0x80000000 & 0xFFFFFFFF) - 0x80000000)
                             wet_distance = abs(out.a[i_2 & 0xFFFFFFFFFFFFFFFF] - (self.cellAt(k_2, a_3).theta_s * self.volume.a[i_2 & 0xFFFFFFFFFFFFFFFF]))
                             self.epsilon.a[i_2 & 0xFFFFFFFFFFFFFFFF] = 1E-08 * ((_m7 if wet_distance < (_m7 := 0.0001 * self.volume.a[i_2 & 0xFFFFFFFFFFFFFFFF]) else wet_distance) if (k_2 != 0) else self.volume.a[i_2 & 0xFFFFFFFFFFFFFFFF])
                             self.perturbed.a[i_2 & 0xFFFFFFFFFFFFFFFF] += self.epsilon.a[i_2 & 0xFFFFFFFFFFFFFFFF]
+                        a_3 += 1
                     k_2 = ((k_2 + 3) + 0x80000000 & 0xFFFFFFFF) - 0x80000000
                 self.rhs(self.perturbed, self.fp, None, None, self.done, rates, None)
                 k_3 = color
@@ -89383,7 +89445,7 @@ class DefaultOutputPlugin(IOutputPlugin, ICopy):
         if self.snow_process_:
             v_2 = 0
             for v_2 in range(0, SubcatchSnapshot_snow_process_count):
-                self.writeInt4(((9 + v_2) + 0x80000000 & 0xFFFFFFFF) - 0x80000000)
+                self.writeInt4(((65536 + v_2) + 0x80000000 & 0xFFFFFFFF) - 0x80000000)
         self.writeInt4(self.n_node_vars_)
         v_3 = 0
         for v_3 in range(0, self.n_node_vars_):
@@ -93103,14 +93165,13 @@ class quality_ConservativeMixing(ICopy):
 
 
     def solve(self, scalar, output):
-        output = Cell(output)
         result = quality_ConservativeMixing_Result__new()
         result.max_water_residual = self.water_residual_
         n = self.diagonal_.n
         if (((not self.prepared_) or (scalar.old_concentration.n != n)) or (scalar.source_mass.n != n)) or ((not (scalar.held_dry_mass.n == 0)) and (scalar.held_dry_mass.n != n)):
             return quality_ConservativeMixing_Result_MoveNew(result)
-        accepted = Cell(self.candidate_)
-        accepted.v.held_dry_mass.assign_ul_T(n, 0.0)
+        accepted = self.candidate_
+        accepted.held_dry_mass.assign_ul_T(n, 0.0)
         i = 0
         for i in range(0, n):
             held = (0.0 if (scalar.held_dry_mass.n == 0) else scalar.held_dry_mass.a[i])
@@ -93118,7 +93179,7 @@ class quality_ConservativeMixing(ICopy):
                 return quality_ConservativeMixing_Result_MoveNew(result)
             mass = (((self.water_.old_volume.a[i] * scalar.old_concentration.a[i]) + scalar.source_mass.a[i]) + held)
             if self.diagonal_.a[i] == 0.0:
-                accepted.v.held_dry_mass.a[i] = mass
+                accepted.held_dry_mass.a[i] = mass
                 self.rhs_.a[i] = 0.0
                 self.guess_.a[i] = 0.0
             else:
@@ -93149,9 +93210,9 @@ class quality_ConservativeMixing(ICopy):
         result.iterations = linear.iterations
         if not linear.converged():
             return quality_ConservativeMixing_Result_MoveNew(result)
-        accepted.v.concentration.resize_ul(n)
-        accepted.v.exported_mass.resize_ul(n)
-        accepted.v.seeped_mass.resize_ul(n)
+        accepted.concentration.resize_ul(n)
+        accepted.exported_mass.resize_ul(n)
+        accepted.seeped_mass.resize_ul(n)
         scale = 1.0
         initial = 0.0
         final = 0.0
@@ -93159,32 +93220,37 @@ class quality_ConservativeMixing(ICopy):
         for i_4 in range(0, n):
             c = (self.guess_.a[i_4] + self.correction_.a[i_4])
             held_2 = (0.0 if (scalar.held_dry_mass.n == 0) else scalar.held_dry_mass.a[i_4])
-            if (not _m_isfinite(c)) or (scalar.nonnegative and ((c < ((-1E-12) * (_m7 if 1.0 < (_m7 := abs(self.guess_.a[i_4])) else 1.0))) or (accepted.v.held_dry_mass.a[i_4] < 0.0))):
+            if (not _m_isfinite(c)) or (scalar.nonnegative and ((c < ((-1E-12) * (_m7 if 1.0 < (_m7 := abs(self.guess_.a[i_4])) else 1.0))) or (accepted.held_dry_mass.a[i_4] < 0.0))):
                 return quality_ConservativeMixing_Result_MoveNew(result)
-            accepted.v.concentration.a[i_4] = (c if 0.0 < c else 0.0) if scalar.nonnegative else c
-            accepted.v.exported_mass.a[i_4] = self.water_.exported.a[i_4] * accepted.v.concentration.a[i_4]
-            accepted.v.seeped_mass.a[i_4] = self.water_.seeped.a[i_4] * accepted.v.concentration.a[i_4]
+            accepted.concentration.a[i_4] = (c if 0.0 < c else 0.0) if scalar.nonnegative else c
+            accepted.exported_mass.a[i_4] = self.water_.exported.a[i_4] * accepted.concentration.a[i_4]
+            accepted.seeped_mass.a[i_4] = self.water_.seeped.a[i_4] * accepted.concentration.a[i_4]
             before = (self.water_.old_volume.a[i_4] * scalar.old_concentration.a[i_4])
             initial += (before + scalar.source_mass.a[i_4]) + held_2
             scale += (abs(before) + abs(scalar.source_mass.a[i_4])) + abs(held_2)
-        accepted.v.transfer_mass.clear()
-        accepted.v.transfer_mass.reserve(self.water_.transfers.n)
+        accepted.transfer_mass.clear()
+        accepted.transfer_mass.reserve(self.water_.transfers.n)
         v__r3 = self.water_.transfers
         v__i4_n = v__r3.n
         for v__i4 in range(0, v__i4_n):
             t_2 = v__r3.a[v__i4]
-            mass_2 = (t_2.volume * accepted.v.concentration.a[t_2.donor])
-            accepted.v.transfer_mass.push_back(mass_2)
+            mass_2 = (t_2.volume * accepted.concentration.a[t_2.donor])
+            accepted.transfer_mass.push_back(mass_2)
             if self.diagonal_.a[t_2.receiver] == 0.0:
-                accepted.v.held_dry_mass.a[t_2.receiver] += mass_2
+                accepted.held_dry_mass.a[t_2.receiver] += mass_2
         i_5 = 0
         for i_5 in range(0, n):
-            final += (((self.water_.new_volume.a[i_5] * accepted.v.concentration.a[i_5]) + accepted.v.held_dry_mass.a[i_5]) + accepted.v.exported_mass.a[i_5]) + accepted.v.seeped_mass.a[i_5]
+            final += (((self.water_.new_volume.a[i_5] * accepted.concentration.a[i_5]) + accepted.held_dry_mass.a[i_5]) + accepted.exported_mass.a[i_5]) + accepted.seeped_mass.a[i_5]
         result.mass_residual = (initial - final) / scale if scale else fdiv0(initial - final, scale)
         if abs(result.mass_residual) > 1E-09:
             return quality_ConservativeMixing_Result_MoveNew(result)
         result.converged = True
-        Std_swap(output, accepted)
+        def _lam8():
+            v__t = quality_MixedScalar_MoveNew(output)
+            output.MoveFrom(accepted)
+            accepted.MoveFrom(v__t)
+            return
+        _lam8()
         return quality_ConservativeMixing_Result_MoveNew(result)
 
 
@@ -111728,26 +111794,50 @@ def richards_Job_src_engine_hydrology_RichardsColumn_cpp_596_MoveNew(s):
     return o
 
 
-def richards__anon_hydrology_RichardsColumn_cpp_Batch__1_New_vec_pColumn_vec_pReport(c, r):
-    o = richards__anon_hydrology_RichardsColumn_cpp_Batch__1()
+def richards__anon_hydrology_RichardsColumn_cpp_Batch_false_New_vec_pColumn_vec_pReport(c, r):
+    o = richards__anon_hydrology_RichardsColumn_cpp_Batch_false()
     o.m__init_vec_pColumn_vec_pReport(c, r)
     return o
 
 
-def richards__anon_hydrology_RichardsColumn_cpp_Batch__1_MoveNew(s):
-    o = richards__anon_hydrology_RichardsColumn_cpp_Batch__1()
+def richards__anon_hydrology_RichardsColumn_cpp_Batch_false_New_rBatch(p):
+    o = richards__anon_hydrology_RichardsColumn_cpp_Batch_false()
+    o.m__init_rBatch(p)
+    return o
+
+
+def richards__anon_hydrology_RichardsColumn_cpp_Batch_false_New_mBatch(p):
+    o = richards__anon_hydrology_RichardsColumn_cpp_Batch_false()
+    o.m__init_mBatch(p)
+    return o
+
+
+def richards__anon_hydrology_RichardsColumn_cpp_Batch_false_MoveNew(s):
+    o = richards__anon_hydrology_RichardsColumn_cpp_Batch_false()
     o.MoveFrom(s)
     return o
 
 
-def richards__anon_hydrology_RichardsColumn_cpp_Batch_0_New_vec_pColumn_vec_pReport(c, r):
-    o = richards__anon_hydrology_RichardsColumn_cpp_Batch_0()
+def richards__anon_hydrology_RichardsColumn_cpp_Batch_true_New_vec_pColumn_vec_pReport(c, r):
+    o = richards__anon_hydrology_RichardsColumn_cpp_Batch_true()
     o.m__init_vec_pColumn_vec_pReport(c, r)
     return o
 
 
-def richards__anon_hydrology_RichardsColumn_cpp_Batch_0_MoveNew(s):
-    o = richards__anon_hydrology_RichardsColumn_cpp_Batch_0()
+def richards__anon_hydrology_RichardsColumn_cpp_Batch_true_New_rBatch(p):
+    o = richards__anon_hydrology_RichardsColumn_cpp_Batch_true()
+    o.m__init_rBatch(p)
+    return o
+
+
+def richards__anon_hydrology_RichardsColumn_cpp_Batch_true_New_mBatch(p):
+    o = richards__anon_hydrology_RichardsColumn_cpp_Batch_true()
+    o.m__init_mBatch(p)
+    return o
+
+
+def richards__anon_hydrology_RichardsColumn_cpp_Batch_true_MoveNew(s):
+    o = richards__anon_hydrology_RichardsColumn_cpp_Batch_true()
     o.MoveFrom(s)
     return o
 
@@ -126937,7 +127027,7 @@ def F_lidnode_layers(ctx, control):
     if s[0] > 0.0:
         _o1 = LidNodeLayer__new()
         _o1.kind = 0
-        _o1.params = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        _o1.params = [s[0], s[1], 0.0, 0.0, 0.0, 0.0, 0.0]
         _o1.treatment = NewVec(LidLayerTreatment__new)
         _o1.retention = richards_Material__new()
         _o1.flow = richards_Options__new()
@@ -126946,36 +127036,36 @@ def F_lidnode_layers(ctx, control):
     if type_.EqLit(R_Lit('PP')) and (p[0] > 0.0):
         _o2 = LidNodeLayer__new()
         _o2.kind = 2
-        _o2.params = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        _o2.params = [p[0], (_n4 / _d3 if ((_n4 := p[1]), (_d3 := 1.0 + p[1]))[1] else fdiv0(_n4, _d3)) * (1.0 - p[2]), p[3], 0.0, 0.0, 0.0, 0.0]
         _o2.treatment = NewVec(LidLayerTreatment__new)
         _o2.retention = richards_Material__new()
         _o2.flow = richards_Options__new()
         out.v.push_back(_o2)
     m = c.soil.a[control & 0xFFFFFFFFFFFFFFFF]
     if m[0] > 0.0:
-        _o3 = LidNodeLayer__new()
-        _o3.kind = 1
-        _o3.params = Arr_Clone__D(m)
-        _o3.treatment = NewVec(LidLayerTreatment__new)
-        _o3.retention = richards_Material__new()
-        _o3.flow = richards_Options__new()
-        out.v.push_back(_o3)
-    g = c.storage.a[control & 0xFFFFFFFFFFFFFFFF]
-    if g[0] > 0.0:
-        _o4 = LidNodeLayer__new()
-        _o4.kind = 2
-        _o4.params = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        _o4.treatment = NewVec(LidLayerTreatment__new)
-        _o4.retention = richards_Material__new()
-        _o4.flow = richards_Options__new()
-        out.v.push_back(_o4)
         _o5 = LidNodeLayer__new()
-        _o5.kind = 3
-        _o5.params = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        _o5.kind = 1
+        _o5.params = Arr_Clone__D(m)
         _o5.treatment = NewVec(LidLayerTreatment__new)
         _o5.retention = richards_Material__new()
         _o5.flow = richards_Options__new()
         out.v.push_back(_o5)
+    g = c.storage.a[control & 0xFFFFFFFFFFFFFFFF]
+    if g[0] > 0.0:
+        _o6 = LidNodeLayer__new()
+        _o6.kind = 2
+        _o6.params = [g[0], _n8 / _d7 if ((_n8 := g[1]), (_d7 := 1.0 + g[1]))[1] else fdiv0(_n8, _d7), 1000000000000.0, 0.0, 0.0, 0.0, 0.0]
+        _o6.treatment = NewVec(LidLayerTreatment__new)
+        _o6.retention = richards_Material__new()
+        _o6.flow = richards_Options__new()
+        out.v.push_back(_o6)
+        _o9 = LidNodeLayer__new()
+        _o9.kind = 3
+        _o9.params = [g[2], g[3], 0.0, 0.0, 0.0, 0.0, 0.0]
+        _o9.treatment = NewVec(LidLayerTreatment__new)
+        _o9.retention = richards_Material__new()
+        _o9.flow = richards_Options__new()
+        out.v.push_back(_o9)
     return Mv_Take(out, (lambda: NewVec(LidNodeLayer__new)))
 
 
@@ -128680,10 +128770,13 @@ def F_richards_advance(columns, dt):
         groups.Index(trial.a[a].cells.n).push_back(a)
         a += 1
     def _lam1(c_2, r_4, packed):
-        if packed and (c_2.n >= 8):
-            raise SysException('NotImplementedException', 'TODO type openswmm::richards::(anonymous namespace)::Batch')
+        c_2 = Cell(c_2)
+        r_4 = Cell(r_4)
+        if packed and (c_2.v.n >= 8):
+            richards__anon_hydrology_RichardsColumn_cpp_Batch_true_New_vec_pColumn_vec_pReport(Mv_Take(c_2, (lambda: NewVec(richards_Column__new))), Mv_Take(r_4, (lambda: NewVec(richards_Report__new)))).run(dt)
         else:
-            raise SysException('NotImplementedException', 'TODO type openswmm::richards::(anonymous namespace)::Batch')
+            richards__anon_hydrology_RichardsColumn_cpp_Batch_false_New_vec_pColumn_vec_pReport(Mv_Take(c_2, (lambda: NewVec(richards_Column__new))), Mv_Take(r_4, (lambda: NewVec(richards_Report__new)))).run(dt)
+        return
     runBatch = _lam1
     parallel_complete = False
     if (trial.n >= 256) and (F_threadinfo_ompMaxThreads() > 1):
@@ -135324,9 +135417,9 @@ def F_input_nws_read_online_value_PostParseResolver(s, v, flag):
 
 
 def F_input_nws_read_file_PostParseResolver(f, spec, file_start, series, first_date__ref, last_date__ref, periods_precip__ref):
+    first_date = first_date__ref.v
     last_date = last_date__ref.v
     periods_precip = periods_precip__ref.v
-    first_date = first_date__ref.v
     try:
         line = R_Buf_i(4096)
         condition = 0
@@ -135546,9 +135639,9 @@ def F_input_nws_read_file_PostParseResolver(f, spec, file_start, series, first_d
                 if ((flag1.v == 65) or (flag1.v == 125)) or (flag1.v == 93):
                     condition = 0
     finally:
+        first_date__ref.v = first_date
         last_date__ref.v = last_date
         periods_precip__ref.v = periods_precip
-        first_date__ref.v = first_date
 
 
 def F_input_load_external_rain_files_impl_PostParseResolver(ctx, file_cache):

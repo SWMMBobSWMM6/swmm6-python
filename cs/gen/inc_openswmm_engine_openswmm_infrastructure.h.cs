@@ -569,59 +569,59 @@ namespace _global
     }
     public enum SWMM_InletType : int
     {
-        SWMM_INLET_GRATE,
-        SWMM_INLET_CURB,
-        SWMM_INLET_COMBO,
-        SWMM_INLET_SLOTTED,
-        SWMM_INLET_DROP_GRATE,
-        SWMM_INLET_DROP_CURB,
-        SWMM_INLET_CUSTOM,
+        SWMM_INLET_GRATE = unchecked((int)0),
+        SWMM_INLET_CURB = unchecked((int)1),
+        SWMM_INLET_COMBO = unchecked((int)2),
+        SWMM_INLET_SLOTTED = unchecked((int)3),
+        SWMM_INLET_DROP_GRATE = unchecked((int)4),
+        SWMM_INLET_DROP_CURB = unchecked((int)5),
+        SWMM_INLET_CUSTOM = unchecked((int)6),
     }
     public enum SWMM_GrateType : int
     {
-        SWMM_GRATE_P_BAR_50,
-        SWMM_GRATE_P_BAR_50x100,
-        SWMM_GRATE_P_BAR_30,
-        SWMM_GRATE_CURVED_VANE,
-        SWMM_GRATE_TILT_BAR_45,
-        SWMM_GRATE_TILT_BAR_30,
-        SWMM_GRATE_RETICULINE,
-        SWMM_GRATE_GENERIC,
+        SWMM_GRATE_P_BAR_50 = unchecked((int)0),
+        SWMM_GRATE_P_BAR_50x100 = unchecked((int)1),
+        SWMM_GRATE_P_BAR_30 = unchecked((int)2),
+        SWMM_GRATE_CURVED_VANE = unchecked((int)3),
+        SWMM_GRATE_TILT_BAR_45 = unchecked((int)4),
+        SWMM_GRATE_TILT_BAR_30 = unchecked((int)5),
+        SWMM_GRATE_RETICULINE = unchecked((int)6),
+        SWMM_GRATE_GENERIC = unchecked((int)7),
     }
     public enum SWMM_ThroatType : int
     {
-        SWMM_THROAT_HORIZONTAL,
-        SWMM_THROAT_INCLINED,
-        SWMM_THROAT_VERTICAL,
+        SWMM_THROAT_HORIZONTAL = unchecked((int)0),
+        SWMM_THROAT_INCLINED = unchecked((int)1),
+        SWMM_THROAT_VERTICAL = unchecked((int)2),
     }
     public enum SWMM_InletCurveKind : int
     {
-        SWMM_INLET_CURVE_NONE,
-        SWMM_INLET_CURVE_DIVERSION,
-        SWMM_INLET_CURVE_RATING,
+        SWMM_INLET_CURVE_NONE = unchecked((int)0),
+        SWMM_INLET_CURVE_DIVERSION = unchecked((int)1),
+        SWMM_INLET_CURVE_RATING = unchecked((int)2),
     }
     public enum SWMM_InletPlacement : int
     {
-        SWMM_INLET_AUTOMATIC,
-        SWMM_INLET_ON_GRADE,
-        SWMM_INLET_ON_SAG,
+        SWMM_INLET_AUTOMATIC = unchecked((int)0),
+        SWMM_INLET_ON_GRADE = unchecked((int)1),
+        SWMM_INLET_ON_SAG = unchecked((int)2),
     }
     public enum SWMM_InletHostKind : int
     {
-        SWMM_INLET_HOST_LINK,
-        SWMM_INLET_HOST_NODE,
+        SWMM_INLET_HOST_LINK = unchecked((int)0),
+        SWMM_INLET_HOST_NODE = unchecked((int)1),
     }
     public enum SWMM_LidNodeLayerKind : int
     {
-        SWMM_LID_NODE_SURFACE,
-        SWMM_LID_NODE_MEDIA,
-        SWMM_LID_NODE_AGGREGATE,
-        SWMM_LID_NODE_BOTTOM,
+        SWMM_LID_NODE_SURFACE = unchecked((int)0),
+        SWMM_LID_NODE_MEDIA = unchecked((int)1),
+        SWMM_LID_NODE_AGGREGATE = unchecked((int)2),
+        SWMM_LID_NODE_BOTTOM = unchecked((int)3),
     }
     public enum SWMM_LidNodeBottom : int
     {
-        SWMM_LID_BOTTOM_CURRENT,
-        SWMM_LID_BOTTOM_SEALED,
-        SWMM_LID_BOTTOM_MESH_AQUIFER,
+        SWMM_LID_BOTTOM_CURRENT = unchecked((int)0),
+        SWMM_LID_BOTTOM_SEALED = unchecked((int)1),
+        SWMM_LID_BOTTOM_MESH_AQUIFER = unchecked((int)2),
     }
 }

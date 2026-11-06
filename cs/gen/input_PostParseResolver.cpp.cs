@@ -2700,9 +2700,9 @@ namespace openswmm.input
         }
         public static void nws_read_file_PostParseResolver(global::Cpp.CFile f, global::openswmm.input.NwsFileSpec spec, double file_start, global::openswmm.Table series, ref double first_date__ref, ref double last_date__ref, ref long periods_precip__ref)
         {
+            var first_date = first_date__ref;
             var last_date = last_date__ref;
             var periods_precip = periods_precip__ref;
-            var first_date = first_date__ref;
             try
             {
                 global::Cpp.CPtr line = global::Cpp.R.Buf(4096);
@@ -2913,9 +2913,9 @@ namespace openswmm.input
             }
             finally
             {
+                first_date__ref = first_date;
                 last_date__ref = last_date;
                 periods_precip__ref = periods_precip;
-                first_date__ref = first_date;
             }
         }
         public static void load_external_rain_files_impl_PostParseResolver(global::openswmm.SimulationContext ctx, global::openswmm.input.MultiColumnFileCache file_cache)

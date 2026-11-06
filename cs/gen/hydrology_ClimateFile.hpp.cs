@@ -197,20 +197,20 @@ namespace openswmm.climate
     }
     public enum ClimateVar : int
     {
-        TMIN,
-        TMAX,
-        EVAP,
-        WIND,
+        TMIN = unchecked((int)0),
+        TMAX = unchecked((int)1),
+        EVAP = unchecked((int)2),
+        WIND = unchecked((int)3),
     }
     public enum WindFieldType : int
     {
-        WDMV,
-        AWND,
+        WDMV = unchecked((int)0),
+        AWND = unchecked((int)1),
     }
     public enum TempUnits : int
     {
-        DEG_C10,
-        DEG_C,
-        DEG_F,
+        DEG_C10 = unchecked((int)0),
+        DEG_C = unchecked((int)1),
+        DEG_F = unchecked((int)2),
     }
 }

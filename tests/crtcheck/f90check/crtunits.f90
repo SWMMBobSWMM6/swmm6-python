@@ -312,8 +312,18 @@ contains
     call check('fread partial element', k == 1 .and. ia%a(0) == 655359 .and. ia%a(1) == 572653568 .and. cpp_r_feof(fp) == 1)
     r = cpp_r_fclose(fp)
     call check('fopen missing', .not. associated(cpp_r_fopen(cpp_r_lit(dir // '/none'), cpp_r_lit('r'))))
-    call check('fopen directory', .not. associated(cpp_r_fopen(cpp_r_lit(dir), cpp_r_lit('r'))) .and. &
+    ! glibc: a directory opens for reading, and the first read fails (ferror set, feof not); r+ and w fail
+    fp => cpp_r_fopen(cpp_r_lit(dir), cpp_r_lit('r'))
+    call check('fopen directory', associated(fp))
+    if (associated(fp)) then
+      call check('fopen directory reads', cpp_cptr_isnull_c(cpp_r_fgets(cpp_r_buf_i(8), 8, fp)) .and. cpp_r_feof(fp) == 0 &
+           .and. cpp_r_ferror(fp) == 1 .and. cpp_r_fgetc(fp) == -1 .and. cpp_r_feof(fp) == 0 .and. cpp_r_fclose(fp) == 0)
+    end if
+    call check('fopen directory r+ w', .not. associated(cpp_r_fopen(cpp_r_lit(dir), cpp_r_lit('r+'))) .and. &
          .not. associated(cpp_r_fopen(cpp_r_lit(dir), cpp_r_lit('w'))))
+    fp => cpp_r_fopen(name, cpp_r_lit('r'))
+    call check('ferror of a file', cpp_r_ferror(fp) == 0)
+    r = cpp_r_fclose(fp)
     call check('fopen bad mode', .not. associated(cpp_r_fopen(name, cpp_r_lit('x'))))
     ! text lines: fgets and the end-of-file flag
     an = cpp_r_lit(dir // '/l.txt')

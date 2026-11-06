@@ -1287,7 +1287,11 @@ namespace openswmm
             if ((fv_opts_.structure_coupling == global::openswmm.fv.StructureCoupling.SUBSTEP))
             {
                 forcing.refresh_user = rctx;
-                throw new global::System.NotImplementedException("TODO method const (lambda at /tmp/claude-0/-home-claude/9f3dde4c-f353-52c4-b476-e410dd8d4e21/scratchpad/swmm6/eng/src/engine/hydraulics/Routing.cpp:1714:27)::operator void (*)(void *, double)"); // line 1717
+                forcing.refresh = (global::Gen.FN20)((object user, double t_elapsed) =>
+{
+    global::openswmm.Router.RefreshCtx_src_engine_hydraulics_Routing_cpp_1705 r_2 = ((global::openswmm.Router.RefreshCtx_src_engine_hydraulics_Routing_cpp_1705)user);
+    r_2.self.refreshFvBoundaryFlows(r_2.ctx, t_elapsed, r_2.eval);
+});
             }
             global::Cpp.Vec<double> trace_start_cells = new global::Cpp.Vec<double>();
             global::Cpp.Vec<double> trace_start_nodes = new global::Cpp.Vec<double>();

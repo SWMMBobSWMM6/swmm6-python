@@ -80,7 +80,12 @@ class Resolver:
         self.key, self.scopes, self.recs, self.locals, self.file = st
 
     def known(self, name):
-        return name in self.m.records or name in self.m.enums
+        if not hasattr(self, '_templates'):
+            # an engine class template is known only by its specializations (ns::Batch<true>); a type that names
+            # it with arguments (Batch<true>) is looked up by the template's name
+            self._templates = {k[:k.index('<')] for k, r in self.m.records.items()
+                               if r.get('kind') == 'ClassTemplateSpecializationDecl' and '<' in k}
+        return name in self.m.records or name in self.m.enums or name in self._templates
 
     def unnamed(self, name):
         """'(unnamed struct at /.../src/engine/x.cpp:159:11)' -> the record key '...(anon@src/engine/x.cpp:159)'."""

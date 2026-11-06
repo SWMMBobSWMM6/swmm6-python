@@ -70,7 +70,10 @@ class _VecBase(ICopy, IDestroyElems):
         return ArrRef(self.a, self.n - 1)
 
     def data(self):
-        return Ptr(self.a, 0)
+        """libstdc++'s data() is the start of the storage, which is nullptr until the vector first allocates
+        (capacity 0); the engine tests it for null (C# Cpp.Vec.data)."""
+        a = self.a
+        return Ptr(a, 0) if a else Ptr_ZERO
 
     def get_Item(self, i):
         return self.a[i]

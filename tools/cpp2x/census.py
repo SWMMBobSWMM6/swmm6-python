@@ -22,6 +22,21 @@ def tstr(t):
 RECORD_RE = re.compile(r'\b(openswmm::[A-Za-z0-9_:<>, ]+?)(?=[\s&*\[\],>)]|$)')
 
 
+def params_sig(t):
+    """A method's function type without its return type, '(params) quals', the part an override must repeat: the
+    return type may be spelled another way (an out-of-line definition of RunStats run_stats() const writes
+    INetworkSolver::RunStats)."""
+    depth = 0
+    for i, ch in enumerate(t):
+        if ch == '<':
+            depth += 1
+        elif ch == '>':
+            depth -= 1
+        elif ch == '(' and depth == 0 and t[i + 1:i + 2] != '*' and t[i + 1:i + 2] != '&':
+            return t[i:]
+    return t
+
+
 def walk(n, f):
     f(n)
     for c in n.get('inner', ()):
@@ -100,11 +115,11 @@ def main():
     for fk, recs in types_used.items():
         for r in recs:
             edges[fk].add(r)
-    # virtual overrides: same name and signature in a derived record
+    # virtual overrides: same name and parameter list in a derived record
     by_rec_name = collections.defaultdict(list)
     for key, (k, nm, par, fl, virt, sig) in meta.items():
         if k == 'CXXMethodDecl' and par:
-            by_rec_name[(par, nm, sig)].append(key)
+            by_rec_name[(par, nm, params_sig(sig))].append(key)
     derived = collections.defaultdict(set)
     for rec, bs in bases.items():
         for b in bs:
@@ -119,7 +134,7 @@ def main():
     for key, (k, nm, par, fl, virt, sig) in meta.items():
         if k == 'CXXMethodDecl' and virt and par:
             for d2 in all_derived(par, set()):
-                for o in by_rec_name.get((d2, nm, sig), []):
+                for o in by_rec_name.get((d2, nm, params_sig(sig)), []):
                     edges[key].add(o)
 
     names = collections.defaultdict(list)

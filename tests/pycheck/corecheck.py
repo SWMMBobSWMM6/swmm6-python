@@ -41,6 +41,8 @@ def _stub_strtod(p, end):
 
 if not hasattr(cpp, 'R_strtod_CPtr_CPtrr'):
     cpp.R_strtod_CPtr_CPtrr = _stub_strtod
+if not hasattr(cpp, 'R_get_ERange'):
+    cpp.R_get_ERange = lambda: False     # part C's R.ERange (the stub's plain decimal input never sets it)
 
 out = []
 NAN = DNAN          # C#'s double.NaN
